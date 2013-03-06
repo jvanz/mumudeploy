@@ -11,3 +11,6 @@ May the force be with us!
 
 Maintainers: José Guilherme Vanz <guilherme.sft@gmail.com>
 	     Marcos Paulo de Souza <marcos.souza.org@gmail.com>
+
+For test run:
+qmlviewer qml/Main.qml
