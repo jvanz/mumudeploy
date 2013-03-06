@@ -6,8 +6,10 @@ Rectangle {
 	property color onHoverColor: "gold"
 	property color borderColor: "white"
 	property string label
-	width: 150
+	border.width: 3
+	border.color: borderColor
 	height: 60
+	width: 250
 	radius: 10
 
 	MouseArea {
@@ -19,6 +21,7 @@ Rectangle {
 	}
 
 	Text {
+		id: myText
 		text: label
 		anchors.centerIn: parent
 	}
