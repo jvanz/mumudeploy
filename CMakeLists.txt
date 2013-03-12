@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 2.8)
+PROJECT(mumudeploy)
+FIND_PACKAGE(Qt4 REQUIRED)
+find_package(Qt4 COMPONENTS QTCORE QTGUI QTDECLARATIVE)
+add_definitions(${QDECLARATIVE_BOOSTABLE_CFLAGS})
+link_libraries(${QDECLARATIVE_BOOSTABLE_LDFLAGS})
+
+SET(mumudeploy_SOURCE main.cpp)
+
+QT4_WRAP_CPP(mumudeploy_SOURCE_MOC ${mumudeploy_SOURCE})
+
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
+ADD_EXECUTABLE(mumudeploy ${mumudeploy_SOURCE}
+${mumudeploy_SOURCE_MOC})
+
+TARGET_LINK_LIBRARIES(mumudeploy ${QT_LIBRARIES})
