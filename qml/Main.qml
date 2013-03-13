@@ -20,6 +20,13 @@ Item {
 			buttonColor: "lightgray"
 			label: "Escolha um IP para enviar um arquivo"
 			anchors.horizontalCenter: parent.horizontalCenter
+
+			MouseArea {
+				anchors.fill: parent
+				onClicked: {
+					rectMain.state = (rectMain.state == "showSendTo") ? "showNothing" : "showSendTo"
+				}
+			}
 		}
 
 		Button {
@@ -35,7 +42,7 @@ Item {
 			MouseArea {
 				anchors.fill: parent
 				onClicked: {
-					rectMain.state = (rectMain.state == "showAnother") ? "showNothing" : "showAnother"
+					rectMain.state = (rectMain.state == "showRunning") ? "showNothing" : "showRunning"
 				}
 			}
 		}
@@ -53,19 +60,24 @@ Item {
 			}
 		}
 
+		Rectangle {
+			id: rectIp
+			y: -100
+			width: 400
+			height: 100
+			color: "lightblue"
+
+			TextEdit {
+				width: 100
+				height: 30
+				text: "Mokiado Rulez"
+				anchors.centerIn : parent
+			}
+		}
+
 		states: [
 			State {
-				name: "showAnother"
-				PropertyChanges {
-					target: rectMain
-					height: 300
-				}
-
-				PropertyChanges {
-					target: send
-					y: 100
-				}
-
+				name: "showRunning"
 				PropertyChanges {
 					target: openTransfers
 					y: 200
@@ -74,6 +86,17 @@ Item {
 				PropertyChanges {
 					target: rectHidden
 					y: 300
+				}
+			},
+			State {
+				name: "showSendTo"
+				PropertyChanges {
+					target: send
+					y: 150
+				}
+				PropertyChanges {
+					target: rectIp
+					y: 0
 				}
 			}
 		]
@@ -93,6 +116,18 @@ Item {
 			}
 			NumberAnimation {
 				target: rectHidden
+				properties: "y"
+				easing.type: Easing.OutExpo
+				duration: 1000
+			}
+			NumberAnimation {
+				target: rectIp
+				properties: "y"
+				easing.type: Easing.OutExpo
+				duration: 1000
+			}
+			NumberAnimation {
+				target: send
 				properties: "y"
 				easing.type: Easing.OutExpo
 				duration: 1000
