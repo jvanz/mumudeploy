@@ -67,11 +67,70 @@ Item {
 			height: 100
 			color: "lightblue"
 
-			TextEdit {
-				width: 100
-				height: 30
-				text: "Mokiado Rulez"
-				anchors.centerIn : parent
+			Text {
+				id: ipLabel
+				text: "IP: "
+				anchors.top: parent.top
+				anchors.topMargin: 30
+				anchors.right: fileLabel.right
+			}
+
+			Rectangle {
+				id: rectIP
+				width: 200
+				height: 20
+				anchors.top: ipLabel.top
+				anchors.left: ipLabel.right
+				anchors.leftMargin: 10
+
+				TextInput {
+					anchors.fill: parent
+					anchors.left : parent.left
+					anchors.leftMargin: 2
+					inputMask: "999.999.999.999"
+					text: "127.000.000.001"
+				}
+			}
+
+			Text {
+				id: fileLabel
+				text: qsTr("Arquivo: ")
+				anchors.top: ipLabel.bottom
+				anchors.topMargin: 5
+				anchors.left: parent.left
+				anchors.leftMargin: 6
+			}
+
+			Rectangle {
+				id: rectFile
+				width: 200
+				height: 20
+				anchors.top: fileLabel.top
+				anchors.left: rectIP.left
+
+				TextInput {
+					anchors.fill: parent
+					anchors.left: parent.left
+					anchors.leftMargin: 2
+				}
+			}
+
+			Button {
+				id: btSend
+				width: 110
+				height: 50
+				anchors.left: rectFile.right
+				anchors.leftMargin: 10
+				anchors.verticalCenter: parent.verticalCenter
+				buttonColor: "lightcyan"
+				label: qsTr("Enviar arquivo")
+
+				MouseArea {
+					anchors.fill: parent
+					onClicked: {
+						console.log("Implement me!!")
+					}
+				}
 			}
 		}
 
