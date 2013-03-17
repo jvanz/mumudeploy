@@ -9,8 +9,5 @@ public:
 	FileHandle() : QObject(0) {}
 	
 public slots:
-	Q_INVOKABLE void test();
-
-private:
-	QString fileName;
+	Q_INVOKABLE bool verifyFile(QString fileName);
 };

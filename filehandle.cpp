@@ -1,5 +1,10 @@
 #include "filehandle.h"
 
-void FileHandle::test()
+bool FileHandle::verifyFile(QString filename)
 {
+	QFile file(filename);
+
+	if (!file.exists())
+		return false;
+	return true;
 }
