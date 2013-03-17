@@ -1,10 +1,15 @@
 import QtQuick 1.0
 import "."
+import mumu 1.0
 
 Item {
 	id: mainScreen
 	width: 400
 	height: 400
+
+	FileHandle {
+		id: fileControler
+	}
 
 	Rectangle {
 		id: rectMain
@@ -109,6 +114,7 @@ Item {
 				anchors.left: rectIP.left
 
 				TextInput {
+					id: textFile
 					anchors.fill: parent
 					anchors.left: parent.left
 					anchors.leftMargin: 2
@@ -128,7 +134,11 @@ Item {
 				MouseArea {
 					anchors.fill: parent
 					onClicked: {
-						console.log("Implement me!!")
+						if (fileControler.verifyFile(textFile.text)) {
+							rectFile.color = "lightgreen"
+						} else {
+							rectFile.color = "red"
+						}
 					}
 				}
 			}
