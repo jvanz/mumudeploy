@@ -134,10 +134,11 @@ Item {
 				MouseArea {
 					anchors.fill: parent
 					onClicked: {
-						if (fileControler.verifyFile(textFile.text) == true)
-							console.log("File exists!!")
-						else
-							console.log("File not exists!!")
+						if (fileControler.verifyFile(textFile.text)) {
+							rectFile.color = "lightgreen"
+						} else {
+							rectFile.color = "red"
+						}
 					}
 				}
 			}
