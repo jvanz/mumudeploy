@@ -20,7 +20,7 @@ Modules:
 Network: This module is responsible for all network operations on the aplication.
 
 
-TODO
+//TODO
 
 - Log module
 - Finish network module. Fix bugs and improve it. Assigned: José Guilherme Vanz <guilherme.sft@gmail.com>
