@@ -15,18 +15,17 @@ Server::Server(): tcpServer(0), networkSession(0)
 	        settings.beginGroup(QLatin1String("QtNetwork"));
         	const QString id = settings.value(QLatin1String("DefaultNetworkConfiguration")).toString();
 	        settings.endGroup();
-
-        // If the saved network configuration is not currently discovered use the system default
-	QNetworkConfiguration config = manager.configurationFromIdentifier(id);
-        if ((config.state() & QNetworkConfiguration::Discovered) !=
-        	QNetworkConfiguration::Discovered) {
+		std::cout<<"ID = "<<id.toStdString()<<std::endl;
+		// If the saved network configuration is not currently discovered use the system default
+		QNetworkConfiguration config = manager.configurationFromIdentifier(id);
+		if ((config.state() & QNetworkConfiguration::Discovered) != QNetworkConfiguration::Discovered) {
 			config = manager.defaultConfiguration();
-	        }
+		}
 
-	networkSession = new QNetworkSession(config, this);
-        connect(networkSession, SIGNAL(opened()), this, SLOT(sessionOpened()));
+		networkSession = new QNetworkSession(config, this);
+	        connect(networkSession, SIGNAL(opened()), this, SLOT(sessionOpened()));
 
-        networkSession->open();
+	        networkSession->open();
 	} else {
         	sessionOpened();
 	}
@@ -40,20 +39,23 @@ Server::Server(): tcpServer(0), networkSession(0)
                  << tr("Computers are not intelligent. They only think they are.");
 
         connect(tcpServer, SIGNAL(newConnection()), this, SLOT(sendFortune()));
-
+	std::cout<<"Constructor finished!"<<std::endl;
 }
 
 void Server::sessionOpened()
 {
-    // Save the used configuration
+	std::cout<<"Opening session"<<std::endl;
+	// Save the used configuration
 	if (networkSession) {
         	QNetworkConfiguration config = networkSession->configuration();
 	        QString id;
         	if (config.type() == QNetworkConfiguration::UserChoice){
 			id = networkSession->sessionProperty(QLatin1String("UserChoiceConfiguration")).toString();
-	        }else
+	        }else{
 			id = config.identifier();
-
+		}
+	
+	std::cout<<"ID = "<<id.toStdString()<<std::endl;
 	QSettings settings(QSettings::UserScope, QLatin1String("Trolltech"));
         settings.beginGroup(QLatin1String("QtNetwork"));
         settings.setValue(QLatin1String("DefaultNetworkConfiguration"), id);
@@ -61,10 +63,12 @@ void Server::sessionOpened()
 	}
 
 	tcpServer = new QTcpServer(this);
+	tcpServer->socketDescriptor().setPort(53097);
 	if (!tcpServer->listen()) {
 	        std::cout<<"Fortune Server: Unable to start the server! "<<std::endl;
 	        return;
 	}
+	std::cout<<"TCP Server listening"<<std::endl;
 	QString ipAddress;
 	QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
     // use the first non-localhost IPv4 address
@@ -79,8 +83,8 @@ void Server::sessionOpened()
 	if (ipAddress.isEmpty()){
 		ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
 	}
-
-	std::cout<<"Session Opened! IP = " <<ipAddress.toStdString()<<std::endl;
+	
+	std::cout<<"Session Opened! IP = " <<ipAddress.toStdString()<<" Port = "<<tcpServer->serverPort()<<std::endl;
 }
 
 void Server::sendFortune()

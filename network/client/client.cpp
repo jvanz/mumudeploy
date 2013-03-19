@@ -35,8 +35,7 @@ Client::Client() :  networkSession(0)
 
 	        // If the saved network configuration is not currently discovered use the system default
         	QNetworkConfiguration config = manager.configurationFromIdentifier(id);
-	        if ((config.state() & QNetworkConfiguration::Discovered) !=
-        		QNetworkConfiguration::Discovered) {
+	        if ((config.state() & QNetworkConfiguration::Discovered) != QNetworkConfiguration::Discovered) {
 			config = manager.defaultConfiguration();
         	}
 
@@ -59,7 +58,7 @@ void Client::requestNewFortune()
 	std::cout<<"Requesting new fortune"<<std::endl;
 	blockSize = 0;
 	tcpSocket->abort();
-	tcpSocket->connectToHost("192.168.1.103",1666);
+	tcpSocket->connectToHost("192.168.1.104",57390);
 	std::cout<<"Fortune requested"<<std::endl;
 }
 
@@ -116,6 +115,7 @@ void Client::sessionOpened()
 	std::cout<<"Opening session"<<std::endl;
 	// Save the used configuration
 	QNetworkConfiguration config = networkSession->configuration();
+	std::cout<<"apso configuration"<<std::endl;
 	QString id;
 	if (config.type() == QNetworkConfiguration::UserChoice){
 		std::cout<<"if"<<std::endl;
@@ -136,7 +136,6 @@ void Client::sessionOpened()
 void Client::run()
 {
 	std::cout<<"Client running! :)"<<std::endl;
-	this->sessionOpened();
 	int count = 0;
 	while((count++) < 10){
 		this->requestNewFortune();

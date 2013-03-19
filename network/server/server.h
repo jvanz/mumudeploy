@@ -2,7 +2,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <QThread>
+#include <QTcpServer>
 #include <QStringList>
 #include <qfile.h>
 
@@ -11,12 +11,12 @@ class QTcpServer;
 class QNetworkSession;
 QT_END_NAMESPACE
 
-class Server : public QThread
+class MumuServer : public QTcpServer
 {
 	Q_OBJECT
 
 public:
-	Server();
+	MumuServer(quint16 port, QObject* parent = 0) : QTcpServer(parent) 
 
 protected:
 	void run();
