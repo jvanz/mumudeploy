@@ -1,14 +1,17 @@
+#include <QtDeclarative>
 #include <QSqlDatabase>
 
 class DatabaseManager : public QObject
 {
-	Q_OBJECT;
+	Q_OBJECT
 public:
-	DatabaseManager(QObject *parent = 0);
-	~DatabaseManager();
+	DatabaseManager() : QObject(0) {}
 
 	bool openDB();
-	void cloneDB();
+	void closeDB();
+
+public slots:
+	Q_INVOKABLE bool insertNewProcess(QString ip, QString path);
 
 private:
 	QSqlDatabase db;

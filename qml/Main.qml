@@ -11,6 +11,10 @@ Item {
 		id: fileControler
 	}
 
+	DatabaseManager {
+		id: dbManager
+	}
+
 	Rectangle {
 		id: rectMain
 		color: "gray"
@@ -89,6 +93,7 @@ Item {
 				anchors.leftMargin: 10
 
 				TextInput {
+					id: textIP
 					anchors.fill: parent
 					anchors.left : parent.left
 					anchors.leftMargin: 2
@@ -136,6 +141,10 @@ Item {
 					onClicked: {
 						if (fileControler.verifyFile(textFile.text)) {
 							rectFile.color = "lightgreen"
+							if (dbManager.insertNewProcess(textIP.text, textFile.text))
+								rectMain.state = ""
+							else
+								rectFile.color = "red"
 						} else {
 							rectFile.color = "red"
 						}

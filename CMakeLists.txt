@@ -7,8 +7,8 @@ find_package(Qt4 REQUIRED QTCORE QTGUI QTDECLARATIVE QTSQL)
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
-SET(mumudeploy_SOURCE main.cpp filehandle.cpp engine.cpp databasemanager.h)
-SET(mumudeploy_HEADERS filehandle.h engine.h databasemanager.cpp)
+SET(mumudeploy_SOURCE main.cpp filehandle.cpp databasemanager.cpp engine.cpp)
+SET(mumudeploy_HEADERS filehandle.h databasemanager.h engine.h)
 
 QT4_WRAP_CPP(mumudeploy_SOURCE_MOC ${mumudeploy_HEADERS})
 

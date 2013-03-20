@@ -1,5 +1,6 @@
 #include "databasemanager.h"
 #include <QDir>
+#include <QSqlQuery>
 
 bool DatabaseManager::openDB()
 {
@@ -14,7 +15,23 @@ bool DatabaseManager::openDB()
 	return db.open();
 }
 
-void closeDB()
+void DatabaseManager::closeDB()
 {
 	db.close();
+}
+
+bool DatabaseManager::insertNewProcess(QString ip, QString path)
+{
+	QSqlQuery query;
+	bool ret = true;
+
+	if (!openDB()) {
+		if (!query.exec(QString("INSERT INTO PROCESSES VALUES(%2, %2, 'N')").arg(ip).arg(path)))
+			ret = false;
+
+		closeDB();
+	}
+
+
+	return ret;
 }
