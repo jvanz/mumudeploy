@@ -6,7 +6,6 @@
 MumuClient::MumuClient(QObject *parent) : tcpSocket(parent)
 {
 	connectMumuServer();
-	std::cout<<"passou pelo construtor"<<std::endl;
 }
 
 /**
@@ -15,9 +14,7 @@ MumuClient::MumuClient(QObject *parent) : tcpSocket(parent)
 bool MumuClient::connectMumuServer()
 {
 	connect(&tcpSocket,SIGNAL(connected()),this,SLOT(serverConnected()));
-	QHostAddress serverIp("127.0.0.1");
 	tcpSocket.connectToHost(QHostAddress::LocalHost, 6666);
-	std::cout<<"passou pelo connect"<<std::endl;
 }
 
 void MumuClient::serverConnected()
