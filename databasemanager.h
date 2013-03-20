@@ -2,12 +2,14 @@
 
 class DatabaseManager : public QObject
 {
+	Q_OBJECT;
 public:
 	DatabaseManager(QObject *parent = 0);
 	~DatabaseManager();
 
-	bool dbOpen();
+	bool openDB();
+	void cloneDB();
 
 private:
 	QSqlDatabase db;
-}
+};

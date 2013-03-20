@@ -1,0 +1,2 @@
+// TABLES USED IN SQLITE AND MUMUDEPLOY
+CREATE TABLE processes(ip text(255), file_path text(255), sent text(1));
