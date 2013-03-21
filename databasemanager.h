@@ -5,7 +5,7 @@ class DatabaseManager : public QObject
 {
 	Q_OBJECT
 public:
-	DatabaseManager() : QObject(0) {}
+	DatabaseManager();
 
 	bool openDB();
 	void closeDB();

@@ -1,17 +1,16 @@
 #include "databasemanager.h"
 #include <QDir>
 #include <QSqlQuery>
+#include <QSqlError>
+
+DatabaseManager::DatabaseManager()
+	: db(QSqlDatabase::addDatabase("QSQLITE"))
+{
+	db.setDatabaseName("mumuDB.db");
+}
 
 bool DatabaseManager::openDB()
 {
-	db = QSqlDatabase::addDatabase("QSQLITE");
-
-	QString path(QDir::home().path());
-	path.append(QDir::separator()).append("mumuDB.sqlite3");
-	path = QDir::toNativeSeparators(path);
-
-	db.setDatabaseName(path);
-
 	return db.open();
 }
 
@@ -22,16 +21,22 @@ void DatabaseManager::closeDB()
 
 bool DatabaseManager::insertNewProcess(QString ip, QString path)
 {
-	QSqlQuery query;
 	bool ret = true;
 
-	if (!openDB()) {
-		if (!query.exec(QString("INSERT INTO PROCESSES VALUES(%2, %2, 'N')").arg(ip).arg(path)))
+	if (openDB()) {
+		QSqlQuery query(db);
+
+		query.prepare("INSERT INTO processes(ip, file_path, sent) VALUES (:IP, :PATH, 'N')");
+		query.bindValue(":IP", ip);
+		query.bindValue(":PATH", path);
+
+		if (!query.exec()) {
+			qDebug() << "Erro ao inserir registro!!";
+			qDebug() << query.lastError().text();
 			ret = false;
+		}
 
 		closeDB();
 	}
-
-
 	return ret;
 }
