@@ -8,6 +8,7 @@ class MumuServer : public QTcpServer
 
 private:
 	QFile * file;
+	QDataStream * in;
 
 	void openFile();
 
@@ -20,5 +21,7 @@ protected:
 private slots:
 	
 	void clientConnecting();
+	void showErrorMessage(QAbstractSocket::SocketError);
+	void socketStateChanged(QAbstractSocket::SocketState);
 };
 

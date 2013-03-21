@@ -24,5 +24,7 @@ private slots:
 	void serverConnected();
 	void readFile();
 	void closeStream();
+	void hostServerFound();
+	void socketStateChanged(QAbstractSocket::SocketState);
 };
 
