@@ -1,6 +1,9 @@
 
 #include <QTcpServer>
 #include <QFile>
+#include <QList>
+
+#include "../mumuconnection.h"
 
 class MumuServer : public QTcpServer
 {
@@ -9,7 +12,7 @@ class MumuServer : public QTcpServer
 private:
 	QFile * file;
 	QDataStream * in;
-
+	QList<MumuConnection *> connections;
 	void openFile();
 
 public:

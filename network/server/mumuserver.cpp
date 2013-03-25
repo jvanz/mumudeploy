@@ -8,20 +8,21 @@
 MumuServer::MumuServer(QObject *parent) : QTcpServer(parent) 
 {
 	if(this->listen(QHostAddress::Any, 8080)){
-		std::cout<<"The MumuServer is listening any ip address on port 666."<<std::endl;
+		std::cout<<"The MumuServer is listening any ip address on port " << this->serverPort() << std::endl;
 	}
 	if(this->isListening()){
 		std::cout<<"The server is listening"<<std::endl;
 	}
 	connect(this, SIGNAL(newConnection()),this,SLOT(clientConnecting()));
 
-	openFile();
+//	openFile();
 	std::cout<<"Constructor done!."<<std::endl;
 }
 
 void MumuServer::clientConnecting()
 {
 	std::cout<<"Client wants connect!"<<std::endl;
+	std::cout << "Total clients connected = " << connections.size() << std::endl;
 }
 
 void MumuServer::openFile()
@@ -39,21 +40,11 @@ void MumuServer::openFile()
 void MumuServer::incomingConnection(int socketDescription)
 {
 	std::cout<<"Incoming connection..."<<std::endl;
-	QTcpSocket tcpSocket;
-	connect(&tcpSocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(showErrorMessage(QAbstractSocket::SocketError)));
-	connect(&tcpSocket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
-	if(tcpSocket.setSocketDescriptor(socketDescription)){
-		if(tcpSocket.isOpen()){
-			if(tcpSocket.isWritable()){
-				std::cout<<"Socket is writable!"<<std::endl;
-			}
-			int writenBytes = tcpSocket.write(file->readAll());
-			std::cout<<"Bytes writen = "<<writenBytes<<std::endl;
-			tcpSocket.flush();
-			tcpSocket.disconnectFromHost();
-			tcpSocket.waitForDisconnected();
-		}
-	}
+	MumuConnection * connection = new MumuConnection(socketDescription,this);
+	std::cout<<"connection created"<<std::endl;
+	connection->setId("TESTE");
+	connections.append(connection); 
+	std::cout<<"Leaving incoming connection..."<<std::endl;
 }
 
 void MumuServer::showErrorMessage(QAbstractSocket::SocketError socketError)
