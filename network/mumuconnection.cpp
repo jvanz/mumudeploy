@@ -80,7 +80,10 @@ void MumuConnection::sendFile()
 	if(file){
 		buffer = file->readAll();
 		std::cout << "Socket " << id.toStdString() << " sending file. Bytes = " << buffer.size() << std::endl; 
-		write(buffer);
+		int bytesWriten = write(buffer);
+		if(bytesWriten == buffer.size()){
+			this->disconnectFromHost();
+		}
 	}
 }
 

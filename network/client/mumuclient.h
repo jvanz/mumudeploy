@@ -16,6 +16,7 @@ private:
 	bool connected;
 	QTcpSocket tcpSocket;
 	QFile * file;
+	QDataStream * in;
 	QByteArray buffer;
 	int statusConnection;
 

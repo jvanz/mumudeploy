@@ -75,18 +75,17 @@ void MumuClient::readFile()
 		QString msg(buffer);
 		std::cout << "Message: " << msg.toStdString() << std::endl; 
 		if(msg == "FILE"){
+			this->openFile();
 			this->sendOk();
 			statusConnection = 2;
 		}
 	}else{
 		//Receving file
-		if(this->openFile()){
-			std::cout<<"Bytes Available = "<<tcpSocket.bytesAvailable()<<std::endl;
-			buffer = tcpSocket.read(tcpSocket.bytesAvailable());
-			std::cout << "Buffer Bytes = " << buffer.size() << std::endl;
-			QDataStream in(file);
-			in << buffer;
-		}
+		std::cout<<"Bytes Available = "<<tcpSocket.bytesAvailable()<<std::endl;
+		buffer = tcpSocket.read(tcpSocket.bytesAvailable());
+		std::cout << "Buffer Bytes = " << buffer.size() << std::endl;
+		QDataStream in(file);
+		in << buffer;
 	}
 	
 }
@@ -96,11 +95,10 @@ bool MumuClient::openFile()
 	QString pathFile = QDir::homePath() + "/client/1-04 Stairway To Heaven.m4a";
 	std::cout << pathFile.toStdString() << std::endl;
 	file = new QFile(QDir::toNativeSeparators(pathFile));
-	std::cout << file << std::endl;
-	if(file->exists()){ // File exists
-		std::cout << "File opened!" << std::endl;
-	}	
-	return file->open(QIODevice::WriteOnly);
+	std::cout << pathFile.toStdString() << std::endl;
+	bool isOpen = file->open(QIODevice::WriteOnly);
+	in = new QDataStream(file);
+	return isOpen;
 }
 
 void MumuClient::closeStream()
