@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QList>
 
-#include "../mumuconnection.h"
+#include "mumuconnection.h"
 
 class MumuServer : public QTcpServer
 {
