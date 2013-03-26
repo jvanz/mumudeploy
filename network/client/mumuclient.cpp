@@ -92,7 +92,7 @@ void MumuClient::readFile()
 
 bool MumuClient::openFile()
 {
-	QString pathFile = QDir::homePath() + "/client/1-04 Stairway To Heaven.m4a";
+	QString pathFile = QDir::homePath() + "/client/teste.txt";
 	std::cout << pathFile.toStdString() << std::endl;
 	file = new QFile(QDir::toNativeSeparators(pathFile));
 	std::cout << pathFile.toStdString() << std::endl;
