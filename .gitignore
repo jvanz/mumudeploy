@@ -1,1 +1,4 @@
 *.sqlite3
+*.o
+client
+server
