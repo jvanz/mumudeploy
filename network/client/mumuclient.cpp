@@ -70,6 +70,7 @@ void MumuClient::sendGreeting()
 void MumuClient::readFile()
 {
 	std::cout<<"Receiving data"<<std::endl;
+	buffer.clear();
 	if(statusConnection != 2){
 		QByteArray buffer = tcpSocket.readAll();
 		QString msg(buffer);
@@ -83,6 +84,9 @@ void MumuClient::readFile()
 		//Receving file
 		std::cout<<"Bytes Available = "<<tcpSocket.bytesAvailable()<<std::endl;
 		buffer = tcpSocket.read(tcpSocket.bytesAvailable());
+		if(QString(buffer) == "FINISH"){
+			this->closeStream();
+		}
 		std::cout << "Buffer Bytes = " << buffer.size() << std::endl;
 		QDataStream in(file);
 		in << buffer;
@@ -92,12 +96,14 @@ void MumuClient::readFile()
 
 bool MumuClient::openFile()
 {
-	QString pathFile = QDir::homePath() + "/client/teste.txt";
+	QString pathFile = QDir::homePath() + "/client/1-04 Stairway To Heaven.m4a";
 	std::cout << pathFile.toStdString() << std::endl;
 	file = new QFile(QDir::toNativeSeparators(pathFile));
 	std::cout << pathFile.toStdString() << std::endl;
 	bool isOpen = file->open(QIODevice::WriteOnly);
+	std::cout << "File size = " << file->size() << std::endl;	
 	in = new QDataStream(file);
+	in->setVersion(QDataStream::Qt_4_3);
 	return isOpen;
 }
 

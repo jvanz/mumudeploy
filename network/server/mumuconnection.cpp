@@ -14,6 +14,7 @@ MumuConnection::MumuConnection(int socketDescriptor, QObject * parent) : QTcpSoc
 	connect(this,SIGNAL(disconnected()),this,SLOT(socketDisconnected()));	
 	connect(this,SIGNAL(hostFound()),this,SLOT(socketHostFound()));	
 	connect(this,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(socketError(QAbstractSocket::SocketError)));
+	connect(this,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
 	connect(this,SIGNAL(readyRead()),this,SLOT(processData()));
 	statusConnection = -1;
 }
@@ -82,15 +83,16 @@ void MumuConnection::sendFile()
 		buffer = file->readAll();
 		std::cout << "Socket " << id.toStdString() << " sending file. Bytes = " << buffer.size() << std::endl; 
 		int bytesWriten = write(buffer);
+		flush();
 		if(bytesWriten == buffer.size()){
-			this->disconnectFromHost();
+			this->sendMsgToClient("FINISH");
 		}
 	}
 }
 
 void MumuConnection::openFile()
 {
-	QString pathFile = QDir::homePath() + "/server/teste.txt";
+	QString pathFile = QDir::homePath() + "/server/1-04 Stairway To Heaven.m4a";
 	file = new QFile(QDir::toNativeSeparators(pathFile));
 	if(file->exists()){
 		std::cout<<"File opened!"<<std::endl;
