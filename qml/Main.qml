@@ -142,7 +142,7 @@ Item {
 						if (fileControler.verifyFile(textFile.text)) {
 							rectFile.color = "lightgreen"
 							if (dbManager.insertNewProcess(textIP.text, textFile.text))
-								rectMain.state = ""
+								rectMain.state = "showRunning"
 							else
 								rectFile.color = "red"
 						} else {

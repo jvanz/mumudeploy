@@ -1,6 +1,6 @@
 #include <QtDeclarative>
 #include <QUrl>
-#include "engine.h"
+#include "controller/engine.h"
 
 int main(int argc, char *argv[])
 {
