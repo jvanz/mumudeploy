@@ -1,5 +1,5 @@
 // TABLES USED IN SQLITE AND MUMUDEPLOY
-CREATE TABLE processes(ip text(255), file_path text(255), sent text(1));
+CREATE TABLE PROCESSES(IP TEXT(255), FILE_PATH TEXT(255), SENT TEXT(1));
 
 For create the database file:
 sqlite3 ~/mumuDB.sqlite3

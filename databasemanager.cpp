@@ -26,7 +26,7 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path)
 	if (openDB()) {
 		QSqlQuery query(db);
 
-		query.prepare("INSERT INTO processes(ip, file_path, sent) VALUES (:IP, :PATH, 'N')");
+		query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT) VALUES (:IP, :PATH, 'N')");
 		query.bindValue(":IP", ip);
 		query.bindValue(":PATH", path);
 
