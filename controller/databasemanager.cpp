@@ -24,6 +24,9 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path)
 	bool ret = true;
 
 	if (openDB()) {
+
+		verifyNewDatabase();
+
 		QSqlQuery query(db);
 
 		query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT) VALUES (:IP, :PATH, 'N')");
@@ -40,3 +43,11 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path)
 	}
 	return ret;
 }
+
+// if we're in a new database
+void DatabaseManager::verifyNewDatabase()
+{
+	QSqlQuery query(db);
+	query.exec("CREATE TABLE IF NOT EXISTS PROCESSES(IP TEXT(255), FILE_PATH TEXT(255), SENT TEXT(1));");
+}
+

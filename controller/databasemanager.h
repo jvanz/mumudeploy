@@ -15,4 +15,5 @@ public slots:
 
 private:
 	QSqlDatabase db;
+	void verifyNewDatabase();
 };
