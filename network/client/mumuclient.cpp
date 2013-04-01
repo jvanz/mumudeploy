@@ -35,7 +35,13 @@ void MumuClient::sendOk()
 void MumuClient::sendMsgToServer(QString msg)
 {
 	std::cout << "Sending to server: " << msg.toStdString() << std::endl;
-	int bytesWriten = tcpSocket.write(msg.toUtf8());
+	QByteArray block = msg.toUtf8();
+	QDataStream out(&block,QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Qt_4_3);
+	out << quint16(0) << block;
+	out.device()->seek(0);
+	out << quint16(block.size() - sizeof(quint16));
+	int bytesWriten = tcpSocket.write(block);
 	std::cout << "Bytes writen = " << bytesWriten << std::endl;
 }
 
@@ -71,39 +77,25 @@ void MumuClient::readFile()
 {
 	std::cout<<"Receiving data"<<std::endl;
 	buffer.clear();
-	if(statusConnection != 2){
-		QByteArray buffer = tcpSocket.readAll();
-		QString msg(buffer);
-		std::cout << "Message: " << msg.toStdString() << std::endl; 
-		if(msg == "FILE"){
-			this->openFile();
-			this->sendOk();
-			statusConnection = 2;
-		}
-	}else{
-		//Receving file
-		std::cout<<"Bytes Available = "<<tcpSocket.bytesAvailable()<<std::endl;
-		buffer = tcpSocket.read(tcpSocket.bytesAvailable());
-		if(QString(buffer) == "FINISH"){
-			this->closeStream();
-		}
-		std::cout << "Buffer Bytes = " << buffer.size() << std::endl;
-		QDataStream in(file);
-		in << buffer;
-	}
-	
+	QDataStream in(&tcpSocket);
+	int blockSize = tcpSocket.bytesAvailable();
+	char * bytes = new char[blockSize];
+	in.readRawData(bytes, blockSize);	
+	openFile();
+	std::cout << "Block size = " << blockSize << std::endl;
+	inFile->writeRawData(bytes,blockSize);
+	this->closeStream();
 }
 
 bool MumuClient::openFile()
 {
-	QString pathFile = QDir::homePath() + "/client/1-04 Stairway To Heaven.m4a";
+	QString pathFile = QDir::homePath() + "/client/teste";
 	std::cout << pathFile.toStdString() << std::endl;
 	file = new QFile(QDir::toNativeSeparators(pathFile));
 	std::cout << pathFile.toStdString() << std::endl;
 	bool isOpen = file->open(QIODevice::WriteOnly);
 	std::cout << "File size = " << file->size() << std::endl;	
-	in = new QDataStream(file);
-	in->setVersion(QDataStream::Qt_4_3);
+	inFile = new QDataStream(file);
 	return isOpen;
 }
 

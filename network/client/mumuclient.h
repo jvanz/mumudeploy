@@ -1,10 +1,10 @@
 
 #include <QTcpSocket>
 #include <QDataStream>
+#include <QTextStream>
 #include <QObject>
 #include <QFile>
 #include <QByteArray>
-
 
 class MumuClient : QObject
 {
@@ -15,8 +15,9 @@ public:
 private:
 	bool connected;
 	QTcpSocket tcpSocket;
+	quint16 nextBlockSize;
 	QFile * file;
-	QDataStream * in;
+	QDataStream * inFile;
 	QByteArray buffer;
 	int statusConnection;
 

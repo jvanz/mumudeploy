@@ -28,7 +28,14 @@ void MumuConnection::clientReady()
 void MumuConnection::sendMsgToClient(QString msg)
 {
 	std::cout << "Sending to client: " << msg.toStdString() << std::endl;
-	int bytesWriten = write(msg.toUtf8());
+	QByteArray block = msg.toUtf8();
+        QDataStream out(&block,QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_4_3);
+        out << quint16(0) << block;
+        out.device()->seek(0);
+        out << quint16(block.size() - sizeof(quint16));
+	int bytesWriten = write(block);
+	flush();
 	std::cout << "Bytes writen = " << bytesWriten << std::endl;
 	
 }
@@ -77,22 +84,28 @@ QString MumuConnection::getId()
 	return this->id;
 }
 
+/**
+ * This funtion send the file for client. When we write de file on the socket is necessary use writeRawData because this is the only
+ * way to write just the bytes on the socket. Otherwise, the QT will serialize the whole object.
+ */ 
 void MumuConnection::sendFile()
 {
 	if(file){
-		buffer = file->readAll();
-		std::cout << "Socket " << id.toStdString() << " sending file. Bytes = " << buffer.size() << std::endl; 
-		int bytesWriten = write(buffer);
-		flush();
-		if(bytesWriten == buffer.size()){
-			this->sendMsgToClient("FINISH");
-		}
+		QByteArray block;
+		block.clear();
+		QDataStream out(&block,QIODevice::WriteOnly);
+		QByteArray blockFile = file->readAll();
+		std::cout << "Block file = " << blockFile.size() << std::endl;
+		std::cout << "File size = " << file->size() << std::endl;
+        	out.writeRawData(blockFile.constData(),blockFile.size());
+		int bytesWriten = write(block);
+		std::cout << "Bytes writen = " << bytesWriten << std::endl;
 	}
 }
 
 void MumuConnection::openFile()
 {
-	QString pathFile = QDir::homePath() + "/server/1-04 Stairway To Heaven.m4a";
+	QString pathFile = QDir::homePath() + "/server/teste";
 	file = new QFile(QDir::toNativeSeparators(pathFile));
 	if(file->exists()){
 		std::cout<<"File opened!"<<std::endl;
@@ -105,14 +118,6 @@ void MumuConnection::openFile()
 void MumuConnection::processData()
 {
 	std::cout << "Socket " << id.toStdString() << " has data to process. " << std::endl; 
-	buffer = readAll();
-	QString msg(buffer);
-	std::cout << "Message: " << msg.toStdString() << std::endl; 
-	if(msg == "GREETING"){
-		this->clientReady();
-		statusConnection = 1;
-	}else if(msg == "OK" & statusConnection == 1){
-		this->openFile();
-		this->sendFile();
-	}
+	this->openFile();
+	this->sendFile();
 }
