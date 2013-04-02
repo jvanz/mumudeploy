@@ -1,13 +1,13 @@
 #ifndef __QMLINTERFACE_H__
 #define __QMLINTERFACE_H__
 
-#include <QAbstractItemModel>
+#include <QAbstractListModel>
 #include <QSqlQuery>
 #include <QVector>
 #include <QObject>
 #include <QStringList>
 
-class QMLInterface : public QAbstractItemModel
+class QMLInterface : public QAbstractListModel
 {
 	Q_OBJECT
 public:

@@ -4,7 +4,7 @@
 #include "qmlinterface.h"
 
 QMLInterface::QMLInterface(QObject *parent)
-	: QAbstractItemModel(parent)
+	: QAbstractListModel(parent)
 	, m_columnCount(0)
 	, m_query(NULL)
 {

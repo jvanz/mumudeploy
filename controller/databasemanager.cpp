@@ -51,3 +51,16 @@ void DatabaseManager::verifyNewDatabase()
 	query.exec("CREATE TABLE IF NOT EXISTS PROCESSES(IP TEXT(255), FILE_PATH TEXT(255), SENT TEXT(1));");
 }
 
+QObject *DatabaseManager::retornaPendetesModel()
+{
+	if (openDB()) {
+		QSqlQuery query;
+		query.prepare("SELECT FILE_PATH "
+				"FROM PROCESSES "
+			       "WHERE SENT = 'N'");
+		model.exec(query);
+		closeDB();
+		return &model;
+	}
+	return &model;
+}
