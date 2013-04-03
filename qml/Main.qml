@@ -63,9 +63,15 @@ Item {
 			height: 100
 			color: "lightgreen"
 
-			Text {
-				text: "Estou escondido"
-				anchors.centerIn: parent
+			GridView {
+				id: grid
+				anchors.fill: parent
+				model: dbManager.retornaPendetesModel()
+				flow: GridView.TopToBottom
+				delegate: FilesToSend { id: toSend }
+				keyNavigationWraps: true
+				cellWidth: 250
+				cellHeight: 20
 			}
 		}
 
