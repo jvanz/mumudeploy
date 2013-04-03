@@ -62,3 +62,28 @@ void QMLInterface::exec(QSqlQuery query)
 	}
 	reset();
 }
+
+void QMLInterface::refresh()
+{
+	int line = 0;
+
+	if (!m_query.isActive())
+		return;
+
+	m_dataList.clear();
+	m_query.exec();
+
+	while (m_query.next())
+	{
+		// just to remove lines from view
+		beginRemoveRows(QModelIndex(), line, line);
+		endRemoveRows();
+
+		beginInsertRows(QModelIndex(), line, line);
+		auto row = loadListFromCurrentRecord();
+		m_dataList.append(row);
+		endInsertRows();
+
+		line++;
+	}
+}

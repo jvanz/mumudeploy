@@ -13,6 +13,7 @@ class QMLInterface : public QAbstractListModel
 public:
 	QMLInterface(QObject *parent = 0);
 	Q_INVOKABLE void exec(QSqlQuery query);
+	Q_INVOKABLE void refresh();
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual QVariant data(const QModelIndex &index, int role) const;
 

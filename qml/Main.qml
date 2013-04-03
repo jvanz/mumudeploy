@@ -63,11 +63,20 @@ Item {
 			height: 100
 			color: "lightgreen"
 
+			Timer {
+				// default is 1 second
+				repeat: true
+				running: true
+
+				onTriggered: grid.model.refresh()
+			}
+
 			GridView {
 				id: grid
 				anchors.fill: parent
 				model: dbManager.retornaPendetesModel()
 				flow: GridView.TopToBottom
+				cacheBuffer: 0
 				delegate: FilesToSend { id: toSend }
 				keyNavigationWraps: true
 				cellWidth: 250
