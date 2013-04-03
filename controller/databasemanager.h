@@ -1,5 +1,6 @@
 #include <QtDeclarative>
 #include <QSqlDatabase>
+#include "qmlinterface.h"
 
 class DatabaseManager : public QObject
 {
@@ -12,8 +13,10 @@ public:
 
 public slots:
 	Q_INVOKABLE bool insertNewProcess(QString ip, QString path);
+	Q_INVOKABLE QObject *retornaPendetesModel();
 
 private:
 	QSqlDatabase db;
 	void verifyNewDatabase();
+	QMLInterface model;
 };
