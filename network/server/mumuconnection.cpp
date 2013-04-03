@@ -105,7 +105,7 @@ void MumuConnection::sendFile()
 
 void MumuConnection::openFile()
 {
-	QString pathFile = QDir::homePath() + "/server/teste";
+	QString pathFile = QDir::homePath() + "/server/twd.mkv";
 	file = new QFile(QDir::toNativeSeparators(pathFile));
 	if(file->exists()){
 		std::cout<<"File opened!"<<std::endl;

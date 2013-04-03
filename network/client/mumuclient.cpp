@@ -59,6 +59,7 @@ void MumuClient::serverConnected()
 {
 	std::cout<<"Client connected!"<<std::endl;
 	connected = true;
+	openFile();
 	this->sendGreeting();
 	
 }
@@ -81,15 +82,13 @@ void MumuClient::readFile()
 	int blockSize = tcpSocket.bytesAvailable();
 	char * bytes = new char[blockSize];
 	in.readRawData(bytes, blockSize);	
-	openFile();
 	std::cout << "Block size = " << blockSize << std::endl;
 	inFile->writeRawData(bytes,blockSize);
-	this->closeStream();
 }
 
 bool MumuClient::openFile()
 {
-	QString pathFile = QDir::homePath() + "/client/teste";
+	QString pathFile = QDir::homePath() + "/client/twd.mvk";
 	std::cout << pathFile.toStdString() << std::endl;
 	file = new QFile(QDir::toNativeSeparators(pathFile));
 	std::cout << pathFile.toStdString() << std::endl;
