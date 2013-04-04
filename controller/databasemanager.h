@@ -18,5 +18,6 @@ public slots:
 private:
 	QSqlDatabase db;
 	void verifyNewDatabase();
+	bool alreadySending(QString path, QString ip);
 	QMLInterface model;
 };

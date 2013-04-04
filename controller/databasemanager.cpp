@@ -27,11 +27,20 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path)
 
 		verifyNewDatabase();
 
+		// verify if the same file is been send
+		if (alreadySending(path, ip)) {
+			qDebug() << "File is already sending";
+			return false;
+		}
+
+		QFileInfo file(path);
+		QString fileName = file.fileName();
+
 		QSqlQuery query(db);
 
 		query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT) VALUES (:IP, :PATH, 'N')");
 		query.bindValue(":IP", ip);
-		query.bindValue(":PATH", path);
+		query.bindValue(":PATH", fileName);
 
 		if (!query.exec()) {
 			qDebug() << "Erro ao inserir registro!!";
@@ -42,6 +51,26 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path)
 		closeDB();
 	}
 	return ret;
+}
+
+bool DatabaseManager::alreadySending(QString path, QString ip)
+{
+	QFileInfo file(path);
+	QString fileName = file.fileName();
+	
+	QSqlQuery query(db);
+	query.prepare("SELECT FILE_PATH "
+			"FROM PROCESSES "
+			"WHERE IP = :IP "
+			"AND FILE_PATH = :FILE "
+			"AND SENT = 'N' ");
+	query.bindValue(":IP", ip);
+	query.bindValue(":FILE", fileName);
+
+	query.exec();
+	if (query.next())
+		return true;
+	return false;
 }
 
 // if we're in a new database
