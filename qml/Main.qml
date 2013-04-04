@@ -18,16 +18,16 @@ Item {
 	Rectangle {
 		id: rectMain
 		color: "gray"
-		width: 400
-		height: 400
+		width: parent.width
+		height: parent.height
 
 		Button {
 			id: send
-			width: 300
-			height: 30
-			y: 100
+			width: parent.width - 100
+			height: parent.height - 370
+			y: parent.height - 300
 			buttonColor: "lightgray"
-			label: "Escolha um IP para enviar um arquivo"
+			label: qsTr("Escolha um IP para enviar um arquivo")
 			anchors.horizontalCenter: parent.horizontalCenter
 
 			MouseArea {
@@ -40,8 +40,8 @@ Item {
 
 		Button {
 			id: openTransfers
-			width: 150
-			height: 30
+			width: parent.width - 250
+			height: parent.height - 370
 			y: 250
 			buttonColor: "lightgray"
 			label: "Em andamento"
@@ -59,8 +59,8 @@ Item {
 		Rectangle {
 			id: rectHidden
 			y: 500
-			width: 400
-			height: 100
+			width: parent.width
+			height: parent.height - 300
 			color: "lightgreen"
 
 			Timer {
@@ -87,8 +87,8 @@ Item {
 		Rectangle {
 			id: rectIp
 			y: -100
-			width: 400
-			height: 100
+			width: parent.width
+			height: parent.height - 300
 			color: "lightblue"
 
 			Text {
@@ -101,8 +101,8 @@ Item {
 
 			Rectangle {
 				id: rectIP
-				width: 200
-				height: 20
+				width: parent.width - 200
+				height: parent.height - 80
 				anchors.top: ipLabel.top
 				anchors.left: ipLabel.right
 				anchors.leftMargin: 10
@@ -128,8 +128,8 @@ Item {
 
 			Rectangle {
 				id: rectFile
-				width: 200
-				height: 20
+				width: parent.width - 200
+				height: parent.height - 80
 				anchors.top: fileLabel.top
 				anchors.left: rectIP.left
 
@@ -143,8 +143,8 @@ Item {
 
 			Button {
 				id: btSend
-				width: 110
-				height: 50
+				width: parent.width - 290
+				height: parent.height - 50
 				anchors.left: rectFile.right
 				anchors.leftMargin: 10
 				anchors.verticalCenter: parent.verticalCenter
