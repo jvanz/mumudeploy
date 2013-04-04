@@ -28,3 +28,5 @@ QML: This module is responsible for all visual of the application.
 - Integrate network and controller modules with QML
 - Show the progress of the files that are in transfer
 - Show errors in the screen when trying to send a file to a host
+- Test/QA
+- Configuration module
