@@ -13,13 +13,10 @@ Maintainers: José Guilherme Vanz <guilherme.sft@gmail.com>
 	     Marcos Paulo de Souza <marcos.souza.org@gmail.com>
 
 Modules:
-	network
-	controller
-	QML
+	Network: This module is responsible for all network operations on the aplication.
+	Controller: This module is reponsible for all operations with database and filesystem.
+	QML: This module is responsible for all visual of the application.
 
-Network: This module is responsible for all network operations on the aplication.
-Controller: This module is reponsible for all operations with database and filesystem.
-QML: This module is responsible for all visual of the application.
 
 //TODO
 
