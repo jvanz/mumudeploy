@@ -22,10 +22,10 @@ Item {
 		height: parent.height
 
 		Button {
-			id: send
+			id: btOptionSend
 			width: parent.width - 100
 			height: parent.height - 370
-			y: parent.height - 300
+			y: parent.height - 320
 			buttonColor: "lightgray"
 			label: qsTr("Escolha um IP para enviar um arquivo")
 			anchors.horizontalCenter: parent.horizontalCenter
@@ -39,12 +39,29 @@ Item {
 		}
 
 		Button {
-			id: openTransfers
+			id: btOptionConfig
+			width: parent.width - 280
+			height: parent.height - 370
+			y: parent.height - 220
+			buttonColor: "lightgray"
+			label: qsTr("Configurações")
+			x: parent.width / 2 - btOptionConfig.width / 2
+
+			MouseArea {
+				anchors.fill: parent
+				onClicked: {
+					rectMain.state = (rectMain.state == "showConfig") ? "showNothing" : "showConfig"
+				}
+			}
+		}
+
+		Button {
+			id: btOptionTranfers
 			width: parent.width - 250
 			height: parent.height - 370
-			y: 250
+			y: parent.height - 100
 			buttonColor: "lightgray"
-			label: "Em andamento"
+			label: qsTr("Em andamento")
 			anchors.horizontalCenter: parent.horizontalCenter
 			smooth: true
 
@@ -57,7 +74,16 @@ Item {
 		}
 
 		Rectangle {
-			id: rectHidden
+			id: rectConfig
+			width: parent.width - btOptionConfig.width - 10
+			height: parent.height - 350
+			color: "lightyellow"
+			x: parent.width + 10
+			y: parent.height - 230
+		}
+
+		Rectangle {
+			id: rectTranfers
 			y: 500
 			width: parent.width
 			height: parent.height - 300
@@ -172,24 +198,36 @@ Item {
 			State {
 				name: "showRunning"
 				PropertyChanges {
-					target: openTransfers
-					y: 200
+					target: btOptionTranfers
+					y: 250
 				}
 
 				PropertyChanges {
-					target: rectHidden
+					target: rectTranfers
 					y: 300
 				}
 			},
 			State {
 				name: "showSendTo"
 				PropertyChanges {
-					target: send
-					y: 150
+					target: btOptionSend
+					y: 120
 				}
 				PropertyChanges {
 					target: rectIp
 					y: 0
+				}
+			},
+			State {
+				name: "showConfig"
+				PropertyChanges {
+					target: btOptionConfig
+					x: 3
+				}
+
+				PropertyChanges {
+					target: rectConfig
+					x: btOptionConfig.width + 10
 				}
 			}
 		]
@@ -202,13 +240,13 @@ Item {
 				duration: 1000
 			}
 			NumberAnimation {
-				target: openTransfers
+				target: btOptionTranfers
 				properties: "y"
 				easing.type: Easing.OutExpo
 				duration: 1000
 			}
 			NumberAnimation {
-				target: rectHidden
+				target: rectTranfers
 				properties: "y"
 				easing.type: Easing.OutExpo
 				duration: 1000
@@ -220,7 +258,25 @@ Item {
 				duration: 1000
 			}
 			NumberAnimation {
-				target: send
+				target: btOptionSend
+				properties: "y"
+				easing.type: Easing.OutExpo
+				duration: 1000
+			}
+			NumberAnimation {
+				target: btOptionConfig
+				properties: "x"
+				easing.type: Easing.OutExpo
+				duration: 1000
+			}
+			NumberAnimation {
+				target: rectConfig
+				properties: "x"
+				easing.type: Easing.OutExpo
+				duration: 1000
+			}
+			NumberAnimation {
+				target: rectConfig
 				properties: "y"
 				easing.type: Easing.OutExpo
 				duration: 1000
