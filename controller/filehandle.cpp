@@ -8,3 +8,12 @@ bool FileHandle::verifyFile(QString filename)
 		return false;
 	return true;
 }
+
+bool FileHandle::verifyDir(QString dirName)
+{
+	QDir dir(dirName);
+
+	if (!dir.exists())
+		return false;
+	return true;
+}
