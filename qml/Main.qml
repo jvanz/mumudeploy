@@ -4,7 +4,7 @@ import mumu 1.0
 
 Item {
 	id: mainScreen
-	width: 400
+	width: 500
 	height: 400
 
 	FileHandle {
@@ -91,11 +91,45 @@ Item {
 
 			Rectangle {
 				id: rectFieldDir
-				width: parent.width - 110
+				width: parent.width - 180
 				height: parent.height - 20
 				anchors.left: txtDestDir.right
 				anchors.leftMargin: 5
-				anchors.verticalCenter: txtDestDir.verticalCenter
+				anchors.verticalCenter: parent.verticalCenter
+
+				TextEdit {
+					id: editFieldDir
+					width: parent.width
+					height: parent.height - 10
+					anchors.left: parent.left
+					anchors.leftMargin: 2
+					anchors.verticalCenter: parent.verticalCenter
+				}
+
+				Button {
+					id: btSaveDir
+					width: parent.width - 250
+					height: parent.height - 5
+					anchors.left: editFieldDir.right
+					anchors.leftMargin: 2
+					anchors.verticalCenter: parent.verticalCenter
+					buttonColor: "lightcyan"
+					label: qsTr("Salvar")
+
+					MouseArea {
+						anchors.fill: parent
+						onClicked: {
+							if (fileControler.verifyDir(textFile.text)) {
+								//if (dbManager.saveDestDir(editFieldDir.text))
+									rectMain.state = "showNothing"
+								//else
+								//	rectFieldDir.color = "red"
+							} else {
+								rectFieldDir.color = "red"
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -144,7 +178,7 @@ Item {
 
 			Rectangle {
 				id: rectIP
-				width: parent.width - 200
+				width: parent.width / 2
 				height: parent.height - 80
 				anchors.top: ipLabel.top
 				anchors.left: ipLabel.right
@@ -171,7 +205,7 @@ Item {
 
 			Rectangle {
 				id: rectFile
-				width: parent.width - 200
+				width: parent.width / 2
 				height: parent.height - 80
 				anchors.top: fileLabel.top
 				anchors.left: rectIP.left
@@ -186,7 +220,7 @@ Item {
 
 			Button {
 				id: btSend
-				width: parent.width - 290
+				width: parent.width - 350
 				height: parent.height - 50
 				anchors.left: rectFile.right
 				anchors.leftMargin: 10
