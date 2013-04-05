@@ -99,3 +99,14 @@ QObject *DatabaseManager::retornaPendetesModel()
 
 	return &model;
 }
+
+QString DatabaseManager::getDestinationDir()
+{
+	QSqlQuery query(db);
+	query.prepare("SELECT DEST_PATH FROM CONFIGS");
+	query.exec();
+
+	if (query.next())
+		return query.value(0).toString();
+	return "";
+}

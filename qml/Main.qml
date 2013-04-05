@@ -50,6 +50,7 @@ Item {
 			MouseArea {
 				anchors.fill: parent
 				onClicked: {
+					editFieldDir.text = dbManager.getDestinationDir()
 					rectMain.state = (rectMain.state == "showConfig") ? "showNothing" : "showConfig"
 				}
 			}
