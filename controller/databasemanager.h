@@ -7,12 +7,11 @@ class DatabaseManager : public QObject
 	Q_OBJECT
 public:
 	DatabaseManager();
-
-	bool openDB();
-	void closeDB();
+	~DatabaseManager();
 
 public slots:
 	Q_INVOKABLE bool insertNewProcess(QString ip, QString path);
+	Q_INVOKABLE void updateDestDir(QString path);
 	Q_INVOKABLE QObject *retornaPendetesModel();
 
 private:

@@ -7,14 +7,10 @@ DatabaseManager::DatabaseManager()
 	: db(QSqlDatabase::addDatabase("QSQLITE"))
 {
 	db.setDatabaseName("mumuDB.db");
+	db.open();
 }
 
-bool DatabaseManager::openDB()
-{
-	return db.open();
-}
-
-void DatabaseManager::closeDB()
+DatabaseManager::~DatabaseManager()
 {
 	db.close();
 }
@@ -23,33 +19,29 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path)
 {
 	bool ret = true;
 
-	if (openDB()) {
+	verifyNewDatabase();
 
-		verifyNewDatabase();
-
-		// verify if the same file is been send
-		if (alreadySending(path, ip)) {
-			qDebug() << "File is already sending";
-			return false;
-		}
-
-		QFileInfo file(path);
-		QString fileName = file.fileName();
-
-		QSqlQuery query(db);
-
-		query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT) VALUES (:IP, :PATH, 'N')");
-		query.bindValue(":IP", ip);
-		query.bindValue(":PATH", fileName);
-
-		if (!query.exec()) {
-			qDebug() << "Erro ao inserir registro!!";
-			qDebug() << query.lastError().text();
-			ret = false;
-		}
-
-		closeDB();
+	// verify if the same file is been send
+	if (alreadySending(path, ip)) {
+		qDebug() << "File is already sending";
+		return false;
 	}
+
+	QFileInfo file(path);
+	QString fileName = file.fileName();
+
+	QSqlQuery query(db);
+
+	query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT) VALUES (:IP, :PATH, 'N')");
+	query.bindValue(":IP", ip);
+	query.bindValue(":PATH", fileName);
+
+	if (!query.exec()) {
+		qDebug() << "Erro ao inserir registro!!";
+		qDebug() << query.lastError().text();
+		ret = false;
+	}
+
 	return ret;
 }
 
@@ -73,24 +65,37 @@ bool DatabaseManager::alreadySending(QString path, QString ip)
 	return false;
 }
 
+void DatabaseManager::updateDestDir(QString path)
+{
+	QSqlQuery query(db);
+	query.prepare("UPDATE CONFIGS SET DEST_PATH = :DIR_PATH");
+	query.bindValue(":DIR_PATH", path);
+
+	query.exec();
+}
+
 // if we're in a new database
 void DatabaseManager::verifyNewDatabase()
 {
 	QSqlQuery query(db);
 	query.exec("CREATE TABLE IF NOT EXISTS PROCESSES(IP TEXT(255), FILE_PATH TEXT(255), SENT TEXT(1));");
 	query.exec("CREATE TABLE IF NOT EXISTS CONFIGS(DEST_PATH TEXT(255));");
+
+	//just one register inside configs
+	query.prepare("SELECT 1 FROM CONFIGS");
+	query.exec();
+
+	if (!query.next())
+		query.exec("INSERT INTO CONFIGS(DEST_PATH) VALUES('');");
 }
 
 QObject *DatabaseManager::retornaPendetesModel()
 {
-	if (openDB()) {
-		QSqlQuery query;
-		query.prepare("SELECT FILE_PATH "
-				"FROM PROCESSES "
-			       "WHERE SENT = 'N'");
-		model.exec(query);
-		closeDB();
-		return &model;
-	}
+	QSqlQuery query(db);
+	query.prepare("SELECT FILE_PATH "
+			"FROM PROCESSES "
+		       "WHERE SENT = 'N'");
+	model.exec(query);
+
 	return &model;
 }

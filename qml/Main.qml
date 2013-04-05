@@ -119,11 +119,9 @@ Item {
 					MouseArea {
 						anchors.fill: parent
 						onClicked: {
-							if (fileControler.verifyDir(textFile.text)) {
-								//if (dbManager.saveDestDir(editFieldDir.text))
-									rectMain.state = "showNothing"
-								//else
-								//	rectFieldDir.color = "red"
+							if (fileControler.verifyDir(editFieldDir.text)) {
+								dbManager.updateDestDir(editFieldDir.text)
+								rectMain.state = "showNothing"
 							} else {
 								rectFieldDir.color = "red"
 							}
