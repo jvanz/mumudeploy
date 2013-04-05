@@ -75,11 +75,28 @@ Item {
 
 		Rectangle {
 			id: rectConfig
-			width: parent.width - btOptionConfig.width - 10
+			width: parent.width
 			height: parent.height - 350
-			color: "lightyellow"
+			color: "palegoldenrod"
 			x: parent.width + 10
 			y: parent.height - 230
+
+			Text {
+				id: txtDestDir
+				text: qsTr("Pasta destino: ")
+				anchors.left: parent.letf
+				anchors.leftMargin: 150
+				anchors.verticalCenter: parent.verticalCenter
+			}
+
+			Rectangle {
+				id: rectFieldDir
+				width: parent.width - 110
+				height: parent.height - 20
+				anchors.left: txtDestDir.right
+				anchors.leftMargin: 5
+				anchors.verticalCenter: txtDestDir.verticalCenter
+			}
 		}
 
 		Rectangle {
@@ -90,11 +107,11 @@ Item {
 			color: "lightgreen"
 
 			Timer {
-				// default is 1 second
 				repeat: true
 				running: true
+				interval: 1000
 
-				onTriggered: grid.model.refresh()
+				onTriggered: { grid.model.refresh() }
 			}
 
 			GridView {
@@ -223,11 +240,12 @@ Item {
 				PropertyChanges {
 					target: btOptionConfig
 					x: 3
+					y: 130
 				}
 
 				PropertyChanges {
 					target: rectConfig
-					x: btOptionConfig.width + 10
+					x: 0
 				}
 			}
 		]
@@ -266,6 +284,12 @@ Item {
 			NumberAnimation {
 				target: btOptionConfig
 				properties: "x"
+				easing.type: Easing.OutExpo
+				duration: 1000
+			}
+			NumberAnimation {
+				target: btOptionConfig
+				properties: "y"
 				easing.type: Easing.OutExpo
 				duration: 1000
 			}
