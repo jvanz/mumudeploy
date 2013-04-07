@@ -33,6 +33,10 @@ Item {
 			MouseArea {
 				anchors.fill: parent
 				onClicked: {
+					if (rectFile.color == "#ffffff") { // white
+						rectFile.color = "white";
+						textFile.text = ""
+					}
 					rectMain.state = (rectMain.state == "showSendTo") ? "showNothing" : "showSendTo"
 				}
 			}
@@ -50,7 +54,10 @@ Item {
 			MouseArea {
 				anchors.fill: parent
 				onClicked: {
-					editFieldDir.text = dbManager.getDestinationDir()
+					if (rectFieldDir.color == "#ffffff") { // white
+						rectFieldDir.color = "white";
+						editFieldDir.text = dbManager.getDestinationDir()
+					}
 					rectMain.state = (rectMain.state == "showConfig") ? "showNothing" : "showConfig"
 				}
 			}
@@ -123,6 +130,7 @@ Item {
 							if (fileControler.verifyDir(editFieldDir.text)) {
 								dbManager.updateDestDir(editFieldDir.text)
 								rectMain.state = "showNothing"
+								rectFieldDir.color = "white"
 							} else {
 								rectFieldDir.color = "red"
 							}
@@ -232,10 +240,12 @@ Item {
 					onClicked: {
 						if (fileControler.verifyFile(textFile.text)) {
 							rectFile.color = "lightgreen"
-							if (dbManager.insertNewProcess(textIP.text, textFile.text))
+							if (dbManager.insertNewProcess(textIP.text, textFile.text)) {
 								rectMain.state = "showRunning"
-							else
+								rectFile.color = "white"
+							} else {
 								rectFile.color = "red"
+							}
 						} else {
 							rectFile.color = "red"
 						}
