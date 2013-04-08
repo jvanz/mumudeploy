@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 
 /** Constructor */
-MumuServer::MumuServer(QObject *parent) : QTcpServer(parent) 
+MumuServer::MumuServer(QString file,QObject *parent) : filePath(file), QTcpServer(parent) 
 {
 	if(this->listen(QHostAddress::Any, 8080)){
 		std::cout<<"The MumuServer is listening any ip address on port " << this->serverPort() << std::endl;
@@ -27,11 +27,10 @@ void MumuServer::clientConnecting()
 
 void MumuServer::openFile()
 {
-	QString pathFile = QDir::homePath() + "/server/1-04 Stairway To Heaven.m4a";
-	file = new QFile(QDir::toNativeSeparators(pathFile));
+	file = new QFile(QDir::toNativeSeparators(filePath));
 	if(file->exists()){
 		std::cout<<"File opened!"<<std::endl;
-		std::cout<<pathFile.toStdString()<<std::endl;
+		std::cout<<filePath.toStdString()<<std::endl;
 	}
 	file->open(QIODevice::ReadOnly);
 	
@@ -40,7 +39,7 @@ void MumuServer::openFile()
 void MumuServer::incomingConnection(int socketDescription)
 {
 	std::cout<<"Incoming connection..."<<std::endl;
-	MumuConnection * connection = new MumuConnection(socketDescription,this);
+	MumuConnection * connection = new MumuConnection(socketDescription,this->filePath,this);
 	std::cout<<"connection created"<<std::endl;
 	connection->setId("TESTE");
 	connections.append(connection); 

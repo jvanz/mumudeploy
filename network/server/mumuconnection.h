@@ -16,6 +16,7 @@ enum mumuConnectionState{
 
 private:
 	QString id;
+	QString filePath;
 	QByteArray buffer;
 	QFile * file;
 	int statusConnection;
@@ -26,7 +27,7 @@ private:
 	void openFile();
 
 public:
-	MumuConnection(int,QObject * parent = 0);
+	MumuConnection(int,QString,QObject * parent = 0);
 
 	void setId(QString);
 	QString getId();

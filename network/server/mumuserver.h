@@ -12,11 +12,12 @@ class MumuServer : public QTcpServer
 private:
 	QFile * file;
 	QDataStream * in;
+	QString filePath;
 	QList<MumuConnection *> connections;
 	void openFile();
 
 public:
-	MumuServer(QObject * parent); 
+	MumuServer(QString,QObject * parent); 
 
 protected:
 	void incomingConnection(int);

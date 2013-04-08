@@ -4,7 +4,7 @@
 #include "mumuconnection.h"
 
 
-MumuConnection::MumuConnection(int socketDescriptor, QObject * parent) : QTcpSocket(parent)
+MumuConnection::MumuConnection(int socketDescriptor,QString nameFile, QObject * parent) : filePath(nameFile), QTcpSocket(parent)
 {
 	if(this->setSocketDescriptor(socketDescriptor)){
 		std::cout << "Socket descriptor setted" << std::endl;
@@ -105,11 +105,10 @@ void MumuConnection::sendFile()
 
 void MumuConnection::openFile()
 {
-	QString pathFile = QDir::homePath() + "/server/twd.mkv";
-	file = new QFile(QDir::toNativeSeparators(pathFile));
+	file = new QFile(QDir::toNativeSeparators(filePath));
 	if(file->exists()){
 		std::cout<<"File opened!"<<std::endl;
-		std::cout<<pathFile.toStdString()<<std::endl;
+		std::cout<<filePath.toStdString()<<std::endl;
 	}
 	file->open(QIODevice::ReadOnly);
 	
