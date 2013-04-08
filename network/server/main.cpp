@@ -6,6 +6,7 @@
 int main(int argc, char *argv[])
 {
 	QCoreApplication app(argc, argv);
-	MumuServer server(&app);
+	QDir homeApp("/home/vanz/server");
+	MumuServer server(homeApp,&app);
 	return app.exec();
 }
