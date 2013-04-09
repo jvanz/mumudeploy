@@ -4,8 +4,9 @@
 #include <QList>
 
 #include "mumuconnection.h"
+#include "../networkinterface.h"
 
-class MumuServer : public QTcpServer
+class MumuServer : public QTcpServer, public NetworkInterface
 {
 	Q_OBJECT
 
@@ -17,7 +18,8 @@ private:
 	void openFile();
 
 public:
-	MumuServer(QString,QObject * parent); 
+	MumuServer(QString,QObject * parent);
+	void sendFile(QString); 
 
 protected:
 	void incomingConnection(int);
