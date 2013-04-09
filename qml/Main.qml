@@ -82,7 +82,7 @@ Item {
 		}
 
 		Rectangle {
-			id: rectConfig
+			id: panelConfig
 			width: parent.width
 			height: parent.height - 350
 			color: "palegoldenrod"
@@ -141,7 +141,7 @@ Item {
 		}
 
 		Rectangle {
-			id: rectTranfers
+			id: panelTranfers
 			y: 500
 			width: parent.width
 			height: parent.height - 300
@@ -169,7 +169,7 @@ Item {
 		}
 
 		Rectangle {
-			id: rectIp
+			id: panelSend
 			y: -100
 			width: parent.width
 			height: parent.height - 300
@@ -263,7 +263,7 @@ Item {
 				}
 
 				PropertyChanges {
-					target: rectTranfers
+					target: panelTranfers
 					y: 300
 				}
 			},
@@ -274,7 +274,7 @@ Item {
 					y: 120
 				}
 				PropertyChanges {
-					target: rectIp
+					target: panelSend
 					y: 0
 				}
 			},
@@ -287,7 +287,7 @@ Item {
 				}
 
 				PropertyChanges {
-					target: rectConfig
+					target: panelConfig
 					x: 0
 				}
 			}
@@ -307,13 +307,13 @@ Item {
 				duration: 1000
 			}
 			NumberAnimation {
-				target: rectTranfers
+				target: panelTranfers
 				properties: "y"
 				easing.type: Easing.OutExpo
 				duration: 1000
 			}
 			NumberAnimation {
-				target: rectIp
+				target: panelSend
 				properties: "y"
 				easing.type: Easing.OutExpo
 				duration: 1000
@@ -337,13 +337,13 @@ Item {
 				duration: 1000
 			}
 			NumberAnimation {
-				target: rectConfig
+				target: panelConfig
 				properties: "x"
 				easing.type: Easing.OutExpo
 				duration: 1000
 			}
 			NumberAnimation {
-				target: rectConfig
+				target: panelConfig
 				properties: "y"
 				easing.type: Easing.OutExpo
 				duration: 1000
