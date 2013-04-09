@@ -25,6 +25,11 @@ void MumuServer::clientConnecting()
 	std::cout << "Total clients connected = " << connections.size() << std::endl;
 }
 
+void MumuServer::sendFile(QString path)
+{
+	//TODO
+} 
+
 void MumuServer::openFile()
 {
 	file = new QFile(QDir::toNativeSeparators(filePath));
