@@ -161,7 +161,10 @@ Item {
 				model: dbManager.retornaPendetesModel()
 				flow: GridView.TopToBottom
 				cacheBuffer: 0
-				delegate: FilesToSend { id: toSend }
+				delegate: FilesToSend {
+						id: toSend
+						width: panelTranfers.width
+					}
 				keyNavigationWraps: true
 				cellWidth: 250
 				cellHeight: 20
