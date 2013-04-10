@@ -81,14 +81,14 @@ void DatabaseManager::verifyNewDatabase()
 	QSqlQuery query(db);
 	query.exec("CREATE TABLE IF NOT EXISTS PROCESSES(IP TEXT(255), FILE_PATH TEXT(255), SENT TEXT(1), "
 						"TOTAL_PIECES INTEGER, SENT_PIECES INTEGER)");
-	query.exec("CREATE TABLE IF NOT EXISTS CONFIGS(DEST_PATH TEXT(255));");
+	query.exec("CREATE TABLE IF NOT EXISTS CONFIGS(DEST_PATH TEXT(255), SERVER_ADDR TEXT(255));");
 
 	//just one register inside configs
 	query.prepare("SELECT 1 FROM CONFIGS");
 	query.exec();
 
 	if (!query.next())
-		query.exec("INSERT INTO CONFIGS(DEST_PATH) VALUES('');");
+		query.exec("INSERT INTO CONFIGS(DEST_PATH, SERVER_ADDR) VALUES('', '');");
 }
 
 QObject *DatabaseManager::retornaPendetesModel()
