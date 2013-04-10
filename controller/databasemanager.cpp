@@ -32,7 +32,8 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path)
 
 	QSqlQuery query(db);
 
-	query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT) VALUES (:IP, :PATH, 'N')");
+	query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT, TOTAL_PIECES, SENT_PIECES) "
+			"VALUES (:IP, :PATH, 'N', 0, 0)");
 	query.bindValue(":IP", ip);
 	query.bindValue(":PATH", fileName);
 
@@ -78,7 +79,8 @@ void DatabaseManager::updateDestDir(QString path)
 void DatabaseManager::verifyNewDatabase()
 {
 	QSqlQuery query(db);
-	query.exec("CREATE TABLE IF NOT EXISTS PROCESSES(IP TEXT(255), FILE_PATH TEXT(255), SENT TEXT(1));");
+	query.exec("CREATE TABLE IF NOT EXISTS PROCESSES(IP TEXT(255), FILE_PATH TEXT(255), SENT TEXT(1), "
+						"TOTAL_PIECES INTEGER, SENT_PIECES INTEGER)");
 	query.exec("CREATE TABLE IF NOT EXISTS CONFIGS(DEST_PATH TEXT(255));");
 
 	//just one register inside configs
