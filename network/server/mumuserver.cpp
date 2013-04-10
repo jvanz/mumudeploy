@@ -100,9 +100,9 @@ void MumuServer::openFiles()
 			}
 			QString path = fileDir.path() + "/" + fileName;
 			std::cout << path.toStdString() << std::endl;
-			QFile file(QDir::toNativeSeparators(path));
-			if(file.exists()){
-				files.append(&file);
+			QFile * file = new QFile(QDir::toNativeSeparators(path));
+			if(file->exists()){
+				files.append(file);
 			}
 		}
 		std::cout << this->files.size() << " files found" << std::endl;
