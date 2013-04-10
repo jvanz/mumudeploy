@@ -19,7 +19,7 @@ private:
 
 public:
 	MumuServer(QString,QObject * parent);
-	void sendFile(QString); 
+	void sendFile(QString);
 
 protected:
 	void incomingConnection(int);
