@@ -11,9 +11,11 @@ public:
 
 public slots:
 	Q_INVOKABLE bool insertNewProcess(QString ip, QString path);
-	Q_INVOKABLE void updateDestDir(QString path);
 	Q_INVOKABLE QObject *retornaPendetesModel();
+	Q_INVOKABLE void updateDestDir(QString path);
 	Q_INVOKABLE QString getDestinationDir();
+	Q_INVOKABLE void updateServerAddress(QString path);
+	Q_INVOKABLE QString getServerAddress();
 
 private:
 	QSqlDatabase db;

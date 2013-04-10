@@ -112,3 +112,23 @@ QString DatabaseManager::getDestinationDir()
 		return query.value(0).toString();
 	return "";
 }
+
+void DatabaseManager::updateServerAddress(QString address)
+{
+	QSqlQuery query(db);
+	query.prepare("UPDATE CONFIGS SET SERVER_ADDR = :ADDRESS");
+	query.bindValue(":ADDRESS", address);
+
+	query.exec();
+}
+
+QString DatabaseManager::getServerAddress()
+{
+	QSqlQuery query(db);
+	query.prepare("SELECT SERVER_ADDR FROM CONFIGS");
+	query.exec();
+
+	if (query.next())
+		return query.value(0).toString();
+	return "";
+}

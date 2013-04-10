@@ -58,6 +58,7 @@ Item {
 						rectFieldDir.color = "white";
 						editFieldDir.text = dbManager.getDestinationDir()
 					}
+					editFieldServer.text = dbManager.getServerAddress()
 					rectMain.state = (rectMain.state == "showConfig") ? "showNothing" : "showConfig"
 				}
 			}
@@ -84,7 +85,7 @@ Item {
 		Rectangle {
 			id: panelConfig
 			width: parent.width
-			height: parent.height - 350
+			height: parent.height - 300
 			color: "palegoldenrod"
 			x: parent.width + 10
 			y: parent.height - 230
@@ -94,16 +95,18 @@ Item {
 				text: qsTr("Pasta destino: ")
 				anchors.left: parent.letf
 				anchors.leftMargin: 150
-				anchors.verticalCenter: parent.verticalCenter
+				anchors.top: parent.top
+				anchors.topMargin: 15
 			}
 
 			Rectangle {
 				id: rectFieldDir
 				width: parent.width - 180
-				height: parent.height - 20
+				height: parent.height - 70
 				anchors.left: txtDestDir.right
 				anchors.leftMargin: 5
-				anchors.verticalCenter: parent.verticalCenter
+				anchors.top: parent.top
+				anchors.topMargin: 11
 
 				TextEdit {
 					id: editFieldDir
@@ -135,6 +138,53 @@ Item {
 								rectFieldDir.color = "red"
 							}
 						}
+					}
+				}
+			}
+
+			Text {
+				id: txtServerAddr
+				text: qsTr("Endereço Server: ")
+				anchors.left: parent.letf
+				anchors.leftMargin: 150
+				anchors.top: txtDestDir.top
+				anchors.topMargin: 42
+			}
+
+			Rectangle {
+				id: rectServerAddres
+				width: parent.width - 190
+				height: parent.height - 70
+				anchors.left: txtServerAddr.right
+				anchors.leftMargin: 5
+				anchors.top: rectFieldDir.top
+				anchors.topMargin: 40
+
+				TextEdit {
+					id: editFieldServer
+					width: parent.width
+					height: parent.height - 10
+					anchors.left: parent.left
+					anchors.leftMargin: 2
+					anchors.verticalCenter: parent.verticalCenter
+				}
+
+				Button {
+					id: btSaveServer
+					width: parent.width - 250
+					height: parent.height - 5
+					anchors.left: editFieldServer.right
+					anchors.leftMargin: 2
+					anchors.verticalCenter: parent.verticalCenter
+					buttonColor: "lightcyan"
+					label: qsTr("Salvar")
+
+					MouseArea {
+						anchors.fill: parent
+						onClicked: {
+								dbManager.updateServerAddress(editFieldServer.text)
+								rectMain.state = "showNothing"
+							}
 					}
 				}
 			}
