@@ -4,7 +4,7 @@
 #include <QHostAddress>
 #include <QDir>
 
-MumuClient::MumuClient(QObject *parent) : tcpSocket(parent)
+MumuClient::MumuClient(QString path, QObject *parent) : filePath(path), tcpSocket(parent)
 {
 	connect(&tcpSocket,SIGNAL(readyRead()),this,SLOT(readFile()));
 	connect(&tcpSocket,SIGNAL(disconnected()),this,SLOT(closeStream()));
@@ -88,10 +88,10 @@ void MumuClient::readFile()
 
 bool MumuClient::openFile()
 {
-	QString pathFile = QDir::homePath() + "/client/twd.mvk";
-	std::cout << pathFile.toStdString() << std::endl;
-	file = new QFile(QDir::toNativeSeparators(pathFile));
-	std::cout << pathFile.toStdString() << std::endl;
+	//QString pathFile = QDir::homePath() + "/client/twd.mvk";
+	//std::cout << pathFile.toStdString() << std::endl;
+	file = new QFile(QDir::toNativeSeparators(filePath));
+	//std::cout << pathFile.toStdString() << std::endl;
 	bool isOpen = file->open(QIODevice::WriteOnly);
 	std::cout << "File size = " << file->size() << std::endl;	
 	inFile = new QDataStream(file);

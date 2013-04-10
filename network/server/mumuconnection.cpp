@@ -100,6 +100,7 @@ void MumuConnection::sendFile()
         	out.writeRawData(blockFile.constData(),blockFile.size());
 		int bytesWriten = write(block);
 		std::cout << "Bytes writen = " << bytesWriten << std::endl;
+		this->disconnectFromHost();
 	}
 }
 

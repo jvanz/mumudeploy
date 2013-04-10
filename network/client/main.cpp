@@ -6,6 +6,6 @@
 int main(int argc, char *argv[])
 {
 	QCoreApplication app(argc, argv);
-	MumuClient client(&app);
+	MumuClient client("/home/vanz/client/teste.mp3",&app);
 	return app.exec();
 }

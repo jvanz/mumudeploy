@@ -1,11 +1,11 @@
 
 #include <QCoreApplication>
 #include <iostream>
-#include "mumuserver.h"
+#include "../networkmanager.h"
 
 int main(int argc, char *argv[])
 {
 	QCoreApplication app(argc, argv);
-	MumuServer server("/home/vanz/server/teste.mp3",&app);
+	NetworkManager::getInstance("/home/vanz/server/file/teste.mp3",&app);
 	return app.exec();
 }
