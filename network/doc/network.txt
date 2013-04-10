@@ -1,0 +1,4 @@
+
+IMPORTANT!
+
+All communication between network module and the rest of application have to be done through NetworkManager and NetworkInterface.
