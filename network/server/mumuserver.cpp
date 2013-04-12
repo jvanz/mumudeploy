@@ -27,7 +27,7 @@ void MumuServer::clientConnecting()
 
 void MumuServer::sendFile(QString path)
 {
-	//TODO
+	this->filePath = path;
 } 
 
 void MumuServer::openFile()
