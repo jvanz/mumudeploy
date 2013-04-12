@@ -1,3 +1,5 @@
+#ifndef __MUMUCONNECTION_H__
+#define __MUMUCONNECTION_H__
 
 #include <QtNetwork>
 #include <QString>
@@ -43,3 +45,5 @@ public slots:
 	void socketStateChanged(QAbstractSocket::SocketState);
 	void processData();
 };
+
+#endif //__MUMUCONNECTION_H__

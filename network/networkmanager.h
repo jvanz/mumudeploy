@@ -1,4 +1,4 @@
-#include "./mumuserver.h"
+#include "server/mumuserver.h"
 #include <QString>
 
 class NetworkManager

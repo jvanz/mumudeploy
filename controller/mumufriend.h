@@ -1,8 +1,7 @@
 #ifndef __MUMUFRIEND_H__
 
 #include <QObject>
-#include "server/networkmanager.h"
-#include "server/networinterface.h"
+#include "networkmanager.h"
 
 class MumuFriend : public QObject
 {

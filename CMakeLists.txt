@@ -6,6 +6,8 @@ set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
+include_directories(network)
+
 SET(mumudeploy_SOURCE
 	main.cpp
 	controller/qmlinterface.cpp
@@ -13,6 +15,8 @@ SET(mumudeploy_SOURCE
 	controller/databasemanager.cpp
 	controller/engine.cpp
 	controller/mumufriend.cpp
+	network/server/mumuserver.cpp
+	network/server/mumuconnection.cpp
 )
 
 SET(mumudeploy_HEADERS
@@ -21,9 +25,10 @@ SET(mumudeploy_HEADERS
 	controller/engine.h
 	controller/qmlinterface.h
 	controller/mumufriend.h
+	network/server/mumuserver.h
+	network/server/mumuconnection.h
 )
 
-include_directories(network)
 
 QT4_WRAP_CPP(mumudeploy_SOURCE_MOC ${mumudeploy_HEADERS})
 
