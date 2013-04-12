@@ -298,7 +298,7 @@ Item {
 						if (fileControler.verifyFile(textFile.text)) {
 							rectFile.color = "lightgreen"
 							if (dbManager.insertNewProcess(textIP.text, textFile.text)) {
-								friend.sendFile(textFile.txt)
+								friend.sendFile(textFile.text)
 								rectMain.state = "showRunning"
 								rectFile.color = "white"
 							} else {
