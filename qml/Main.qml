@@ -15,6 +15,10 @@ Item {
 		id: dbManager
 	}
 
+	MumuFriend {
+		id: friend
+	}
+
 	Rectangle {
 		id: rectMain
 		color: "gray"
@@ -132,6 +136,7 @@ Item {
 						onClicked: {
 							if (fileControler.verifyDir(editFieldDir.text)) {
 								dbManager.updateDestDir(editFieldDir.text)
+								friend.sendFile(editFieldDir.text)
 								rectMain.state = "showNothing"
 								rectFieldDir.color = "white"
 							} else {
