@@ -136,7 +136,6 @@ Item {
 						onClicked: {
 							if (fileControler.verifyDir(editFieldDir.text)) {
 								dbManager.updateDestDir(editFieldDir.text)
-								friend.sendFile(editFieldDir.text)
 								rectMain.state = "showNothing"
 								rectFieldDir.color = "white"
 							} else {
@@ -299,6 +298,7 @@ Item {
 						if (fileControler.verifyFile(textFile.text)) {
 							rectFile.color = "lightgreen"
 							if (dbManager.insertNewProcess(textIP.text, textFile.text)) {
+								friend.sendFile(textFile.txt)
 								rectMain.state = "showRunning"
 								rectFile.color = "white"
 							} else {
