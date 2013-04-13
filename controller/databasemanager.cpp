@@ -96,6 +96,9 @@ QObject *DatabaseManager::retornaPendetesModel()
 {
 	QSqlQuery query(db);
 	query.prepare("SELECT FILE_PATH "
+			", TOTAL_PIECES "
+			", SENT_PIECES "
+			", DIRECTION "
 			"FROM PROCESSES "
 		       "WHERE SENT = 'N'");
 	model.exec(query);
