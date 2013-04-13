@@ -10,7 +10,7 @@ public:
 	~DatabaseManager();
 
 public slots:
-	Q_INVOKABLE bool insertNewProcess(QString ip, QString path);
+	Q_INVOKABLE bool insertNewProcess(QString ip, QString path, QString direction);
 	Q_INVOKABLE QObject *retornaPendetesModel();
 	Q_INVOKABLE void updateDestDir(QString path);
 	Q_INVOKABLE QString getDestinationDir();

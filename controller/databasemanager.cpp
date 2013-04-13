@@ -15,7 +15,7 @@ DatabaseManager::~DatabaseManager()
 	db.close();
 }
 
-bool DatabaseManager::insertNewProcess(QString ip, QString path)
+bool DatabaseManager::insertNewProcess(QString ip, QString path, QString direction)
 {
 	bool ret = true;
 
@@ -32,10 +32,11 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path)
 
 	QSqlQuery query(db);
 
-	query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT, TOTAL_PIECES, SENT_PIECES) "
-			"VALUES (:IP, :PATH, 'N', 0, 0)");
+	query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT, TOTAL_PIECES, SENT_PIECES, DIRECTION) "
+			"VALUES (:IP, :PATH, 'N', 0, 0, :DIRECTION)");
 	query.bindValue(":IP", ip);
 	query.bindValue(":PATH", fileName);
+	query.bindValue(":DIRECTION", direction);
 
 	if (!query.exec()) {
 		qDebug() << "Erro ao inserir registro!!";
@@ -80,7 +81,7 @@ void DatabaseManager::verifyNewDatabase()
 {
 	QSqlQuery query(db);
 	query.exec("CREATE TABLE IF NOT EXISTS PROCESSES(IP TEXT(255), FILE_PATH TEXT(255), SENT TEXT(1), "
-						"TOTAL_PIECES INTEGER, SENT_PIECES INTEGER)");
+						"TOTAL_PIECES INTEGER, SENT_PIECES INTEGER, DIRECTION TEXT(1))");
 	query.exec("CREATE TABLE IF NOT EXISTS CONFIGS(DEST_PATH TEXT(255), SERVER_ADDR TEXT(255));");
 
 	//just one register inside configs
