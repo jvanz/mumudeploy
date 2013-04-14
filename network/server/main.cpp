@@ -6,6 +6,7 @@
 int main(int argc, char *argv[])
 {
 	QCoreApplication app(argc, argv);
-	NetworkManager::getInstance("/home/vanz/server/file/teste.mp3",&app);
+	QDir homeApp("/home/vanz/server");
+	MumuServer server(homeApp,&app);
 	return app.exec();
 }

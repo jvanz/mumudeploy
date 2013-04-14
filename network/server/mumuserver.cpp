@@ -5,8 +5,16 @@
 #include <QTcpSocket>
 
 /** Constructor */
-MumuServer::MumuServer(QString file,QObject *parent) : filePath(file), QTcpServer(parent) 
+MumuServer::MumuServer(QDir homeApp,QObject *parent) : QTcpServer(parent) 
 {
+	this->blackListFile;
+	this->blackListFile << "." << "..";
+	this->totalSplit = 3;
+	/* First - Look for a files in the homeapp/file and split it*/
+	this->homeApp = homeApp;
+	this->openAndSplitFile();
+
+
 	if(this->listen(QHostAddress::Any, 8080)){
 		std::cout<<"The MumuServer is listening any ip address on port " << this->serverPort() << std::endl;
 	}
@@ -15,7 +23,6 @@ MumuServer::MumuServer(QString file,QObject *parent) : filePath(file), QTcpServe
 	}
 	connect(this, SIGNAL(newConnection()),this,SLOT(clientConnecting()));
 
-//	openFile();
 	std::cout<<"Constructor done!."<<std::endl;
 }
 
@@ -30,15 +37,77 @@ void MumuServer::sendFile(QString path)
 	this->filePath = path;
 } 
 
-void MumuServer::openFile()
+void MumuServer::openAndSplitFile()
 {
-	file = new QFile(QDir::toNativeSeparators(filePath));
-	if(file->exists()){
-		std::cout<<"File opened!"<<std::endl;
-		std::cout<<filePath.toStdString()<<std::endl;
+	this->openFiles();
+	/* Split the file */
+	QDir blockDir(QDir::toNativeSeparators(homeApp.path() + "/block"));
+	if(blockDir.exists()){
+		for(QFile * file : files){
+			int countBlock = 1;
+			QList<QByteArray> blocks = this->splitFile(file,this->totalSplit);
+			for(QByteArray block : blocks){
+				QString path = QDir::toNativeSeparators(blockDir.path() + "/block-" + QString::number(countBlock));
+				std::cout << path.toStdString() << "block size = " << block.size() <<  std::endl;
+				QFile fileBlock(path);
+				fileBlock.open(QIODevice::WriteOnly);
+				QDataStream out(&fileBlock);
+				out << block;
+				fileBlock.close();
+				countBlock++;
+			}
+			std::cout << file->fileName().toStdString() << ". Block ready! " << std::endl;	
+		}
 	}
+}
+
+
+QList<QByteArray> MumuServer::splitFile(QFile* file, int blockCount)
+{
+	QList<QByteArray> blocks;
 	file->open(QIODevice::ReadOnly);
-	
+	QByteArray blockFile = file->readAll();
+	int blockSize = blockFile.size() / blockCount;
+	int  totalBlocksBytes = 0;
+	int lastPos = 0;
+	while(blocks.count() < blockCount){
+		QByteArray block = blockFile.mid(lastPos, blockSize);
+		totalBlocksBytes += block.size();
+		blocks.append(block);
+		lastPos = blockSize * blocks.size();
+	}
+	if(blockFile.size() != totalBlocksBytes){
+		lastPos = blockSize * blocks.size();
+		QByteArray block = blockFile.mid(lastPos);
+		totalBlocksBytes += block.size();
+		blocks.append(block);
+	}
+	file->close();
+	return blocks;
+}
+
+
+void MumuServer::openFiles()
+{
+	QDir fileDir(QDir::toNativeSeparators(homeApp.path() + "/file"));
+	std::cout << fileDir.path().toStdString() << std::endl;
+	if(fileDir.exists()){ // there is files directory in the application home dir
+		std::cout << "fileDir exists" << std::endl;
+		QStringList filesList = fileDir.entryList();
+		for(int index = 0; index < filesList.size(); index++){
+			QString fileName = filesList.at(index);
+			if(this->blackListFile.contains(fileName)){
+				continue;
+			}
+			QString path = fileDir.path() + "/" + fileName;
+			std::cout << path.toStdString() << std::endl;
+			QFile * file = new QFile(QDir::toNativeSeparators(path));
+			if(file->exists()){
+				files.append(file);
+			}
+		}
+		std::cout << this->files.size() << " files found" << std::endl;
+	}
 }
 
 void MumuServer::incomingConnection(int socketDescription)

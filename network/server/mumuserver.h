@@ -2,6 +2,7 @@
 #include <QTcpServer>
 #include <QFile>
 #include <QList>
+#include <QByteArray>
 
 #include "mumuconnection.h"
 #include "../networkinterface.h"
@@ -11,15 +12,20 @@ class MumuServer : public QTcpServer, public NetworkInterface
 	Q_OBJECT
 
 private:
-	QFile * file;
+	QList<QFile*> files;
+	QStringList blackListFile; 
+	QDir homeApp;
 	QDataStream * in;
 	QString filePath;
 	QList<MumuConnection *> connections;
-	void openFile();
+	int totalSplit;
+	void openFiles();
+	void openAndSplitFile();
+	QList<QByteArray> splitFile(QFile*, int);
 
 public:
-	MumuServer(QString,QObject * parent);
 	void sendFile(QString);
+	MumuServer(QDir,QObject * parent); 
 
 protected:
 	void incomingConnection(int);
