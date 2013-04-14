@@ -14,7 +14,7 @@ MumuServer::MumuServer(QDir homeApp,QObject *parent) : QTcpServer(parent)
 	this->homeApp = homeApp;
 	this->openAndSplitFile();
 
-/*
+
 	if(this->listen(QHostAddress::Any, 8080)){
 		std::cout<<"The MumuServer is listening any ip address on port " << this->serverPort() << std::endl;
 	}
@@ -22,7 +22,7 @@ MumuServer::MumuServer(QDir homeApp,QObject *parent) : QTcpServer(parent)
 		std::cout<<"The server is listening"<<std::endl;
 	}
 	connect(this, SIGNAL(newConnection()),this,SLOT(clientConnecting()));
-*/
+
 	std::cout<<"Constructor done!."<<std::endl;
 }
 
@@ -39,20 +39,18 @@ void MumuServer::openAndSplitFile()
 	/* Split the file */
 	QDir blockDir(QDir::toNativeSeparators(homeApp.path() + "/block"));
 	if(blockDir.exists()){
-		std::cout << "blockDir exists" << std::endl;
-		std::cout << files.size() << " files to split" << std::endl;
-		
-		for(int index = 0; index < files.size(); index++){
-			QFile * file = files.at(index);
-			std::cout << "File size = " << file->size() << std::endl;
+		for(QFile * file : files){
 			int countBlock = 1;
-			for(QByteArray block : this->splitFile(file, this->totalSplit)){
-				std::cout << "block = " << countBlock << std::endl;
-				QString path = QDir::toNativeSeparators(blockDir.path() + "/" + file->fileName() + "-" + countBlock);
+			QList<QByteArray> blocks = this->splitFile(file,this->totalSplit);
+			for(QByteArray block : blocks){
+				QString path = QDir::toNativeSeparators(blockDir.path() + "/block-" + QString::number(countBlock));
+				std::cout << path.toStdString() << "block size = " << block.size() <<  std::endl;
 				QFile fileBlock(path);
+				fileBlock.open(QIODevice::WriteOnly);
 				QDataStream out(&fileBlock);
 				out << block;
 				fileBlock.close();
+				countBlock++;
 			}
 			std::cout << file->fileName().toStdString() << ". Block ready! " << std::endl;	
 		}
@@ -62,26 +60,25 @@ void MumuServer::openAndSplitFile()
 
 QList<QByteArray> MumuServer::splitFile(QFile* file, int blockCount)
 {
-	std::cout << "entrou no splitFile. File name = " << file->fileName().toStdString() << std::endl;
 	QList<QByteArray> blocks;
-	qint64 fileSize = file->size();
-	qint64 blockSize = fileSize / blockCount;
-	qint64 restBytes = fileSize % blockCount;
+	file->open(QIODevice::ReadOnly);
+	QByteArray blockFile = file->readAll();
+	int blockSize = blockFile.size() / blockCount;
+	int  totalBlocksBytes = 0;
+	int lastPos = 0;
 	while(blocks.count() < blockCount){
-		QByteArray block = file->read(blockSize);
-		if(block.isEmpty()){ // There are not more bytes avaiable
-			break;
-		}
+		QByteArray block = blockFile.mid(lastPos, blockSize);
+		totalBlocksBytes += block.size();
 		blocks.append(block);
-		file->seek((blocks.count() * blockSize) + 1);
+		lastPos = blockSize * blocks.size();
 	}
-	if(restBytes){
-		QByteArray block = file->read(blockSize);
-		if(!block.isEmpty()){ // There are not more bytes avaiable
-			blocks.append(block);
-		}
+	if(blockFile.size() != totalBlocksBytes){
+		lastPos = blockSize * blocks.size();
+		QByteArray block = blockFile.mid(lastPos);
+		totalBlocksBytes += block.size();
+		blocks.append(block);
 	}
-	std::cout << file->fileName().toStdString() << " splited " << std::endl;
+	file->close();
 	return blocks;
 }
 
