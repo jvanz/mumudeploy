@@ -221,7 +221,7 @@ Item {
 					}
 				keyNavigationWraps: true
 				cellWidth: 250
-				cellHeight: 20
+				cellHeight: 22
 			}
 		}
 

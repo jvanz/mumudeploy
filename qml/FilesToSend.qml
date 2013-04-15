@@ -4,7 +4,7 @@ import "."
 Item {
 	Rectangle {
 		id: path
-		width: parent.width / 3 - 5
+		width: parent.width / 3
 		height: 20
 		anchors.left: parent.left
 
@@ -16,10 +16,16 @@ Item {
 
 	Rectangle {
 		id: fragments 
-		width: parent.width / 3 - 5
+		width: parent.width / 3
 		height: 20
 		anchors.left: path.right
-		anchors.leftMargin: 5
+		anchors.leftMargin: 3
+
+		Progressbar {
+			anchors.fill: parent
+			value: SENT_PIECES
+			maximum: TOTAL_PIECES
+		}
 
 		Text {
 			text: SENT_PIECES + "/" + TOTAL_PIECES
@@ -29,10 +35,10 @@ Item {
 
 	Rectangle {
 		id: direction
-		width: parent.width / 3 - 5
+		width: parent.width / 3
 		height: 20
 		anchors.left: fragments.right
-		anchors.leftMargin: 5
+		anchors.leftMargin: 3
 
 		Text {
 			text: (DIRECTION == "R") ? qsTr("Recebendo") : qsTr("Enviando")
