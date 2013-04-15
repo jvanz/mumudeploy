@@ -99,6 +99,7 @@ QObject *DatabaseManager::retornaPendetesModel()
 			", TOTAL_PIECES "
 			", SENT_PIECES "
 			", DIRECTION "
+			", IP "
 			"FROM PROCESSES "
 		       "WHERE SENT = 'N'");
 	model.exec(query);

@@ -2,11 +2,25 @@ import QtQuick 1.0
 import "."
 
 Item {
+
 	Rectangle {
-		id: path
-		width: parent.width / 3
+		id: ip
+		width: parent.width / 4
 		height: 20
 		anchors.left: parent.left
+
+		Text {
+			text: IP
+			anchors.centerIn: parent
+		}
+	}
+
+	Rectangle {
+		id: path
+		width: parent.width / 4
+		height: 20
+		anchors.left: ip.right
+		anchors.leftMargin: 3
 
 		Text {
 			text: FILE_PATH
@@ -16,7 +30,7 @@ Item {
 
 	Rectangle {
 		id: fragments 
-		width: parent.width / 3
+		width: parent.width / 4
 		height: 20
 		anchors.left: path.right
 		anchors.leftMargin: 3
@@ -35,7 +49,7 @@ Item {
 
 	Rectangle {
 		id: direction
-		width: parent.width / 3
+		width: parent.width / 4
 		height: 20
 		anchors.left: fragments.right
 		anchors.leftMargin: 3
