@@ -6,13 +6,14 @@
 
 #include "mumuconnection.h"
 #include "../networkinterface.h"
+#include "../commum/mumufile.h"
 
 class MumuServer : public QTcpServer, public NetworkInterface
 {
 	Q_OBJECT
 
 private:
-	QList<QFile*> files;
+	QList<MumuFile*> files;
 	QStringList blackListFile; 
 	QDir homeApp;
 	QDataStream * in;
