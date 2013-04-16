@@ -22,7 +22,6 @@ private:
 	int totalSplit;
 	void openFiles();
 	void openAndSplitFile();
-	QList<QByteArray> splitFile(QFile*, int);
 
 public:
 	void sendFile(QString);

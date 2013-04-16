@@ -1,8 +1,11 @@
 
+#include <QDir>
+
 #include "mumufile.h"
 
-MumuFile::MumuFile(QString path) : QFile(path)
+MumuFile::MumuFile(QString path)
 {
+	this->file = new QFile(QDir::toNativeSeparators(path));
 	this->getMd5();
 	this->splitFile();
 	
@@ -10,8 +13,8 @@ MumuFile::MumuFile(QString path) : QFile(path)
 
 void MumuFile::splitFile(int blocksCount)
 {
-	if(this->open(QIODevice::ReadOnly)){
-		QByteArray blockFile = this->readAll();
+	if(this->file->open(QIODevice::ReadOnly)){
+		QByteArray blockFile = this->file->readAll();
 		int blockSize = blockFile.size() / blocksCount;
 		int totalBlocksBytes = 0;
 		int lastPos = 0;
@@ -29,16 +32,16 @@ void MumuFile::splitFile(int blocksCount)
 			totalBlocksBytes += block.size();
 			this->blocks.append(block);
 		}
-		this->close();
+		this->file->close();
 	}
 }
 
 QByteArray MumuFile::getMd5()
 {
 	if(this->md5.isEmpty()){
-		if(this->open(QIODevice::ReadOnly)){
-			this->md5 = Util::generateMd5(this->readAll());
-			this->close();
+		if(this->file->open(QIODevice::ReadOnly)){
+			this->md5 = Util::generateMd5(this->file->readAll());
+			this->file->close();
 		}
 	}
 	Util::logMessage("MD5 = " + QString(this->md5.toHex()));
@@ -47,6 +50,9 @@ QByteArray MumuFile::getMd5()
 
 QList<MumuBlock> MumuFile::getBlocks()
 {
+	if(this->blocks.size() == 0){
+		this->splitFile();
+	}
 	return this->blocks;
 }
 
@@ -63,4 +69,25 @@ void MumuFile::setMd5(QByteArray md5)
 void MumuFile::setBlocks(QList<MumuBlock> blocks)
 {
 	this->blocks = blocks;
+}
+
+
+FileDescriptor MumuFile::getFileDescriptor()
+{
+	return FileDescriptor(this->file->fileName(), this->getMd5(), this->getBlocks().size());
+}
+	
+QFile* MumuFile::getFile()
+{
+	return this->file;
+}
+
+QString MumuFile::fileName()
+{
+	return this->getFile()->fileName();
+}
+	
+bool MumuFile::exists()
+{
+	return this->getFile()->exists();
 }

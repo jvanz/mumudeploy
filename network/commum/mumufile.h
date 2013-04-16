@@ -2,10 +2,12 @@
 #include <QList>
 #include <QFile>
 #include <QByteArray>
+#include <QObject>
 
 #include "mumublock.h"
+#include "filedescriptor.h"
 
-class MumuFile : public QFile
+class MumuFile : QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(QByteArray md5 READ getMd5 WRITE setMd5)
@@ -14,6 +16,7 @@ class MumuFile : public QFile
 private:
 	QList<MumuBlock> blocks;
 	QByteArray md5;
+	QFile * file;
 
 public:
 	MumuFile(QString);
@@ -24,4 +27,8 @@ public:
 	void setBlocks(QList<MumuBlock>);
 	MumuBlock getBlock(int);
 	void getMumuDescription();
+	FileDescriptor getFileDescriptor();
+	QFile* getFile();
+	QString fileName();
+	bool exists();
 };

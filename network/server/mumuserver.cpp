@@ -45,7 +45,7 @@ void MumuServer::openAndSplitFile()
 	if(blockDir.exists()){
 		for(MumuFile * file : files){
 			int countBlock = 1;
-			QList<QByteArray> blocks = this->splitFile(file,this->totalSplit);
+			QList<MumuBlock> blocks = file->getBlocks();
 			for(QByteArray block : blocks){
 				QString path = QDir::toNativeSeparators(blockDir.path() + "/block-" + QString::number(countBlock));
 				std::cout << path.toStdString() << "block size = " << block.size() << std::endl;
@@ -60,32 +60,6 @@ void MumuServer::openAndSplitFile()
 		}
 	}
 }
-
-
-QList<QByteArray> MumuServer::splitFile(QFile* file, int blockCount)
-{
-	QList<QByteArray> blocks;
-	file->open(QIODevice::ReadOnly);
-	QByteArray blockFile = file->readAll();
-	int blockSize = blockFile.size() / blockCount;
-	int  totalBlocksBytes = 0;
-	int lastPos = 0;
-	while(blocks.count() < blockCount){
-		QByteArray block = blockFile.mid(lastPos, blockSize);
-		totalBlocksBytes += block.size();
-		blocks.append(block);
-		lastPos = blockSize * blocks.size();
-	}
-	if(blockFile.size() != totalBlocksBytes){
-		lastPos = blockSize * blocks.size();
-		QByteArray block = blockFile.mid(lastPos);
-		totalBlocksBytes += block.size();
-		blocks.append(block);
-	}
-	file->close();
-	return blocks;
-}
-
 
 void MumuServer::openFiles()
 {
