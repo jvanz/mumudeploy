@@ -15,6 +15,15 @@ DatabaseManager::~DatabaseManager()
 	db.close();
 }
 
+void DatabaseManager::updateSentReceive(QString ip, QString file)
+{
+	QSqlQuery query(db);
+	query.prepare("UPDATE PROCESSES SET SENT_PIECES = SENT_PIECES + 1 WHERE IP = : IP AND FILE_PATH = :FILE");
+	query.bindValue(":IP", ip);
+	query.bindValue(":FILE", file);
+	query.exec();
+}
+
 bool DatabaseManager::insertNewProcess(QString ip, QString path, QString direction)
 {
 	bool ret = true;

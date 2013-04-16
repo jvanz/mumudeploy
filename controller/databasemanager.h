@@ -21,5 +21,6 @@ private:
 	QSqlDatabase db;
 	void verifyNewDatabase();
 	bool alreadySending(QString path, QString ip);
+	void updateSentReceive(QString ip, QString file);
 	QMLInterface model;
 };
