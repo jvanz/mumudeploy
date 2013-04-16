@@ -17,6 +17,10 @@ SET(mumudeploy_SOURCE
 	controller/mumufriend.cpp
 	network/server/mumuserver.cpp
 	network/server/mumuconnection.cpp
+	network/commum/mumufile.cpp
+	network/commum/filedescriptor.cpp
+	network/commum/util.cpp
+	network/commum/mumublock.cpp
 )
 
 SET(mumudeploy_HEADERS
@@ -27,6 +31,10 @@ SET(mumudeploy_HEADERS
 	controller/mumufriend.h
 	network/server/mumuserver.h
 	network/server/mumuconnection.h
+	network/commum/mumufile.h
+	network/commum/filedescriptor.h
+	network/commum/util.h
+	network/commum/mumublock.h
 )
 
 
