@@ -1,12 +1,12 @@
 #include "databasemanager.h"
-#include <QDir>
+#include "filehandle.h"
 #include <QSqlQuery>
 #include <QSqlError>
 
 DatabaseManager::DatabaseManager()
 	: db(QSqlDatabase::addDatabase("QSQLITE"))
 {
-	db.setDatabaseName("mumuDB.db");
+	db.setDatabaseName(FileHandle::getUserHome() + "mumuDB.db");
 	db.open();
 }
 

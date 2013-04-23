@@ -7,9 +7,10 @@ class FileHandle : public QObject
 
 public:
 	FileHandle() : QObject(0) {}
+	static QString getUserHome();
 	
 public slots:
-	Q_INVOKABLE bool verifyPath(QString path);
-	Q_INVOKABLE bool verifyFile(QString fileName);
-	Q_INVOKABLE bool verifyDir(QString dirName);
+	Q_INVOKABLE static bool verifyPath(QString path);
+	Q_INVOKABLE static bool verifyFile(QString fileName);
+	Q_INVOKABLE static bool verifyDir(QString dirName);
 };

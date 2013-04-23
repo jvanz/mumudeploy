@@ -1,3 +1,4 @@
+#include <QDir>
 #include "filehandle.h"
 
 bool FileHandle::verifyPath(QString path)
@@ -23,4 +24,14 @@ bool FileHandle::verifyDir(QString dirName)
 	if (!dir.exists())
 		return false;
 	return true;
+}
+
+QString FileHandle::getUserHome()
+{
+	QDir home(QDir::toNativeSeparators(QDir::homePath() + "/.mumudeploy/"));
+
+	if (!home.exists())
+		home.mkdir(home.path());
+	
+	return home.path();
 }
