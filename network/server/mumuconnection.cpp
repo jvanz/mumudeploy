@@ -91,27 +91,35 @@ QString MumuConnection::getId()
 void MumuConnection::sendFile()
 {
 	if(this->files->size() > 0){
-		//TODO - This method not complete
-		Util::logMessage("Sending file");
+		MumuFile * file = this->files->at(0);
+		file->getFile()->open(QIODevice::ReadOnly);
+		QByteArray blockFile = file->getFile()->readAll();
+        	int bytesWriten = write(blockFile.constData(),blockFile.size());
+		std::cout << "Bytes writen = " << bytesWriten << std::endl;
+		this->disconnectFromHost();
+		Util::logMessage("File sent");
+	}
+/*		Util::logMessage("Sending file");
 		MumuFile * file = files->at(0);
 		Util::logMessage(file->fileName());
 		file->getFile()->open(QIODevice::ReadOnly);	
 		QByteArray blockFile = file->getFile()->readAll();
 		Util::logMessage(QString("File size = ") + QString::number(blockFile.size()));
-		QByteArray compressFile = MumuFile::compress(file->getFile()->readAll());
+//		QByteArray compressFile = MumuFile::compress(blockFile);
 		QByteArray block;
 		QDataStream out(&block,QIODevice::WriteOnly);
 		out.setVersion(QDataStream::Qt_4_3);
-		out << quint16(0) << compressFile;
+		out << quint16(0) << compressFile << quint16(0xFFFF);
 		out.device()->seek(0);
 		out << quint16(block.size() - sizeof(quint16));
 		int bytesWriten = write(block);
 		Util::logMessage(QString::number(bytesWriten));
 		Util::logMessage("File sent");
-		file->getFile()->close();	
+		file->getFile()->close();
+		this->disconnectFromHost();	
 		return;
+*/
 	
-	}
 	Util::logMessage("File did not send");
 	/* if(file){
 		QByteArray block;

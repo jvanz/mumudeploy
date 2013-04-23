@@ -21,7 +21,7 @@ private:
 	QDataStream * inFile;
 	QByteArray buffer;
 	QString filePath;
-	int statusConnection; // 1 = greeting sent ; 2 = file request
+	int statusConnection; // 1 = greeting sent ; 2 = file request ; 3 = file recive
 
 	bool connectMumuServer();
 	bool openFile();
