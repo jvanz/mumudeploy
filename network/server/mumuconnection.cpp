@@ -2,10 +2,9 @@
 #include <QDir>
 
 #include "mumuconnection.h"
-#include "../commum/util.h"
 
 
-MumuConnection::MumuConnection(int socketDescriptor,QString nameFile, QObject * parent) : filePath(nameFile), QTcpSocket(parent)
+MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, QObject * parent) : files(fileList), QTcpSocket(parent)
 {
 	if(this->setSocketDescriptor(socketDescriptor)){
 		std::cout << "Socket descriptor setted" << std::endl;
@@ -91,7 +90,30 @@ QString MumuConnection::getId()
  */ 
 void MumuConnection::sendFile()
 {
-	if(file){
+	if(this->files->size() > 0){
+		//TODO - This method not complete
+		Util::logMessage("Sending file");
+		MumuFile * file = files->at(0);
+		Util::logMessage(file->fileName());
+		file->getFile()->open(QIODevice::ReadOnly);	
+		QByteArray blockFile = file->getFile()->readAll();
+		Util::logMessage(QString("File size = ") + QString::number(blockFile.size()));
+		QByteArray compressFile = MumuFile::compress(file->getFile()->readAll());
+		QByteArray block;
+		QDataStream out(&block,QIODevice::WriteOnly);
+		out.setVersion(QDataStream::Qt_4_3);
+		out << quint16(0) << compressFile;
+		out.device()->seek(0);
+		out << quint16(block.size() - sizeof(quint16));
+		int bytesWriten = write(block);
+		Util::logMessage(QString::number(bytesWriten));
+		Util::logMessage("File sent");
+		file->getFile()->close();	
+		return;
+	
+	}
+	Util::logMessage("File did not send");
+	/* if(file){
 		QByteArray block;
 		block.clear();
 		QDataStream out(&block,QIODevice::WriteOnly);
@@ -103,6 +125,7 @@ void MumuConnection::sendFile()
 		std::cout << "Bytes writen = " << bytesWriten << std::endl;
 		this->disconnectFromHost();
 	}
+	*/
 }
 
 void MumuConnection::openFile()
@@ -150,7 +173,7 @@ void MumuConnection::processData()
 		}else if(statusConnection == 1 & msg == "FILE"){
 			// client is requesting the files
 			statusConnection = 2;
-			this->sendMsgToClient("FILE - OK");
+			this->sendFile();
 		}
 		nextBlockSize = 0;
 	}

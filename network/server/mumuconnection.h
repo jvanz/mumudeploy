@@ -6,6 +6,8 @@
 #include <QByteArray>
 #include <QFile>
 
+#include "../commum/mumufile.h"
+
 class MumuConnection : QTcpSocket
 {
 	Q_OBJECT
@@ -23,6 +25,7 @@ private:
 	QFile * file;
 	int statusConnection;
 	quint16 nextBlockSize;
+	QList<MumuFile*>* files;
 
 	void sendMsgToClient(QString);
 	void clientReady();
@@ -30,7 +33,7 @@ private:
 	void openFile();
 
 public:
-	MumuConnection(int,QString,QObject * parent = 0);
+	MumuConnection(int,QList<MumuFile*>*,QObject * parent = 0);
 
 	void setId(QString);
 	QString getId();

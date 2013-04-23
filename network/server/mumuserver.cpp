@@ -87,7 +87,7 @@ void MumuServer::openFiles()
 void MumuServer::incomingConnection(int socketDescription)
 {
 	std::cout<<"Incoming connection..."<<std::endl;
-	MumuConnection * connection = new MumuConnection(socketDescription,this->filePath,this);
+	MumuConnection * connection = new MumuConnection(socketDescription,&(this->files),this);
 	std::cout<<"connection created"<<std::endl;
 	connection->setId("TESTE");
 	connections.append(connection); 
