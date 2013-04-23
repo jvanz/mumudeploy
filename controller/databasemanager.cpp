@@ -144,3 +144,17 @@ QString DatabaseManager::getServerAddress()
 		return query.value(0).toString();
 	return "";
 }
+
+QSqlQuery DatabaseManager::returnOpenProcesses()
+{
+	QSqlQuery query(db);
+	query.prepare("SELECT FILE_PATH "
+			", TOTAL_PIECES "
+			", SENT_PIECES "
+			", DIRECTION "
+			", IP "
+			"FROM PROCESSES "
+		       "WHERE SENT = 'N'");
+	query.exec();
+	return query;
+}

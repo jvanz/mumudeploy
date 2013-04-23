@@ -1,5 +1,6 @@
 #include <QtDeclarative>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include "qmlinterface.h"
 
 /**
@@ -11,6 +12,8 @@ class DatabaseManager : public QObject
 public:
 	DatabaseManager(); ///< default constructor
 	~DatabaseManager(); ///< default destructor
+
+	QSqlQuery returnOpenProcesses(); ///< return a qsqlquery with all pending processes
 
 public slots:
 	Q_INVOKABLE bool insertNewProcess(QString ip, QString path, QString direction); ///< insert a new process to send/receive a file
