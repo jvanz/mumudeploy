@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QByteArray>
 
+#include "../commum/util.h"
 class MumuClient : QObject
 {
 	Q_OBJECT
@@ -20,7 +21,7 @@ private:
 	QDataStream * inFile;
 	QByteArray buffer;
 	QString filePath;
-	int statusConnection;
+	int statusConnection; // 1 = greeting sent ; 2 = file request
 
 	bool connectMumuServer();
 	bool openFile();

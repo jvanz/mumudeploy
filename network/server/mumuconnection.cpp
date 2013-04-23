@@ -2,6 +2,7 @@
 #include <QDir>
 
 #include "mumuconnection.h"
+#include "../commum/util.h"
 
 
 MumuConnection::MumuConnection(int socketDescriptor,QString nameFile, QObject * parent) : filePath(nameFile), QTcpSocket(parent)
@@ -17,6 +18,7 @@ MumuConnection::MumuConnection(int socketDescriptor,QString nameFile, QObject * 
 	connect(this,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
 	connect(this,SIGNAL(readyRead()),this,SLOT(processData()));
 	statusConnection = -1;
+	nextBlockSize = 0;
 }
 
 void MumuConnection::clientReady()
@@ -28,15 +30,14 @@ void MumuConnection::clientReady()
 void MumuConnection::sendMsgToClient(QString msg)
 {
 	std::cout << "Sending to client: " << msg.toStdString() << std::endl;
-	QByteArray block = msg.toUtf8();
-        QDataStream out(&block,QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_4_3);
-        out << quint16(0) << block;
-        out.device()->seek(0);
-        out << quint16(block.size() - sizeof(quint16));
+	QByteArray block;
+	QDataStream out(&block,QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Qt_4_3);
+	out << quint16(0) << msg;
+	out.device()->seek(0);
+	out << quint16(block.size() - sizeof(quint16));
 	int bytesWriten = write(block);
-	flush();
-	std::cout << "Bytes writen = " << bytesWriten << std::endl;
+	Util::logMessage(QString::number(bytesWriten));
 	
 }
 
@@ -118,6 +119,43 @@ void MumuConnection::openFile()
 void MumuConnection::processData()
 {
 	std::cout << "Socket " << id.toStdString() << " has data to process. " << std::endl; 
-	this->openFile();
-	this->sendFile();
+	QDataStream in(this);
+	in.setVersion(QDataStream::Qt_4_3);
+	forever {
+		if (nextBlockSize == 0) {
+			if (this->bytesAvailable() < sizeof(quint16)){
+				break;
+			}
+			in >> nextBlockSize;
+			Util::logMessage(QString::number(nextBlockSize));
+		}
+		if (nextBlockSize == 0xFFFF) {
+			Util::logMessage("0xFFFF encontrado");
+			break;
+		}
+		if (this->bytesAvailable() < nextBlockSize){
+			Util::logMessage("nextblocksize maior que bytes disponiveis");
+			break;
+		}
+		Util::logMessage(QString::number(this->bytesAvailable()));
+		QString msg;
+		in >> msg;
+		Util::logMessage(msg);
+		
+		if(msg == "GREETING"){
+			// Client is saying hello! Give a response
+			statusConnection = 1;
+			this->sendMsgToClient("OK");
+			
+		}else if(statusConnection == 1 & msg == "FILE"){
+			// client is requesting the files
+			statusConnection = 2;
+			this->sendMsgToClient("FILE - OK");
+		}
+		nextBlockSize = 0;
+	}
+//	this->sendMsgToClient("Ola cliente");
+//	this->openFile();
+//	this->sendFile();
+
 }

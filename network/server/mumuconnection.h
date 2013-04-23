@@ -22,6 +22,7 @@ private:
 	QByteArray buffer;
 	QFile * file;
 	int statusConnection;
+	quint16 nextBlockSize;
 
 	void sendMsgToClient(QString);
 	void clientReady();
