@@ -8,7 +8,6 @@ MumuFile::MumuFile(QString path)
 	this->file = new QFile(QDir::toNativeSeparators(path));
 	this->getMd5();
 	this->splitFile();
-	
 }
 
 void MumuFile::splitFile(int blocksCount)
@@ -100,4 +99,9 @@ QByteArray MumuFile::compress(const QByteArray& data)
 QByteArray MumuFile::uncompress(const QByteArray& data)
 {
 	return qUncompress(data);
+}
+
+int MumuFile::getSize()
+{
+	return getBlocks().size();
 }

@@ -28,6 +28,7 @@ public:
 	void setMd5(QByteArray); ///< Set the MD5 of the file
 	QList<MumuBlock> getBlocks(); ///< A list of the blocks that will be send
 	void setBlocks(QList<MumuBlock>); ///< Populate the list of blocks tht will be send
+	int getSize(); ///< Return the number os blocks
 	MumuBlock getBlock(int); ///< Get the block at position
 	FileDescriptor getFileDescriptor(); ///< Return the file descriptor of MumuFile
 	QFile* getFile(); ///< Get the file inside of MumuFile
