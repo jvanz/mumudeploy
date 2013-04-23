@@ -2,12 +2,15 @@
 #include "filehandle.h"
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QDir>
 
 DatabaseManager::DatabaseManager()
 	: db(QSqlDatabase::addDatabase("QSQLITE"))
 {
-	db.setDatabaseName(FileHandle::getUserHome() + "mumuDB.db");
+	db.setDatabaseName(QDir::toNativeSeparators(FileHandle::getUserHome() + "/mumuDB.db"));
 	db.open();
+
+	verifyNewDatabase();
 }
 
 DatabaseManager::~DatabaseManager()
@@ -28,8 +31,6 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path, QString directi
 {
 	bool ret = true;
 
-	verifyNewDatabase();
-
 	// verify if the same file is been send
 	if (alreadySending(path, ip)) {
 		qDebug() << "File is already sending";
@@ -37,14 +38,12 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path, QString directi
 	}
 
 	QFileInfo file(path);
-	QString fileName = file.fileName();
 
 	QSqlQuery query(db);
-
 	query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT, TOTAL_PIECES, SENT_PIECES, DIRECTION) "
 			"VALUES (:IP, :PATH, 'N', 0, 0, :DIRECTION)");
 	query.bindValue(":IP", ip);
-	query.bindValue(":PATH", fileName);
+	query.bindValue(":PATH", file.fileName());
 	query.bindValue(":DIRECTION", direction);
 
 	if (!query.exec()) {
@@ -59,7 +58,6 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path, QString directi
 bool DatabaseManager::alreadySending(QString path, QString ip)
 {
 	QFileInfo file(path);
-	QString fileName = file.fileName();
 	
 	QSqlQuery query(db);
 	query.prepare("SELECT FILE_PATH "
@@ -68,7 +66,7 @@ bool DatabaseManager::alreadySending(QString path, QString ip)
 			"AND FILE_PATH = :FILE "
 			"AND SENT = 'N' ");
 	query.bindValue(":IP", ip);
-	query.bindValue(":FILE", fileName);
+	query.bindValue(":FILE", file.fileName());
 
 	query.exec();
 	if (query.next())
