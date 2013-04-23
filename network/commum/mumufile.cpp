@@ -91,3 +91,13 @@ bool MumuFile::exists()
 {
 	return this->getFile()->exists();
 }
+
+QByteArray MumuFile::compress(const QByteArray& data)
+{
+	return qCompress(data);
+}
+
+QByteArray MumuFile::uncompress(const QByteArray& data)
+{
+	return qUncompress(data);
+}
