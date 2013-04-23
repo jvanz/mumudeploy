@@ -1,4 +1,3 @@
-
 #include <QList>
 #include <QFile>
 #include <QByteArray>
@@ -7,6 +6,10 @@
 #include "mumublock.h"
 #include "filedescriptor.h"
 
+/**
+ * MumuFile - The struct of the file that will be used by server
+ */
+
 class MumuFile : QObject
 {
 	Q_OBJECT
@@ -14,21 +17,22 @@ class MumuFile : QObject
 	Q_PROPERTY(QList<MumuBlock> blocks READ getBlocks WRITE setBlocks)
 
 private:
-	QList<MumuBlock> blocks;
-	QByteArray md5;
-	QFile * file;
+	QList<MumuBlock> blocks; ///< List of all blocks of MumuFile
+	QByteArray md5; ///< MD5 of the file
+	QFile * file; ///< File inside MumuFile
 
 public:
-	MumuFile(QString);
-	void splitFile(int blocksCount = 3); 
-	QByteArray getMd5();	
-	void setMd5(QByteArray);
-	QList<MumuBlock> getBlocks();
-	void setBlocks(QList<MumuBlock>);
-	MumuBlock getBlock(int);
-	void getMumuDescription();
-	FileDescriptor getFileDescriptor();
-	QFile* getFile();
-	QString fileName();
-	bool exists();
+	MumuFile(QString); ///< Default constructor
+	void splitFile(int blocksCount = 3);  ///< Split file in chunks that will be send
+	QByteArray getMd5(); ///< Get the MD5 of the file for comparisson
+	void setMd5(QByteArray); ///< Set the MD5 of the file
+	QList<MumuBlock> getBlocks(); ///< A list of the blocks that will be send
+	void setBlocks(QList<MumuBlock>); ///< Populate the list of blocks tht will be send
+	MumuBlock getBlock(int); ///< Get the block at position
+	FileDescriptor getFileDescriptor(); ///< Return the file descriptor of MumuFile
+	QFile* getFile(); ///< Get the file inside of MumuFile
+	QString fileName(); ///< Get the name of file
+	bool exists(); ///< Verify if the file exists
+	static QByteArray compress(const QByteArray& data); ///< Compress a packet that will be send
+	static QByteArray uncompress(const QByteArray& data); ///< Uncompress a received packet
 };

@@ -5,5 +5,5 @@
 class Engine
 {
 public:
-	static void start(); /// static to publish C++ classes to QML
+	static void start(); ///< static to publish C++ classes to QML
 };
