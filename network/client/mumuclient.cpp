@@ -42,7 +42,6 @@ void MumuClient::sendMsgToServer(QString msg)
 	out.device()->seek(0);
 	out << quint16(block.size() - sizeof(quint16));
 	int bytesWriten = tcpSocket.write(block);
-	Util::logMessage(QString::number(block.size()));
 }
 
 void MumuClient::catchError(QAbstractSocket::SocketError error)
@@ -60,7 +59,7 @@ void MumuClient::serverConnected()
 	std::cout<<"Client connected!"<<std::endl;
 	connected = true;
 	nextBlockSize = 0;
-//	openFile();
+	this->openFile();
 	this->sendGreeting();
 	
 }
@@ -76,6 +75,7 @@ void MumuClient::sendGreeting()
 void MumuClient::readFile()
 {
 /*
+	if(statusConnection == 2){
 	std::cout<<"Receiving data"<<std::endl;
 	buffer.clear();
 	QDataStream in(&tcpSocket);
@@ -85,46 +85,63 @@ void MumuClient::readFile()
 	std::cout << "Block size = " << blockSize << std::endl;
 	inFile->writeRawData(bytes,blockSize);
 */	
+	Util::logMessage("Client has data to process");
 	QDataStream in(&tcpSocket);
 	in.setVersion(QDataStream::Qt_4_3);
-	forever {
-		if (nextBlockSize == 0) {
-			if (tcpSocket.bytesAvailable() < sizeof(quint16)){
+	if(statusConnection == 2){
+		Util::logMessage("Reading file");
+		int blockSize = tcpSocket.bytesAvailable();
+		char * bytes = new char[blockSize];
+		in.readRawData(bytes, blockSize);	
+		inFile->writeRawData(bytes,blockSize);
+	}else{
+		forever {
+			if (nextBlockSize == 0) {
+				if (tcpSocket.bytesAvailable() < sizeof(quint16)){
+					continue;
+				}
+				in >> nextBlockSize;
+				Util::logMessage(QString::number(nextBlockSize));
+			}
+			if (nextBlockSize == 0xFFFF) {
+				Util::logMessage("0xFFFF encontrado");
 				break;
 			}
-			in >> nextBlockSize;
-			Util::logMessage(QString::number(nextBlockSize));
-		}
-		if (nextBlockSize == 0xFFFF) {
-			Util::logMessage("0xFFFF encontrado");
-			break;
-		}
-		if (tcpSocket.bytesAvailable() < nextBlockSize){
-			Util::logMessage("nextblocksize maior que bytes disponiveis");
-			break;
-		}
-		Util::logMessage(QString::number(tcpSocket.bytesAvailable()));
-		QString msg;
-		in >> msg;
-		Util::logMessage(msg);
-		if(statusConnection == 1 & msg == "OK"){
-			// Server is answer your greeting! Request the file
-			statusConnection = 2;
-			this->sendMsgToServer("FILE");
-			
-		}else if(statusConnection == 2){
+			if (tcpSocket.bytesAvailable() == nextBlockSize){
+				Util::logMessage("nextblocksize maior que bytes disponiveis");
+				break;
+			}
+//		nextBlockSize = 0;
+		} // forever
+		if(statusConnection == 1){
+			Util::logMessage("primeiro if");
+			QString msg;
+			in >> msg;
+			Util::logMessage(msg);
+			if(msg == "OK"){
+				// Server is answer your greeting! Request the file
+				statusConnection = 2;
+				this->sendMsgToServer("FILE");
+				nextBlockSize = 0;
+			}
+		}else if(false /*statusConnection == 2*/){
+			Util::logMessage("segundo if");
 			//Server is sending the response about the file
+			if(this->openFile()){
+				Util::logMessage("Recebendo arquivo!");
+				QByteArray block;
+				in >> block;
+				inFile->writeRawData(block.constData(),nextBlockSize);
+				statusConnection = 3;
+			}
 		}
-		nextBlockSize = 0;
 	}
-
 }
+
+
 bool MumuClient::openFile()
 {
-	//QString pathFile = QDir::homePath() + "/client/twd.mvk";
-	//std::cout << pathFile.toStdString() << std::endl;
 	file = new QFile(QDir::toNativeSeparators(filePath));
-	//std::cout << pathFile.toStdString() << std::endl;
 	bool isOpen = file->open(QIODevice::WriteOnly);
 	std::cout << "File size = " << file->size() << std::endl;	
 	inFile = new QDataStream(file);
@@ -133,6 +150,9 @@ bool MumuClient::openFile()
 
 void MumuClient::closeStream()
 {
+	if(statusConnection != 3){
+		return;
+	}
 	std::cout << "Closing stream" << std::endl;
 	if(file){
 		file->flush();
