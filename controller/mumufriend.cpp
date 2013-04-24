@@ -27,3 +27,33 @@ void MumuFriend::updateSendPieces(QString ip, QString file)
 	DatabaseManager manager;
 	manager.updateSentReceive(ip, file);
 }
+
+QString MumuFriend::getDestinationDir()
+{
+	DatabaseManager manager;
+	return manager.getDestinationDir();
+}
+
+QString MumuFriend::getServerAddress()
+{
+	DatabaseManager manager;
+	return manager.getServerAddress();
+}
+
+void MumuFriend::updateDestDir(QString path)
+{
+	DatabaseManager manager;
+	manager.updateDestDir(path);
+}
+
+void MumuFriend::updateServerAddress(QString address)
+{
+	DatabaseManager manager;
+	manager.updateServerAddress(address);
+}
+
+QObject *MumuFriend::retornaPendentesModel()
+{
+	DatabaseManager manager;
+	return manager.retornaPendetesModel();
+}

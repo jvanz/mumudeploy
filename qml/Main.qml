@@ -11,10 +11,6 @@ Item {
 		id: fileControler
 	}
 
-	DatabaseManager {
-		id: dbManager
-	}
-
 	MumuFriend {
 		id: friend
 	}
@@ -60,9 +56,9 @@ Item {
 				onClicked: {
 					if (rectFieldDir.color == "#ffffff") { // white
 						rectFieldDir.color = "white";
-						editFieldDir.text = dbManager.getDestinationDir()
+						editFieldDir.text = friend.getDestinationDir()
 					}
-					editFieldServer.text = dbManager.getServerAddress()
+					editFieldServer.text = friend.getServerAddress()
 					rectMain.state = (rectMain.state == "showConfig") ? "showNothing" : "showConfig"
 				}
 			}
@@ -135,7 +131,7 @@ Item {
 						anchors.fill: parent
 						onClicked: {
 							if (fileControler.verifyDir(editFieldDir.text)) {
-								dbManager.updateDestDir(editFieldDir.text)
+								friend.updateDestDir(editFieldDir.text)
 								rectMain.state = "showNothing"
 								rectFieldDir.color = "white"
 							} else {
@@ -186,7 +182,7 @@ Item {
 					MouseArea {
 						anchors.fill: parent
 						onClicked: {
-								dbManager.updateServerAddress(editFieldServer.text)
+								friend.updateServerAddress(editFieldServer.text)
 								rectMain.state = "showNothing"
 							}
 					}
@@ -200,7 +196,7 @@ Item {
 			width: parent.width
 			height: parent.height - 300
 			color: "lightgreen"
-
+/*
 			Timer {
 				repeat: true
 				running: true
@@ -212,7 +208,7 @@ Item {
 			GridView {
 				id: grid
 				anchors.fill: parent
-				model: dbManager.retornaPendetesModel()
+				model: friend.retornaPendentesModel()
 				flow: GridView.TopToBottom
 				cacheBuffer: 0
 				delegate: FilesToSend {
@@ -223,6 +219,7 @@ Item {
 				cellWidth: 250
 				cellHeight: 22
 			}
+*/
 		}
 
 		Rectangle {
