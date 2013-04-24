@@ -93,9 +93,10 @@ void MumuConnection::sendFile()
 	if(this->files->size() > 0){
 		MumuFile * file = this->files->at(0);
 		file->getFile()->open(QIODevice::ReadOnly);
-		QByteArray blockFile = file->getFile()->readAll();
+		QByteArray blockFile = MumuFile::compress(file->getFile()->readAll());
         	int bytesWriten = write(blockFile.constData(),blockFile.size());
 		std::cout << "Bytes writen = " << bytesWriten << std::endl;
+		file->getFile()->close();
 		this->disconnectFromHost();
 		Util::logMessage("File sent");
 	}
@@ -158,14 +159,11 @@ void MumuConnection::processData()
 				break;
 			}
 			in >> nextBlockSize;
-			Util::logMessage(QString::number(nextBlockSize));
 		}
 		if (nextBlockSize == 0xFFFF) {
-			Util::logMessage("0xFFFF encontrado");
 			break;
 		}
 		if (this->bytesAvailable() < nextBlockSize){
-			Util::logMessage("nextblocksize maior que bytes disponiveis");
 			break;
 		}
 		Util::logMessage(QString::number(this->bytesAvailable()));

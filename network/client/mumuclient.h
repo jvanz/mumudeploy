@@ -5,14 +5,16 @@
 #include <QObject>
 #include <QFile>
 #include <QByteArray>
+#include <QHostAddress>
 
-#include "../commum/util.h"
+#include "../commum/mumufile.h"
+
 class MumuClient : QObject
 {
 	Q_OBJECT
 
 public:
-	MumuClient(QString,QObject *parent);
+	MumuClient(QString,QHostAddress,QObject *parent);
 private:
 	bool connected;
 	QTcpSocket tcpSocket;
@@ -21,7 +23,9 @@ private:
 	QDataStream * inFile;
 	QByteArray buffer;
 	QString filePath;
+	QHostAddress ipServer;
 	int statusConnection; // 1 = greeting sent ; 2 = file request ; 3 = file recive
+	char * bytes;
 
 	bool connectMumuServer();
 	bool openFile();

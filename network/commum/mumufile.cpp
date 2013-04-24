@@ -93,9 +93,7 @@ bool MumuFile::exists()
 
 QByteArray MumuFile::compress(const QByteArray& data)
 {
-	Util::logMessage("Antes compress = " + QString::number(((QByteArray)data).size()));
-	Util::logMessage("Depois compress = " + QString::number(qCompress(data).size()));
-	return qCompress(data);
+	return qCompress(data, 9);
 }
 
 QByteArray MumuFile::uncompress(const QByteArray& data)

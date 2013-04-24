@@ -4,7 +4,7 @@
 #include <QHostAddress>
 #include <QDir>
 
-MumuClient::MumuClient(QString path, QObject *parent) : filePath(path), tcpSocket(parent)
+MumuClient::MumuClient(QString path,QHostAddress ip, QObject *parent) : filePath(path),ipServer(ip), tcpSocket(parent)
 {
 	connect(&tcpSocket,SIGNAL(readyRead()),this,SLOT(readFile()));
 	connect(&tcpSocket,SIGNAL(disconnected()),this,SLOT(closeStream()));
@@ -22,8 +22,7 @@ MumuClient::MumuClient(QString path, QObject *parent) : filePath(path), tcpSocke
  */
 bool MumuClient::connectMumuServer()
 {
-	tcpSocket.connectToHost(QHostAddress::LocalHost, 8080);
-	std::cout<<"TCP Socket state? "<<tcpSocket.state()<<std::endl;
+	tcpSocket.connectToHost(ipServer, 8080);
 	return tcpSocket.isOpen();
 }
 
@@ -91,9 +90,11 @@ void MumuClient::readFile()
 	if(statusConnection == 2){
 		Util::logMessage("Reading file");
 		int blockSize = tcpSocket.bytesAvailable();
-		char * bytes = new char[blockSize];
-		in.readRawData(bytes, blockSize);	
-		inFile->writeRawData(bytes,blockSize);
+		bytes = new char[blockSize];
+		in.readRawData(bytes, blockSize);
+		Util::logMessage("Quantidade bytes = " + QString::number(sizeof(blockSize)));
+		QByteArray block = MumuFile::uncompress(QByteArray(bytes));
+		inFile->writeRawData(block.constData(),block.size());
 	}else{
 		forever {
 			if (nextBlockSize == 0) {
