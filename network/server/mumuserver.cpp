@@ -15,7 +15,7 @@ MumuServer::MumuServer(QDir homeApp,QObject *parent) : QTcpServer(parent)
 	this->openAndSplitFile();
 
 
-	if(this->listen(QHostAddress::Any, 8080)){
+	if(this->listen(QHostAddress::Any, 1500)){
 		std::cout<<"The MumuServer is listening any ip address on port " << this->serverPort() << std::endl;
 	}
 	if(this->isListening()){

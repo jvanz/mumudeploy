@@ -22,7 +22,7 @@ MumuClient::MumuClient(QString path,QHostAddress ip, QObject *parent) : filePath
  */
 bool MumuClient::connectMumuServer()
 {
-	tcpSocket.connectToHost(ipServer, 8080);
+	tcpSocket.connectToHost(ipServer, 1500);
 	return tcpSocket.isOpen();
 }
 

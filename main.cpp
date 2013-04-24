@@ -1,6 +1,7 @@
 #include <QtDeclarative>
 #include <QUrl>
 #include "controller/engine.h"
+#include "client/mumuclient.h"
 
 int main(int argc, char *argv[])
 {
@@ -13,7 +14,8 @@ int main(int argc, char *argv[])
 			qDebug() << "Expected --headless, received " << args[1] << ". Aborting!";
 			return 1;
 		}
-		// implement headless here
+		MumuClient client("/home/marcos/grafico.diff", QHostAddress::LocalHost, NULL);
+		return app.exec();
 	}
 
 	QDeclarativeView view;
