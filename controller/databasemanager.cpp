@@ -4,6 +4,15 @@
 #include <QSqlError>
 #include <QDir>
 
+DatabaseManager *DatabaseManager::instance = 0;
+
+DatabaseManager *DatabaseManager::getInstance()
+{
+	if (!instance)
+		instance = new DatabaseManager();
+	return instance;
+}
+
 DatabaseManager::DatabaseManager()
 	: db(QSqlDatabase::addDatabase("QSQLITE"))
 {

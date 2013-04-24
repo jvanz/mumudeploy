@@ -8,52 +8,43 @@ MumuFriend::MumuFriend(QObject *parent)
 
 bool MumuFriend::sendFile(QString ip, QString path)
 {
-	DatabaseManager manager;
-
 	this->server = NetworkManager::getInstance(path,this->parent());
 	this->server->sendFile(path);
 
-	return manager.insertNewProcess(ip, path, "S", this->server->getNumberOfParts());
+	return DatabaseManager::getInstance()->insertNewProcess(ip, path, "S", this->server->getNumberOfParts());
 }
 
 QSqlQuery MumuFriend::returnOpenProcess()
 {
-	DatabaseManager manager;
-	return manager.returnOpenProcesses();
+	return DatabaseManager::getInstance()->returnOpenProcesses();
 }
 
 void MumuFriend::updateSendPieces(QString ip, QString file)
 {
-	DatabaseManager manager;
-	manager.updateSentReceive(ip, file);
+	DatabaseManager::getInstance()->updateSentReceive(ip, file);
 }
 
 QString MumuFriend::getDestinationDir()
 {
-	DatabaseManager manager;
-	return manager.getDestinationDir();
+	return DatabaseManager::getInstance()->getDestinationDir();
 }
 
 QString MumuFriend::getServerAddress()
 {
-	DatabaseManager manager;
-	return manager.getServerAddress();
+	return DatabaseManager::getInstance()->getServerAddress();
 }
 
 void MumuFriend::updateDestDir(QString path)
 {
-	DatabaseManager manager;
-	manager.updateDestDir(path);
+	DatabaseManager::getInstance()->updateDestDir(path);
 }
 
 void MumuFriend::updateServerAddress(QString address)
 {
-	DatabaseManager manager;
-	manager.updateServerAddress(address);
+	DatabaseManager::getInstance()->updateServerAddress(address);
 }
 
 QObject *MumuFriend::retornaPendentesModel()
 {
-	DatabaseManager manager;
-	return manager.retornaPendetesModel();
+	return DatabaseManager::getInstance()->retornaPendetesModel();
 }

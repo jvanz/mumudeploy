@@ -196,7 +196,7 @@ Item {
 			width: parent.width
 			height: parent.height - 300
 			color: "lightgreen"
-/*
+
 			Timer {
 				repeat: true
 				running: true
@@ -219,7 +219,7 @@ Item {
 				cellWidth: 250
 				cellHeight: 22
 			}
-*/
+
 		}
 
 		Rectangle {
