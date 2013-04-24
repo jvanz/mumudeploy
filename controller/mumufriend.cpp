@@ -17,3 +17,9 @@ QSqlQuery MumuFriend::returnOpenProcess()
 	DatabaseManager manager;
 	return manager.returnOpenProcesses();
 }
+
+void MumuFriend::updateSendPieces(QString ip, QString file)
+{
+	DatabaseManager manager;
+	manager.updateSentReceive(ip, file);
+}

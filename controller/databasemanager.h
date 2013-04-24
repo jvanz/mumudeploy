@@ -22,11 +22,11 @@ public slots:
 	Q_INVOKABLE QString getDestinationDir(); ///< returns the destinatioh dir
 	Q_INVOKABLE void updateServerAddress(QString path); ///< Updates the server address to get files
 	Q_INVOKABLE QString getServerAddress(); ///< return the server address to get files
+	void updateSentReceive(QString ip, QString file); ///< update the number os sent/received pieces of a file
 
 private:
 	QSqlDatabase db; ///< Database conection
 	void verifyNewDatabase(); ///< Creates tables if the database is a new one
 	bool alreadySending(QString path, QString ip); ///< verify if a file/IP are not in progress
-	void updateSentReceive(QString ip, QString file); ///< update the number os sent/received pieces of a file
 	QMLInterface model; ///< model to return data from DB
 };
