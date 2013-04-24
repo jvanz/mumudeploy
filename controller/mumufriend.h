@@ -18,7 +18,7 @@ private:
 
 public:
 	MumuFriend(QObject *parent = 0); ///< Default constructor
-	Q_INVOKABLE void sendFile(QString path); ///< Send a file by the server
+	Q_INVOKABLE bool sendFile(QString ip, QString path); ///< Send a file by the server
 	QSqlQuery returnOpenProcess(); ///< Return all pending actions that needs to be handled by server
 	void updateSendPieces(QString ip, QString file); ///< Updates the number of packets sent by server
 };

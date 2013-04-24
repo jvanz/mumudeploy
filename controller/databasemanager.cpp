@@ -27,7 +27,7 @@ void DatabaseManager::updateSentReceive(QString ip, QString file)
 	query.exec();
 }
 
-bool DatabaseManager::insertNewProcess(QString ip, QString path, QString direction)
+bool DatabaseManager::insertNewProcess(QString ip, QString path, QString direction, int parts)
 {
 	bool ret = true;
 
@@ -41,10 +41,11 @@ bool DatabaseManager::insertNewProcess(QString ip, QString path, QString directi
 
 	QSqlQuery query(db);
 	query.prepare("INSERT INTO PROCESSES(IP, FILE_PATH, SENT, TOTAL_PIECES, SENT_PIECES, DIRECTION) "
-			"VALUES (:IP, :PATH, 'N', 0, 0, :DIRECTION)");
+			"VALUES (:IP, :PATH, 'N', :PARTS, 0, :DIRECTION)");
 	query.bindValue(":IP", ip);
 	query.bindValue(":PATH", file.fileName());
 	query.bindValue(":DIRECTION", direction);
+	query.bindValue(":PARTS", parts);
 
 	if (!query.exec()) {
 		qDebug() << "Erro ao inserir registro!!";

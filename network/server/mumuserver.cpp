@@ -103,3 +103,13 @@ void MumuServer::socketStateChanged(QAbstractSocket::SocketState state)
 {
 	std::cout<<"Socket state = "<<state<<std::endl;
 }
+
+int MumuServer::getNumberOfParts()
+{
+	int parts = 0;
+
+	for (MumuFile *file : files)
+		parts += file->getSize();
+
+	return parts;
+}

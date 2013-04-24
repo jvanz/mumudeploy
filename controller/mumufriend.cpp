@@ -6,10 +6,14 @@ MumuFriend::MumuFriend(QObject *parent)
 {
 }
 
-void MumuFriend::sendFile(QString path)
+bool MumuFriend::sendFile(QString ip, QString path)
 {
+	DatabaseManager manager;
+
 	this->server = NetworkManager::getInstance(path,this->parent());
-	this->server->sendFile(path);	
+	this->server->sendFile(path);
+
+	return manager.insertNewProcess(ip, path, "S", this->server->getNumberOfParts());
 }
 
 QSqlQuery MumuFriend::returnOpenProcess()

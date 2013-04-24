@@ -16,7 +16,8 @@ public:
 	QSqlQuery returnOpenProcesses(); ///< return a qsqlquery with all pending processes
 
 public slots:
-	Q_INVOKABLE bool insertNewProcess(QString ip, QString path, QString direction); ///< insert a new process to send/receive a file
+	Q_INVOKABLE bool insertNewProcess(QString ip, QString path, QString direction
+					, int parts); ///< insert a new process to send/receive a file
 	Q_INVOKABLE QObject *retornaPendetesModel(); ///< returns all files that are been sending/receiving
 	Q_INVOKABLE void updateDestDir(QString path); ///< Updates the destination dir of downloaded files from server
 	Q_INVOKABLE QString getDestinationDir(); ///< returns the destinatioh dir
