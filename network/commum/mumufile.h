@@ -18,11 +18,13 @@ class MumuFile : QObject
 
 private:
 	QList<MumuBlock> blocks; ///< List of all blocks of MumuFile
-	QByteArray md5; ///< MD5 of the file
+	FileDescriptor descriptor;
 	QFile * file; ///< File inside MumuFile
 
 public:
 	MumuFile(QString); ///< Default constructor
+	MumuFile(QByteArray);
+	MumuFile(FileDescriptor);
 	void splitFile(int blocksCount = 3);  ///< Split file in chunks that will be send
 	QByteArray getMd5(); ///< Get the MD5 of the file for comparisson
 	void setMd5(QByteArray); ///< Set the MD5 of the file

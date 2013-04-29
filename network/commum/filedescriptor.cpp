@@ -1,5 +1,10 @@
 #include "filedescriptor.h"
 
+FileDescriptor::FileDescriptor(QByteArray block)
+{
+	this->generateFileDescriptor(block);
+}
+
 QString FileDescriptor::getFileName()
 {
 	return this->fileName;
@@ -32,5 +37,14 @@ void FileDescriptor::setTotalBlocksCount(quint8 totalBlocks)
 
 QByteArray FileDescriptor::getBlockFileDescriptor()
 {
-	//TODO - implement
+	QByteArray block;
+	QDataStream out(&block,QIODevice::WriteOnly);
+	out << this->getFileName() << this->getTotalBlocksCount() << this->getMd5();
+	return block;
+}
+	
+void FileDescriptor::generateFileDescriptor(QByteArray block)
+{
+	QDataStream in(&block,QIODevice::ReadOnly);
+	in >> this->fileName >> this->totalBlocksCount >> this->md5;
 }
