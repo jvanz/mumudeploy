@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 
 /** Constructor */
-MumuServer::MumuServer(QDir homeApp,QObject *parent) : QTcpServer(parent) 
+MumuServer::MumuServer(QDir homeApp,int port, QObject *parent) : QTcpServer(parent) 
 {
 	this->blackListFile;
 	this->blackListFile << "." << "..";
@@ -15,20 +15,20 @@ MumuServer::MumuServer(QDir homeApp,QObject *parent) : QTcpServer(parent)
 	this->openAndSplitFile();
 
 
-	if(this->listen(QHostAddress::Any, 1500)){
+	if(this->listen(QHostAddress::Any, port)){
 		std::cout<<"The MumuServer is listening any ip address on port " << this->serverPort() << std::endl;
 	}
 	if(this->isListening()){
-		std::cout<<"The server is listening"<<std::endl;
+		Util::logMessage("The server is listening");
 	}
 	connect(this, SIGNAL(newConnection()),this,SLOT(clientConnecting()));
 
-	std::cout<<"Constructor done!."<<std::endl;
+	Util::logMessage("Constructor done!.");
 }
 
 void MumuServer::clientConnecting()
 {
-	std::cout<<"Client wants connect!"<<std::endl;
+	Util::logMessage("Client wants connect!");
 	std::cout << "Total clients connected = " << connections.size() << std::endl;
 }
 
@@ -86,12 +86,12 @@ void MumuServer::openFiles()
 
 void MumuServer::incomingConnection(int socketDescription)
 {
-	std::cout<<"Incoming connection..."<<std::endl;
+	Util::logMessage("Incoming connection...");
 	MumuConnection * connection = new MumuConnection(socketDescription,&(this->files),this);
-	std::cout<<"connection created"<<std::endl;
+	Util::logMessage("connection created");
 	connection->setId("TESTE");
 	connections.append(connection); 
-	std::cout<<"Leaving incoming connection..."<<std::endl;
+	Util::logMessage("Leaving incoming connection...");
 }
 
 void MumuServer::showErrorMessage(QAbstractSocket::SocketError socketError)

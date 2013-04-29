@@ -19,5 +19,6 @@ public:
 	void setMd5(QByteArray);
 	quint8 getTotalBlocksCount();
 	void setTotalBlocksCount(quint8);
+	QByteArray getBlockFileDescriptor();
 
 };

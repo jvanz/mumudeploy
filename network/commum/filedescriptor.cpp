@@ -30,3 +30,7 @@ void FileDescriptor::setTotalBlocksCount(quint8 totalBlocks)
 	this->totalBlocksCount = totalBlocks;
 }
 
+QByteArray FileDescriptor::getBlockFileDescriptor()
+{
+	//TODO - implement
+}

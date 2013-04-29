@@ -4,7 +4,7 @@
 #include <QHostAddress>
 #include <QDir>
 
-MumuClient::MumuClient(QString path,QHostAddress ip, QObject *parent) : filePath(path),ipServer(ip), tcpSocket(parent)
+MumuClient::MumuClient(QString path,QHostAddress ip,int port, QObject *parent) : filePath(path), ipServer(ip), portServer(port), tcpSocket(parent)
 {
 	connect(&tcpSocket,SIGNAL(readyRead()),this,SLOT(readFile()));
 	connect(&tcpSocket,SIGNAL(disconnected()),this,SLOT(closeStream()));
@@ -22,7 +22,7 @@ MumuClient::MumuClient(QString path,QHostAddress ip, QObject *parent) : filePath
  */
 bool MumuClient::connectMumuServer()
 {
-	tcpSocket.connectToHost(ipServer, 1500);
+	tcpSocket.connectToHost(ipServer, portServer);
 	return tcpSocket.isOpen();
 }
 

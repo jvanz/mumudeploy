@@ -5,9 +5,9 @@ class NetworkManager
 {
 public:
 	/*This function return a pointer to a mumuserver instance*/
-	static NetworkInterface* getInstance(QString filePath, QObject * parent)
+	static NetworkInterface* getInstance(QString filePath, int port, QObject * parent)
 	{
-		return new MumuServer(filePath, parent);
+		return new MumuServer(filePath, port,parent);
 	}
 
 };
