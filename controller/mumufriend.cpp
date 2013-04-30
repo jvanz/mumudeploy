@@ -8,7 +8,7 @@ MumuFriend::MumuFriend(QObject *parent)
 
 bool MumuFriend::sendFile(QString ip, QString path)
 {
-	this->server = NetworkManager::getInstance(path,this->parent());
+	this->server = NetworkManager::getInstance(path, 6666, this->parent());
 	this->server->sendFile(path);
 
 	return DatabaseManager::getInstance()->insertNewProcess(ip, path, "S", this->server->getNumberOfParts());

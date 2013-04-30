@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 			qDebug() << "Expected --headless, received " << args[1] << ". Aborting!";
 			return 1;
 		}
-		MumuClient client("/home/marcos/grafico.diff", QHostAddress::LocalHost, NULL);
+		MumuClient client("/home/marcos/grafico.diff", QHostAddress::LocalHost, 6666, NULL);
 		return app.exec();
 	}
 
