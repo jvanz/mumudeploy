@@ -152,39 +152,54 @@ void MumuConnection::processData()
 {
 	std::cout << "Socket " << id.toStdString() << " has data to process. " << std::endl; 
 	QDataStream in(this);
+	QByteArray block;
+	QDataStream out(&block, QIODevice::WriteOnly);
 	in.setVersion(QDataStream::Qt_4_3);
-	forever {
-		if (nextBlockSize == 0) {
-			if (this->bytesAvailable() < sizeof(quint16)){
-				break;
-			}
-			in >> nextBlockSize;
+	forever{
+		quint8 byte;
+		in >> byte;
+		if(byte == quint8(2)){ //STX - START OF TEXT ( FIRST BYTE )
+			Util::logMessage("Achou STX");
+			continue;
 		}
-		if (nextBlockSize == 0xFFFF) {
+		if(byte == quint8(3)){ // ETX - END OF TEXT ( LAST BYTE )
+			Util::logMessage("Achou ETX");
 			break;
 		}
-		if (this->bytesAvailable() < nextBlockSize){
-			break;
-		}
-		Util::logMessage(QString::number(this->bytesAvailable()));
-		QString msg;
-		in >> msg;
-		Util::logMessage(msg);
-		
-		if(msg == "GREETING"){
-			// Client is saying hello! Give a response
-			statusConnection = 1;
-			this->sendMsgToClient("OK");
-			
-		}else if(statusConnection == 1 & msg == "FILE"){
-			// client is requesting the files
-			statusConnection = 2;
-			this->sendFile();
-		}
-		nextBlockSize = 0;
+		out << byte;
 	}
-//	this->sendMsgToClient("Ola cliente");
-//	this->openFile();
-//	this->sendFile();
 
+	this->processBlock(block);
+}
+
+void MumuConnection::processBlock(QByteArray block)
+{
+	QDataStream in(&block, QIODevice::ReadOnly);
+	quint8 byte;
+	in >> byte;
+	Util::logMessage(QString::number(byte));
+	if(byte == quint8(1)){
+		Util::logMessage("Starting a connection");
+		this->statusConnection = 1;
+	}
+}
+	
+void MumuConnection::sendMsgToClient(quint8 msg)
+{
+	QByteArray block;
+	QDataStream out(&block,QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Qt_4_3);
+	out << quint8(2) << msg << quint8(3);
+	write(block.data());
+	
+}
+
+void MumuConnection::sendAckToClient()
+{
+	this->sendMsgToClient(quint8(6));
+}
+
+void MumuConnection::sendNakToClient()
+{
+	this->sendMsgToClient(quint8(21));
 }

@@ -33,6 +33,7 @@ private:
 	void sendGreeting();
 	void sendOk();
 	void sendMsgToServer(QString);
+	void sendMsgToServer(quint8);
 
 private slots:
 	void serverConnected();
