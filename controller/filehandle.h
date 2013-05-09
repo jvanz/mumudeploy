@@ -1,5 +1,6 @@
-#include <QtDeclarative>
+//#include <QtDeclarative>
 #include <QFile>
+#include <QDir>
 
 /**
  * FileHandle - The class who verifies for files and dirs
@@ -11,6 +12,8 @@ class FileHandle : public QObject
 public:
 	FileHandle() : QObject(0) {} /// default constructor
 	static QString getUserHome(); /// returns the user home dir path
+	static QDir getDirUserHome(); /// returns the user home dir
+	static QDir getPublicUserHome(); /// returns the public user home dir
 	
 public slots:
 	Q_INVOKABLE static bool verifyPath(QString path); /// verify if a path exists (if the path points to a file or a dir)

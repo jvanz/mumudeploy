@@ -41,13 +41,13 @@ void MumuServer::openAndSplitFile()
 {
 	this->openFiles();
 	/* Split the file */
-	QDir blockDir(QDir::toNativeSeparators(homeApp.path() + "/mumufile"));
+	QDir blockDir = FileHandle::getPublicUserHome();
 	if(blockDir.exists()){
 		for(MumuFile * file : files){
 			int countBlock = 1;
 			QList<MumuBlock> blocks = file->getBlocks();
 			for(QByteArray block : blocks){
-				QString path = QDir::toNativeSeparators(blockDir.path() + "/block-" + QString::number(countBlock));
+				QString path = FileHandle::getUserHome() + "/block-" + QString::number(countBlock);
 				std::cout << path.toStdString() << "block size = " << block.size() << std::endl;
 				QFile fileBlock(path);
 				fileBlock.open(QIODevice::WriteOnly);

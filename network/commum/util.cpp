@@ -1,5 +1,6 @@
 #include "util.h"
 
+#include <QByteArray>
 #include <iostream>
 
 QByteArray Util::generateMd5(QByteArray block)
