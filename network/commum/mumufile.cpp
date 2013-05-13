@@ -6,7 +6,7 @@
 MumuFile::MumuFile(QString path)
 {
 	this->descriptor;
-	this->file = new QFile(QDir::toNativeSeparators(path));
+	this->file = new QFile(path);
 	this->descriptor.setFileName(file->fileName());
 	this->getMd5();
 	this->splitFile();
