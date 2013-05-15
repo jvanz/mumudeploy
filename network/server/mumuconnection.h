@@ -27,7 +27,6 @@ private:
 	quint16 nextBlockSize;
 	QList<MumuFile*>* files;
 
-	void sendMsgToClient(QString);
 	void sendMsgToClient(quint8);
 	void sendAckToClient();
 	void sendNakToClient();

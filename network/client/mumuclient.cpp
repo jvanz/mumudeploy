@@ -26,28 +26,12 @@ bool MumuClient::connectMumuServer()
 	return tcpSocket.isOpen();
 }
 
-void MumuClient::sendOk()
-{
-	this->sendMsgToServer("OK");
-}
-
-void MumuClient::sendMsgToServer(QString msg)
-{
-	std::cout << "Sending to server: " << msg.toStdString() << std::endl;
-	QByteArray block;
-	QDataStream out(&block,QIODevice::WriteOnly);
-	out.setVersion(QDataStream::Qt_4_3);
-	out << quint8(2) << msg.data() << quint8(3); // STX - DATA - ETX
-	Util::logMessage(QString::number(block.size()));
-	int bytesWriten = tcpSocket.write(block.data());
-}
-
 void MumuClient::sendMsgToServer(quint8 msg)
 {
 	QByteArray block;
 	QDataStream out(&block,QIODevice::WriteOnly);
 	out.setVersion(QDataStream::Qt_4_3);
-	out << quint8(2) << msg << quint8(3); // STX - DATA - ETX
+	out << quint8(STX) << msg << quint8(ETX); // STX - DATA - ETX
 	Util::logMessage(QString::number(block.size()));
 	int bytesWriten = tcpSocket.write(block.data());
 }
@@ -75,7 +59,7 @@ void MumuClient::serverConnected()
 
 void MumuClient::sendGreeting()
 {
-	this->sendMsgToServer(quint8(1)); // SOH - It's initial char of a new connection
+	this->sendMsgToServer(quint8(SOH)); // SOH - It's initial char of a new connection
 	tcpSocket.flush();
 	statusConnection = 1;
 }
@@ -89,17 +73,45 @@ void MumuClient::readFile()
 	forever{
 		quint8 byte;
 		in >> byte;
-		if(byte == quint8(2)){ //STX - START OF TEXT ( FIRST BYTE )
+		if(byte == quint8(STX)){ //STX - START OF TEXT ( FIRST BYTE )
 			Util::logMessage("Achou STX");
 			continue;
 		}
-		if(byte == quint8(3)){ // ETX - END OF TEXT ( LAST BYTE )
+		if(byte == quint8(ETX)){ // ETX - END OF TEXT ( LAST BYTE )
 			Util::logMessage("Achou ETX");
 			break;
 		}
 		out << byte;
 	}
-	//TODO - process block
+	this->processBlock(block);
+}
+
+void MumuClient::processBlock(QByteArray block)
+{
+	QDataStream in(&block, QIODevice::ReadOnly);
+	quint8 byte;
+	in >> byte;
+	Util::logMessage(QString::number(byte));
+	if(byte == quint8(ACK) & statusConnection == 1){ // server accept connection. Request files
+		this->requestFilesToServer();
+	}
+}
+
+void MumuClient::sendAckToServer()
+{
+	this->sendMsgToServer(quint8(ACK));
+}
+
+void MumuClient::sendNakToServer()
+{
+	this->sendMsgToServer(quint8(NAK));
+}
+
+void MumuClient::requestFilesToServer()
+{
+	this->sendMsgToServer(quint8(ENQ));
+	statusConnection = 2; // request statius
+	Util::logMessage("File requested");
 }
 
 bool MumuClient::openFile()

@@ -22,22 +22,7 @@ MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, 
 
 void MumuConnection::clientReady()
 {
-	std::cout << "Sending file to client" << std::endl;
-	sendMsgToClient("FILE");
-}
-
-void MumuConnection::sendMsgToClient(QString msg)
-{
-	std::cout << "Sending to client: " << msg.toStdString() << std::endl;
-	QByteArray block;
-	QDataStream out(&block,QIODevice::WriteOnly);
-	out.setVersion(QDataStream::Qt_4_3);
-	out << quint16(0) << msg;
-	out.device()->seek(0);
-	out << quint16(block.size() - sizeof(quint16));
-	int bytesWriten = write(block);
-	Util::logMessage(QString::number(bytesWriten));
-	
+	Util::logMessage("Sending file to client");
 }
 
 int MumuConnection::getState()
@@ -94,47 +79,13 @@ void MumuConnection::sendFile()
 		MumuFile * file = this->files->at(0);
 		file->getFile()->open(QIODevice::ReadOnly);
 		QByteArray blockFile = MumuFile::compress(file->getFile()->readAll());
-        	int bytesWriten = write(blockFile.constData(),blockFile.size());
-		std::cout << "Bytes writen = " << bytesWriten << std::endl;
+        	write(blockFile.constData(),blockFile.size());
 		file->getFile()->close();
 		this->disconnectFromHost();
 		Util::logMessage("File sent");
-	}
-/*		Util::logMessage("Sending file");
-		MumuFile * file = files->at(0);
-		Util::logMessage(file->fileName());
-		file->getFile()->open(QIODevice::ReadOnly);	
-		QByteArray blockFile = file->getFile()->readAll();
-		Util::logMessage(QString("File size = ") + QString::number(blockFile.size()));
-//		QByteArray compressFile = MumuFile::compress(blockFile);
-		QByteArray block;
-		QDataStream out(&block,QIODevice::WriteOnly);
-		out.setVersion(QDataStream::Qt_4_3);
-		out << quint16(0) << compressFile << quint16(0xFFFF);
-		out.device()->seek(0);
-		out << quint16(block.size() - sizeof(quint16));
-		int bytesWriten = write(block);
-		Util::logMessage(QString::number(bytesWriten));
-		Util::logMessage("File sent");
-		file->getFile()->close();
-		this->disconnectFromHost();	
 		return;
-*/
-	
-	Util::logMessage("File did not send");
-	/* if(file){
-		QByteArray block;
-		block.clear();
-		QDataStream out(&block,QIODevice::WriteOnly);
-		QByteArray blockFile = file->readAll();
-		std::cout << "Block file = " << blockFile.size() << std::endl;
-		std::cout << "File size = " << file->size() << std::endl;
-        	out.writeRawData(blockFile.constData(),blockFile.size());
-		int bytesWriten = write(block);
-		std::cout << "Bytes writen = " << bytesWriten << std::endl;
-		this->disconnectFromHost();
 	}
-	*/
+	Util::logMessage("File did not send");
 }
 
 void MumuConnection::openFile()
@@ -158,12 +109,10 @@ void MumuConnection::processData()
 	forever{
 		quint8 byte;
 		in >> byte;
-		if(byte == quint8(2)){ //STX - START OF TEXT ( FIRST BYTE )
-			Util::logMessage("Achou STX");
+		if(byte == quint8(STX)){ //STX - START OF TEXT ( FIRST BYTE )
 			continue;
 		}
-		if(byte == quint8(3)){ // ETX - END OF TEXT ( LAST BYTE )
-			Util::logMessage("Achou ETX");
+		if(byte == quint8(ETX)){ // ETX - END OF TEXT ( LAST BYTE )
 			break;
 		}
 		out << byte;
@@ -178,28 +127,32 @@ void MumuConnection::processBlock(QByteArray block)
 	quint8 byte;
 	in >> byte;
 	Util::logMessage(QString::number(byte));
-	if(byte == quint8(1)){
+	if(byte == quint8(SOH)){
 		Util::logMessage("Starting a connection");
 		this->statusConnection = 1;
+		this->sendAckToClient();
+	}else if(byte == quint8(ENQ)){
+		Util::logMessage("File request by client");
 	}
 }
-	
+
+
 void MumuConnection::sendMsgToClient(quint8 msg)
 {
 	QByteArray block;
 	QDataStream out(&block,QIODevice::WriteOnly);
 	out.setVersion(QDataStream::Qt_4_3);
-	out << quint8(2) << msg << quint8(3);
+	out << quint8(STX) << msg << quint8(ETX);
 	write(block.data());
 	
 }
 
 void MumuConnection::sendAckToClient()
 {
-	this->sendMsgToClient(quint8(6));
+	this->sendMsgToClient(quint8(ACK));
 }
 
 void MumuConnection::sendNakToClient()
 {
-	this->sendMsgToClient(quint8(21));
+	this->sendMsgToClient(quint8(NAK));
 }
