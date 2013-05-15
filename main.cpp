@@ -2,6 +2,7 @@
 #include <QUrl>
 #include "controller/engine.h"
 #include "client/mumuclient.h"
+#include "controller/mumuthread.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +18,11 @@ int main(int argc, char *argv[])
 		MumuClient client("/home/marcos/grafico.diff", QHostAddress::LocalHost, 6666, NULL);
 		return app.exec();
 	}
+
+	MumuThread thread;
+	thread.start();
+	qDebug() << "Hello from gui thread " << app.thread()->currentThreadId();
+	thread.wait();
 
 	QDeclarativeView view;
 

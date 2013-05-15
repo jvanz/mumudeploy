@@ -15,6 +15,7 @@ SET(mumudeploy_SOURCE
 	controller/databasemanager.cpp
 	controller/engine.cpp
 	controller/mumufriend.cpp
+	controller/mumuthread.cpp
 	network/client/mumuclient.cpp
 	network/server/mumuserver.cpp
 	network/server/mumuconnection.cpp
@@ -30,6 +31,7 @@ SET(mumudeploy_HEADERS
 	controller/engine.h
 	controller/qmlinterface.h
 	controller/mumufriend.h
+	controller/mumuthread.h
 	network/client/mumuclient.h
 	network/server/mumuserver.h
 	network/server/mumuconnection.h
