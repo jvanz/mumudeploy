@@ -1,6 +1,6 @@
 #include <QThread>
 
-class MumuThread : public QThread
+class MumuThreadSend : public QThread
 {
 	Q_OBJECT
 public:

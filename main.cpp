@@ -2,7 +2,8 @@
 #include <QUrl>
 #include "controller/engine.h"
 #include "client/mumuclient.h"
-#include "controller/mumuthread.h"
+#include "controller/mumuthreadsend.h"
+#include "controller/mumuthreadreceive.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,10 +20,13 @@ int main(int argc, char *argv[])
 		return app.exec();
 	}
 
-	MumuThread thread;
-	thread.start();
+	MumuThreadSend threadSend;
+	MumuThreadReceive threadReceive;
+	threadSend.start();
+	threadReceive.start();
 	qDebug() << "Hello from gui thread " << app.thread()->currentThreadId();
-	thread.wait();
+	threadSend.wait();
+	threadReceive.wait();
 
 	QDeclarativeView view;
 
