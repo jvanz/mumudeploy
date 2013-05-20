@@ -18,7 +18,7 @@ public:
 private:
 	bool connected;
 	QTcpSocket tcpSocket;
-	quint16 nextBlockSize;
+	qint64 nextBlockSize;
 	QFile * file;
 	QDataStream * inFile;
 	QByteArray buffer;
