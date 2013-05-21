@@ -8,6 +8,8 @@
 #include <QObject>
 
 
+#include "util.h"
+
 class FileDescriptor
 {
 

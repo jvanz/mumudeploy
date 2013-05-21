@@ -39,7 +39,7 @@ QByteArray FileDescriptor::getBlockFileDescriptor()
 {
 	QByteArray block;
 	QDataStream out(&block,QIODevice::WriteOnly);
-	out << this->getFileName() << this->getTotalBlocksCount() << this->getMd5();
+	out << this->getFileName() << this->getTotalBlocksCount() << this->getMd5().constData();
 	return block;
 }
 	

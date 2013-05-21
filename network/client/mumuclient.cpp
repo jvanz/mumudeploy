@@ -26,14 +26,10 @@ bool MumuClient::connectMumuServer()
 	return tcpSocket.isOpen();
 }
 
-void MumuClient::sendMsgToServer(quint8 msg)
+void MumuClient::sendMsgToServer(char msg)
 {
-	QByteArray block;
-	QDataStream out(&block,QIODevice::WriteOnly);
-	out.setVersion(QDataStream::Qt_4_3);
-	out << quint8(STX) << msg << quint8(ETX); // STX - DATA - ETX
-	Util::logMessage(QString::number(block.size()));
-	int bytesWriten = tcpSocket.write(block.data());
+	Util::logMessage("Enviando mensagem");
+	Util::sendMsgTo(msg,&(this->tcpSocket));	
 }
 
 
@@ -60,7 +56,6 @@ void MumuClient::serverConnected()
 void MumuClient::sendGreeting()
 {
 	this->sendMsgToServer(quint8(SOH)); // SOH - It's initial char of a new connection
-	tcpSocket.flush();
 	statusConnection = 1;
 }
 
@@ -70,46 +65,70 @@ void MumuClient::readFile()
 	QDataStream out(&block, QIODevice::WriteOnly);
 	QDataStream in(&this->tcpSocket);
 	in.setVersion(QDataStream::Qt_4_3);
+	
 	forever{
-		quint8 byte;
-		in >> byte;
-		if(byte == quint8(STX)){ //STX - START OF TEXT ( FIRST BYTE )
-			Util::logMessage("Achou STX");
-			continue;
+		if(nextBlockSize == 0){
+			if(this->tcpSocket.bytesAvailable() < sizeof(quint16)){
+				break;	
+			}
+			in >> nextBlockSize;
 		}
-		if(byte == quint8(ETX)){ // ETX - END OF TEXT ( LAST BYTE )
-			Util::logMessage("Achou ETX");
+
+		if (nextBlockSize == 0xFFFF) {
 			break;
 		}
-		out << byte;
+
+		if(this->tcpSocket.bytesAvailable() < nextBlockSize){
+			break;
+		}
 	}
+	out << in;
 	this->processBlock(block);
 }
 
 void MumuClient::processBlock(QByteArray block)
 {
-	QDataStream in(&block, QIODevice::ReadOnly);
-	quint8 byte;
-	in >> byte;
-	Util::logMessage(QString::number(byte));
-	if(byte == quint8(ACK) & statusConnection == 1){ // server accept connection. Request files
-		this->requestFilesToServer();
-	}
+	Util::logMessage("Bloco para processar");
+	Util::logMessage("Tamanho = " + QString::number(block.size()));
+}
+
+bool MumuClient::processFileDescriptorBlock(QByteArray * block)
+{
+	Util::logMessage("Processing FD");
+	Util::logMessage(QString::number(block->size()));
+	QDataStream in(block, QIODevice::ReadOnly);
+	QString  fileName;
+	quint8 blocksCount;
+	QByteArray md5;
+
+	in >> fileName >> blocksCount >> md5;
+
+	Util::logMessage(fileName);
+	Util::logMessage(QString::number(blocksCount));
+	Util::logMessage(QString(md5.toHex()));
+	
+	Util::logMessage("FD processed");
+	return true;
+}
+
+void MumuClient::sendBytesToServer(char * data)
+{
+	Util::sendBytesTo(data,&(this->tcpSocket));
 }
 
 void MumuClient::sendAckToServer()
 {
-	this->sendMsgToServer(quint8(ACK));
+	this->sendMsgToServer(ACK);
 }
 
 void MumuClient::sendNakToServer()
 {
-	this->sendMsgToServer(quint8(NAK));
+	this->sendMsgToServer(NAK);
 }
 
 void MumuClient::requestFilesToServer()
 {
-	this->sendMsgToServer(quint8(ENQ));
+	this->sendMsgToServer(ENQ);
 	statusConnection = 2; // request statius
 	Util::logMessage("File requested");
 }

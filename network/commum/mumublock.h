@@ -1,5 +1,4 @@
-#include "util.h"
-
+#include <QByteArray>
 
 class MumuBlock : public QByteArray
 {

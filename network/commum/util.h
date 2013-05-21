@@ -1,7 +1,9 @@
 #include <QByteArray>
 #include <QCryptographicHash>
 #include <QString>
+#include <QTcpSocket>
 
+#define US  17 // unitu separator char. Used to separate field in the blocks
 #define SOH 1 // start connection
 #define STX 2 // begin block
 #define ETX 3 // end block
@@ -17,5 +19,8 @@ class Util
 public:
 	static QByteArray generateMd5(QByteArray);	
 	static void logMessage(QString);	
+	static void sendBytesTo(char*, QTcpSocket*);
+	static void sendMsgTo(char, QTcpSocket*);
+	static QByteArray processData(QTcpSocket*);
 
 };

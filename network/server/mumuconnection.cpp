@@ -7,7 +7,7 @@
 MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, QObject * parent) : files(fileList), QTcpSocket(parent)
 {
 	if(this->setSocketDescriptor(socketDescriptor)){
-		std::cout << "Socket descriptor setted" << std::endl;
+		Util::logMessage("Socket descriptor setted");
 	}
 
 	connect(this,SIGNAL(connected()),this,SLOT(socketConnected()));	
@@ -101,58 +101,41 @@ void MumuConnection::openFile()
 
 void MumuConnection::processData()
 {
-	std::cout << "Socket " << id.toStdString() << " has data to process. " << std::endl; 
-	QDataStream in(this);
-	QByteArray block;
-	QDataStream out(&block, QIODevice::WriteOnly);
-	in.setVersion(QDataStream::Qt_4_3);
-	forever{
-		quint8 byte;
-		in >> byte;
-		if(byte == quint8(STX)){ //STX - START OF TEXT ( FIRST BYTE )
-			continue;
-		}
-		if(byte == quint8(ETX)){ // ETX - END OF TEXT ( LAST BYTE )
-			break;
-		}
-		out << byte;
-	}
-
+	QByteArray block = Util::processData(this);
 	this->processBlock(block);
 }
 
 void MumuConnection::processBlock(QByteArray block)
 {
+ 	Util::logMessage("Bloco para processar");
+ 	Util::logMessage("Tamanho = " + QString::number(block.size()));
+	
 	QDataStream in(&block, QIODevice::ReadOnly);
-	quint8 byte;
-	in >> byte;
-	Util::logMessage(QString::number(byte));
-	if(byte == quint8(SOH)){
-		Util::logMessage("Starting a connection");
-		this->statusConnection = 1;
-		this->sendAckToClient();
-	}else if(byte == quint8(ENQ)){
-		Util::logMessage("File request by client");
+	char * data = block.data();
+	Util::logMessage("Data size = " + QString::number(sizeof(*data)/sizeof(char)));
+	printf("data = %d\n", *data);
+	if(*data == SOH){
+		Util::logMessage("SOH");
 	}
 }
 
-
-void MumuConnection::sendMsgToClient(quint8 msg)
+void MumuConnection::sendBytesToClient(char * data)
 {
-	QByteArray block;
-	QDataStream out(&block,QIODevice::WriteOnly);
-	out.setVersion(QDataStream::Qt_4_3);
-	out << quint8(STX) << msg << quint8(ETX);
-	write(block.data());
-	
+	Util::sendBytesTo(data,this);
+}
+
+
+void MumuConnection::sendMsgToClient(char msg)
+{
+	Util::sendMsgTo(msg,this);	
 }
 
 void MumuConnection::sendAckToClient()
 {
-	this->sendMsgToClient(quint8(ACK));
+	this->sendMsgToClient(ACK);
 }
 
 void MumuConnection::sendNakToClient()
 {
-	this->sendMsgToClient(quint8(NAK));
+	this->sendMsgToClient(NAK);
 }
