@@ -3,15 +3,14 @@
 #include <QString>
 #include <QTcpSocket>
 
-#define US  17 // unitu separator char. Used to separate field in the blocks
-#define SOH 1 // start connection
-#define STX 2 // begin block
-#define ETX 3 // end block
-#define ACK 6 // positive
-#define NAK 21 // negative
-#define ENQ 5 // request file
-#define ETB 23 // end of transmition
-
+#define US  quint16(17) // unitu separator char. Used to separate field in the blocks
+#define SOH quint16(1) // start connection
+#define STX quint16(2) // begin block
+#define ETX quint16(3) // end block
+#define ACK quint16(6) // positive
+#define NAK quint16(21) // negative
+#define ENQ quint16(5) // request file
+#define ETB quint16(23) // end of transmition
 
 class Util
 {
@@ -19,8 +18,9 @@ class Util
 public:
 	static QByteArray generateMd5(QByteArray);	
 	static void logMessage(QString);	
-	static void sendBytesTo(char*, QTcpSocket*);
-	static void sendMsgTo(char, QTcpSocket*);
+	static void sendBytesTo(QByteArray, QTcpSocket*);
+	static void sendMsgTo(quint16, QTcpSocket*);
 	static QByteArray processData(QTcpSocket*);
+	static quint16 processMsg(QByteArray);
 
 };

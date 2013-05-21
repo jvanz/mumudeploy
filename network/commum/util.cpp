@@ -4,6 +4,8 @@
 #include <QDataStream>
 #include <iostream>
 
+
+
 QByteArray Util::generateMd5(QByteArray block)
 {
 	QCryptographicHash* hash;
@@ -18,52 +20,44 @@ void Util::logMessage(QString msg)
 }
 
 
-void Util::sendBytesTo(char * data, QTcpSocket * socket)
+void Util::sendBytesTo(QByteArray data, QTcpSocket * socket)
 {
-	QByteArray  * tmpBlock = new QByteArray();
-	QDataStream out(tmpBlock,QIODevice::WriteOnly);
+	QByteArray tmpBlock;
+	QDataStream out(&tmpBlock,QIODevice::WriteOnly);
 	out.setVersion(QDataStream::Qt_4_3);
-	out << STX;
-	Util::logMessage("Data size = " + QString::number(sizeof(*data)/sizeof(char)));
-	while(*data){
-		out << *data;
-		data++;
-	}
-	out << ETX;
-	int bytes = socket->write(tmpBlock->constData(), sizeof(tmpBlock->constData()));
-	Util::logMessage(QString::number(bytes));
+	out << data << ETX;
+	int bytes = socket->write(tmpBlock);
 }
 
-void Util::sendMsgTo(char msg, QTcpSocket * socket)
+void Util::sendMsgTo(quint16 msg, QTcpSocket * socket)
 {
-	Util::sendBytesTo(&msg, socket);
-	
+	QByteArray block;
+	QDataStream out(&block,QIODevice::WriteOnly);
+	out << msg;
+	Util::sendBytesTo(block, socket);
 }
 
 QByteArray Util::processData(QTcpSocket * socket)
 {
 	Util::logMessage("Socket has data to process.");
-	QByteArray block;
-	QDataStream out(&block, QIODevice::WriteOnly);
-	QDataStream in(socket);
-	in.setVersion(QDataStream::Qt_4_3);
+	QByteArray array;
 
-	forever{
-		if(socket->bytesAvailable() > 0){
-			Util::logMessage("Bytes Available = " + QString::number(socket->bytesAvailable()));
-		}
-		char * byte;
-		in.readRawData(byte, sizeof(char));
-		if(*byte == STX){ //STX - START OF TEXT ( FIRST BYTE )
-			Util::logMessage("Achou STX");
-			continue;
-		}
-		if(*byte == ETX){ // ETX - END OF TEXT ( LAST BYTE )
-			Util::logMessage("Achou ETX");
-			break;
-		}
-		out << byte;
+	while(!array.contains(ETX)) {
+		array += socket->readAll();
 	}
-	return block;
+
+	QDataStream in(&array, QIODevice::ReadOnly);
+	QByteArray message;
+	in >> message;
+	return message;
 }
 
+quint16 Util::processMsg(QByteArray block)
+{
+	QDataStream in(&block, QIODevice::ReadOnly);
+	quint16 byte;
+	in >> byte;
+	Util::logMessage("MSG = " + QString::number(byte));
+	return byte;
+
+}

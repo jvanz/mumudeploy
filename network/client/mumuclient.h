@@ -32,13 +32,13 @@ private:
 	bool openFile();
 	void sendGreeting();
 	void sendOk();
-	void sendMsgToServer(char);
+	void sendMsgToServer(quint16);
 	void sendAckToServer();
 	void sendNakToServer();
 	void requestFilesToServer();
 	void processBlock(QByteArray);
 	bool processFileDescriptorBlock(QByteArray *);
-	void sendBytesToServer(char*);
+	void sendBytesToServer(QByteArray);
 
 private slots:
 	void serverConnected();

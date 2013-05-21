@@ -17,7 +17,6 @@ MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, 
 	connect(this,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
 	connect(this,SIGNAL(readyRead()),this,SLOT(processData()));
 	statusConnection = -1;
-	nextBlockSize = 0;
 }
 
 void MumuConnection::clientReady()
@@ -111,21 +110,27 @@ void MumuConnection::processBlock(QByteArray block)
  	Util::logMessage("Tamanho = " + QString::number(block.size()));
 	
 	QDataStream in(&block, QIODevice::ReadOnly);
-	char * data = block.data();
-	Util::logMessage("Data size = " + QString::number(sizeof(*data)/sizeof(char)));
-	printf("data = %d\n", *data);
-	if(*data == SOH){
-		Util::logMessage("SOH");
+	if(this->statusConnection == -1){
+		Util::logMessage("-1");
+		if(Util::processMsg(block) == SOH){
+			this->statusConnection == 1;
+			this->sendAckToClient();
+		}
+	}else if(this->statusConnection == 1){ // requesting fd
+		Util::logMessage("opa");
+		if(Util::processMsg(block) == ENQ){
+			this->sendNakToClient();
+		}
 	}
 }
 
-void MumuConnection::sendBytesToClient(char * data)
+void MumuConnection::sendBytesToClient(QByteArray data)
 {
 	Util::sendBytesTo(data,this);
 }
 
 
-void MumuConnection::sendMsgToClient(char msg)
+void MumuConnection::sendMsgToClient(quint16 msg)
 {
 	Util::sendMsgTo(msg,this);	
 }
@@ -137,5 +142,6 @@ void MumuConnection::sendAckToClient()
 
 void MumuConnection::sendNakToClient()
 {
+	Util::logMessage("Enviando NAK");
 	this->sendMsgToClient(NAK);
 }

@@ -26,7 +26,7 @@ bool MumuClient::connectMumuServer()
 	return tcpSocket.isOpen();
 }
 
-void MumuClient::sendMsgToServer(char msg)
+void MumuClient::sendMsgToServer(quint16 msg)
 {
 	Util::logMessage("Enviando mensagem");
 	Util::sendMsgTo(msg,&(this->tcpSocket));	
@@ -55,34 +55,13 @@ void MumuClient::serverConnected()
 
 void MumuClient::sendGreeting()
 {
-	this->sendMsgToServer(quint8(SOH)); // SOH - It's initial char of a new connection
+	this->sendMsgToServer(SOH); // SOH - It's initial char of a new connection
 	statusConnection = 1;
 }
 
 void MumuClient::readFile()
 {
-	QByteArray block;
-	QDataStream out(&block, QIODevice::WriteOnly);
-	QDataStream in(&this->tcpSocket);
-	in.setVersion(QDataStream::Qt_4_3);
-	
-	forever{
-		if(nextBlockSize == 0){
-			if(this->tcpSocket.bytesAvailable() < sizeof(quint16)){
-				break;	
-			}
-			in >> nextBlockSize;
-		}
-
-		if (nextBlockSize == 0xFFFF) {
-			break;
-		}
-
-		if(this->tcpSocket.bytesAvailable() < nextBlockSize){
-			break;
-		}
-	}
-	out << in;
+	QByteArray block = Util::processData(&tcpSocket);
 	this->processBlock(block);
 }
 
@@ -90,6 +69,19 @@ void MumuClient::processBlock(QByteArray block)
 {
 	Util::logMessage("Bloco para processar");
 	Util::logMessage("Tamanho = " + QString::number(block.size()));
+
+	if(statusConnection == 1){ //waiting ack to greeting from server
+		if(Util::processMsg(block) == ACK){
+			Util::logMessage("Server accepted the connection");
+			this->requestFilesToServer();
+		}
+	}else if(statusConnection == 2){ // waiting file descriptor from server
+		if(block.size() > 2){ //recive fd
+			this->processFileDescriptorBlock(&block);
+		}else if(Util::processMsg(block) == NAK){ // probabli nak
+			Util::logMessage("Server did not send FD");
+		}
+	}
 }
 
 bool MumuClient::processFileDescriptorBlock(QByteArray * block)
@@ -111,7 +103,7 @@ bool MumuClient::processFileDescriptorBlock(QByteArray * block)
 	return true;
 }
 
-void MumuClient::sendBytesToServer(char * data)
+void MumuClient::sendBytesToServer(QByteArray data)
 {
 	Util::sendBytesTo(data,&(this->tcpSocket));
 }

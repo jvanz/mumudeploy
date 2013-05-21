@@ -27,14 +27,14 @@ private:
 	quint16 nextBlockSize;
 	QList<MumuFile*>* files;
 
-	void sendMsgToClient(char);
+	void sendMsgToClient(quint16);
 	void sendAckToClient();
 	void sendNakToClient();
 	void clientReady();
 	void sendFile();
 	void openFile();
 	void processBlock(QByteArray);
-	void sendBytesToClient(char*);
+	void sendBytesToClient(QByteArray);
 
 public:
 	MumuConnection(int,QList<MumuFile*>*,QObject * parent = 0);
