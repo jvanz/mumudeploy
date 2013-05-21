@@ -76,11 +76,10 @@ void MumuConnection::sendFile()
 {
 	if(this->files->size() > 0){
 		MumuFile * file = this->files->at(0);
-		file->getFile()->open(QIODevice::ReadOnly);
-		QByteArray blockFile = MumuFile::compress(file->getFile()->readAll());
-        	write(blockFile.constData(),blockFile.size());
-		file->getFile()->close();
-		this->disconnectFromHost();
+		QByteArray block = Util::getBlockFile(file->getFile()->fileName());
+		Util::logMessage("Sending " + file->getFile()->fileName());
+        	Util::logMessage("File block size = " + QString::number(block.size()));
+        	this->sendBytesToClient(block);
 		Util::logMessage("File sent");
 		return;
 	}
@@ -106,21 +105,43 @@ void MumuConnection::processData()
 
 void MumuConnection::processBlock(QByteArray block)
 {
- 	Util::logMessage("Bloco para processar");
- 	Util::logMessage("Tamanho = " + QString::number(block.size()));
-	
 	QDataStream in(&block, QIODevice::ReadOnly);
 	if(this->statusConnection == -1){
 		Util::logMessage("-1");
 		if(Util::processMsg(block) == SOH){
-			this->statusConnection == 1;
+			this->statusConnection = 1;
 			this->sendAckToClient();
 		}
 	}else if(this->statusConnection == 1){ // requesting fd
-		Util::logMessage("opa");
 		if(Util::processMsg(block) == ENQ){
-			this->sendNakToClient();
+			this->sendFileDescriptor();
+			this->statusConnection = 2;
 		}
+	}else if(this->statusConnection == 2){ // fd ok. Send file
+		if(Util::processMsg(block) == ACK){
+			this->sendFile();
+			this->statusConnection = 3;
+		}else{
+			this->sendFileDescriptor();
+		}
+	}else if(this->statusConnection == 3){ // file sent. ok?
+		if(Util::processMsg(block) == ACK){
+			Util::logMessage("File is ok in client");
+			this->statusConnection = 4;
+		}else{
+			Util::logMessage("File is not ok in client");
+		}
+	}
+}
+
+void MumuConnection::sendFileDescriptor()
+{
+	if(this->files->size() > 0){
+		MumuFile * file = this->files->at(0);
+		this->sendBytesToClient(file->getFileDescriptor().getBlockFileDescriptor());
+		Util::logMessage("FD sent");
+	}else{
+		Util::logMessage("No file");
 	}
 }
 

@@ -27,6 +27,7 @@ void Util::sendBytesTo(QByteArray data, QTcpSocket * socket)
 	out.setVersion(QDataStream::Qt_4_3);
 	out << data << ETX;
 	int bytes = socket->write(tmpBlock);
+	Util::logMessage("Bytes writen = " + QString::number(bytes));
 }
 
 void Util::sendMsgTo(quint16 msg, QTcpSocket * socket)
@@ -61,3 +62,15 @@ quint16 Util::processMsg(QByteArray block)
 	return byte;
 
 }
+	
+QByteArray Util::getBlockFile(QString fileName)
+{
+	QString path = FileHandle::getPublicUserHome().path() +"/file/" + fileName;
+	Util::logMessage("Path = " + path);
+	QFile file(path);
+	if(file.open(QIODevice::ReadOnly)){
+		return file.readAll();
+	}
+	return NULL;
+}
+

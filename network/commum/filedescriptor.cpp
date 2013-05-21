@@ -48,3 +48,17 @@ void FileDescriptor::generateFileDescriptor(QByteArray block)
 	QDataStream in(&block,QIODevice::ReadOnly);
 	in >> this->fileName >> this->totalBlocksCount >> this->md5;
 }
+
+FileDescriptor* FileDescriptor::processFileDescriptorBlock(QByteArray block)
+{
+	Util::logMessage("------------Processing FD--------------");
+
+	FileDescriptor * fd = new FileDescriptor(block);
+	Util::logMessage("FileName = " + fd->getFileName());
+	Util::logMessage("Total blocks = " + QString::number(fd->getTotalBlocksCount()));
+	Util::logMessage("MD5 = " + QString(fd->getMd5().toHex()));
+	
+	Util::logMessage("--------------FD processed------------");
+	return fd;
+
+}
