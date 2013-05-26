@@ -17,6 +17,7 @@ MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, 
 	connect(this,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
 	connect(this,SIGNAL(readyRead()),this,SLOT(processData()));
 	statusConnection = -1;
+	this->nextBlockSize = 0;
 }
 
 void MumuConnection::clientReady()
@@ -100,25 +101,36 @@ void MumuConnection::openFile()
 
 void MumuConnection::processData()
 {
-	QByteArray block = Util::processData(this);
+	QDataStream in(this);
+	forever{
+		if(this->nextBlockSize == 0){
+			if(this->bytesAvailable() >= sizeof(qint64)){
+				in >> this->nextBlockSize;	
+			}
+		}
+		if(this->bytesAvailable() == this->nextBlockSize){
+			break;
+		}
+
+	}
+	QByteArray block;
+	in >> block;
 	this->processBlock(block);
+	this->nextBlockSize = 0;
 }
 
 void MumuConnection::processBlock(QByteArray block)
 {
- 	Util::logMessage("Bloco para processar");
- 	Util::logMessage("Tamanho = " + QString::number(block.size()));
-	
 	QDataStream in(&block, QIODevice::ReadOnly);
 	if(this->statusConnection == -1){
-		Util::logMessage("-1");
 		if(Util::processMsg(block) == SOH){
-			this->statusConnection == 1;
+			this->statusConnection = 1;
 			this->sendAckToClient();
+			Util::logMessage("Connection accepted");
 		}
 	}else if(this->statusConnection == 1){ // requesting fd
-		Util::logMessage("opa");
 		if(Util::processMsg(block) == ENQ){
+			Util::logMessage("Client request file");
 			this->sendNakToClient();
 		}
 	}

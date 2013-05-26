@@ -61,14 +61,32 @@ void MumuClient::sendGreeting()
 
 void MumuClient::readFile()
 {
-	QByteArray block = Util::processData(&tcpSocket);
+//	QByteArray block = Util::processData(&tcpSocket);
+//	this->processBlock(block);
+	QDataStream in(&tcpSocket);
+	Util::logMessage("Processing data... bytes = " + QString::number(tcpSocket.bytesAvailable()));
+	forever{
+		if(this->nextBlockSize == 0){
+			if(tcpSocket.bytesAvailable() >= sizeof(qint64)){
+				in >> this->nextBlockSize;	
+				Util::logMessage("nextBlockSize = " + QString::number(this->nextBlockSize));
+				Util::logMessage("Bytes Available = " + QString::number(tcpSocket.bytesAvailable()));
+			}
+		}
+		Util::logMessage("Bytes Available = " + QString::number(tcpSocket.bytesAvailable()));
+		if(tcpSocket.bytesAvailable() == this->nextBlockSize){
+			break;
+		}
+
+	}
+	QByteArray block;
+	in >> block;
 	this->processBlock(block);
+	this->nextBlockSize = 0;
 }
 
 void MumuClient::processBlock(QByteArray block)
 {
-	Util::logMessage("Bloco para processar");
-	Util::logMessage("Tamanho = " + QString::number(block.size()));
 
 	if(statusConnection == 1){ //waiting ack to greeting from server
 		if(Util::processMsg(block) == ACK){
@@ -77,6 +95,7 @@ void MumuClient::processBlock(QByteArray block)
 		}
 	}else if(statusConnection == 2){ // waiting file descriptor from server
 		if(block.size() > 2){ //recive fd
+			Util::logMessage("Reciving FD");
 			this->processFileDescriptorBlock(&block);
 		}else if(Util::processMsg(block) == NAK){ // probabli nak
 			Util::logMessage("Server did not send FD");

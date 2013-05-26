@@ -24,7 +24,7 @@ private:
 	QByteArray buffer;
 	QFile * file;
 	int statusConnection; // 1 = SOH recive
-	quint16 nextBlockSize;
+	qint64 nextBlockSize;
 	QList<MumuFile*>* files;
 
 	void sendMsgToClient(quint16);
