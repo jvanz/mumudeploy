@@ -97,7 +97,6 @@ void MumuClient::processBlock(QByteArray block)
 	}else if(statusConnection == 2){ // waiting file descriptor from server
 		if(block.size() > 2){ //recive fd
 			Util::logMessage("Reciving FD");
-			this->processFileDescriptorBlock(&block);
 		}else if(Util::processMsg(block) == NAK){ // probabli nak
 			Util::logMessage("Server did not send FD");
 		}
