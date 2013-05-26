@@ -35,6 +35,7 @@ private:
 	void openFile();
 	void processBlock(QByteArray);
 	void sendBytesToClient(QByteArray);
+	void sendFileDescriptor();
 
 public:
 	MumuConnection(int,QList<MumuFile*>*,QObject * parent = 0);

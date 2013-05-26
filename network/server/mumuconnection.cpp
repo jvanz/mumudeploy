@@ -77,11 +77,10 @@ void MumuConnection::sendFile()
 {
 	if(this->files->size() > 0){
 		MumuFile * file = this->files->at(0);
-		file->getFile()->open(QIODevice::ReadOnly);
-		QByteArray blockFile = MumuFile::compress(file->getFile()->readAll());
-        	write(blockFile.constData(),blockFile.size());
-		file->getFile()->close();
-		this->disconnectFromHost();
+		QByteArray block = Util::getBlockFile(file->getFile()->fileName());
+		Util::logMessage("Sending " + file->getFile()->fileName());
+        	Util::logMessage("File block size = " + QString::number(block.size()));
+        	this->sendBytesToClient(block);
 		Util::logMessage("File sent");
 		return;
 	}
@@ -133,6 +132,31 @@ void MumuConnection::processBlock(QByteArray block)
 			Util::logMessage("Client request file");
 			this->sendNakToClient();
 		}
+	}else if(this->statusConnection == 2){ // fd ok. Send file
+		if(Util::processMsg(block) == ACK){
+			this->sendFile();
+			this->statusConnection = 3;
+		}else{
+			this->sendFileDescriptor();
+		}
+	}else if(this->statusConnection == 3){ // file sent. ok?
+		if(Util::processMsg(block) == ACK){
+			Util::logMessage("File is ok in client");
+			this->statusConnection = 4;
+		}else{
+			Util::logMessage("File is not ok in client");
+		}
+	}
+}
+
+void MumuConnection::sendFileDescriptor()
+{
+	if(this->files->size() > 0){
+		MumuFile * file = this->files->at(0);
+		this->sendBytesToClient(file->getFileDescriptor().getBlockFileDescriptor());
+		Util::logMessage("FD sent");
+	}else{
+		Util::logMessage("No file");
 	}
 }
 

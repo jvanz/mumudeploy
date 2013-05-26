@@ -93,6 +93,7 @@ void MumuClient::processBlock(QByteArray block)
 			Util::logMessage("Server accepted the connection");
 			this->requestFilesToServer();
 		}
+
 	}else if(statusConnection == 2){ // waiting file descriptor from server
 		if(block.size() > 2){ //recive fd
 			Util::logMessage("Reciving FD");
@@ -100,26 +101,16 @@ void MumuClient::processBlock(QByteArray block)
 		}else if(Util::processMsg(block) == NAK){ // probabli nak
 			Util::logMessage("Server did not send FD");
 		}
+
+	}else if(this->statusConnection == 3){ // wainting the file
+		if(block.size() > 2){ // recive file
+			Util::logMessage("Receving the file");
+			this->statusConnection = 4;
+		}else{
+
+		}
+		this->sendAckToServer();
 	}
-}
-
-bool MumuClient::processFileDescriptorBlock(QByteArray * block)
-{
-	Util::logMessage("Processing FD");
-	Util::logMessage(QString::number(block->size()));
-	QDataStream in(block, QIODevice::ReadOnly);
-	QString  fileName;
-	quint8 blocksCount;
-	QByteArray md5;
-
-	in >> fileName >> blocksCount >> md5;
-
-	Util::logMessage(fileName);
-	Util::logMessage(QString::number(blocksCount));
-	Util::logMessage(QString(md5.toHex()));
-	
-	Util::logMessage("FD processed");
-	return true;
 }
 
 void MumuClient::sendBytesToServer(QByteArray data)

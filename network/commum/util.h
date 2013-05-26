@@ -3,6 +3,8 @@
 #include <QString>
 #include <QTcpSocket>
 
+#include "../../controller/filehandle.h"
+
 #define US  quint16(17) // unitu separator char. Used to separate field in the blocks
 #define SOH quint16(1) // start connection
 #define STX quint16(2) // begin block
@@ -22,5 +24,6 @@ public:
 	static void sendMsgTo(quint16, QTcpSocket*);
 	static QByteArray processData(QTcpSocket*);
 	static quint16 processMsg(QByteArray);
+	static QByteArray getBlockFile(QString);
 
 };

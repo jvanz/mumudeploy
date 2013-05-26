@@ -116,3 +116,8 @@ int MumuFile::getSize()
 {
 	return getBlocks().size();
 }
+	
+FileDescriptor* MumuFile::processFileDescriptorBlock(QByteArray block)
+{
+	return FileDescriptor::processFileDescriptorBlock(block);
+}

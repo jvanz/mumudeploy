@@ -30,6 +30,7 @@ public:
 	void setTotalBlocksCount(quint8);
 	QByteArray getBlockFileDescriptor();
 	void generateFileDescriptor(QByteArray);
+	static FileDescriptor* processFileDescriptorBlock(QByteArray);
 
 };
 

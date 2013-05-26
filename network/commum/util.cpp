@@ -86,3 +86,15 @@ quint16 Util::processMsg(QByteArray block)
 	return byte;
 
 }
+	
+QByteArray Util::getBlockFile(QString fileName)
+{
+	QString path = FileHandle::getPublicUserHome().path() +"/file/" + fileName;
+	Util::logMessage("Path = " + path);
+	QFile file(path);
+	if(file.open(QIODevice::ReadOnly)){
+		return file.readAll();
+	}
+	return NULL;
+}
+

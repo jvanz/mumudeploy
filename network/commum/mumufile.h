@@ -39,4 +39,5 @@ public:
 	bool exists(); ///< Verify if the file exists
 	static QByteArray compress(const QByteArray& data); ///< Compress a packet that will be send
 	static QByteArray uncompress(const QByteArray& data); ///< Uncompress a received packet
+	static FileDescriptor* processFileDescriptorBlock(QByteArray);
 };
