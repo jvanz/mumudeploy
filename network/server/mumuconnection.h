@@ -23,14 +23,19 @@ private:
 	QString filePath;
 	QByteArray buffer;
 	QFile * file;
-	int statusConnection;
+	int statusConnection; // 1 = SOH recive
 	qint64 nextBlockSize;
 	QList<MumuFile*>* files;
 
-	void sendMsgToClient(QString);
+	void sendMsgToClient(quint16);
+	void sendAckToClient();
+	void sendNakToClient();
 	void clientReady();
-	void sendFile();
+	bool sendFile();
 	void openFile();
+	void processBlock(QByteArray);
+	void sendBytesToClient(QByteArray);
+	void sendFileDescriptor();
 
 public:
 	MumuConnection(int,QList<MumuFile*>*,QObject * parent = 0);

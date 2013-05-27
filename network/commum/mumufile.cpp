@@ -5,10 +5,20 @@
 
 MumuFile::MumuFile(QString path)
 {
-	this->file = new QFile(QDir::toNativeSeparators(path));
+	this->descriptor;
+	this->file = new QFile(path);
+	this->descriptor.setFileName(file->fileName());
 	this->getMd5();
 	this->splitFile();
 }
+
+MumuFile::MumuFile(QByteArray fdBlock)
+{
+	this->descriptor = FileDescriptor(fdBlock);	
+}
+
+MumuFile::MumuFile(FileDescriptor fd) : descriptor(fd)
+{}
 
 void MumuFile::splitFile(int blocksCount)
 {
@@ -32,19 +42,20 @@ void MumuFile::splitFile(int blocksCount)
 			this->blocks.append(block);
 		}
 		this->file->close();
+		this->descriptor.setTotalBlocksCount(this->blocks.size());
 	}
 }
 
 QByteArray MumuFile::getMd5()
 {
-	if(this->md5.isEmpty()){
+	if(this->descriptor.getMd5().isEmpty()){
 		if(this->file->open(QIODevice::ReadOnly)){
-			this->md5 = Util::generateMd5(this->file->readAll());
+			this->descriptor.setMd5(Util::generateMd5(this->file->readAll()));
 			this->file->close();
 		}
 	}
-	Util::logMessage("MD5 = " + QString(this->md5.toHex()));
-	return this->md5;
+	Util::logMessage("MD5 = " + QString(this->descriptor.getMd5().toHex()));
+	return this->descriptor.getMd5();
 }
 
 QList<MumuBlock> MumuFile::getBlocks()
@@ -62,7 +73,7 @@ MumuBlock MumuFile::getBlock(int blockIndex)
 
 void MumuFile::setMd5(QByteArray md5)
 {
-	this->md5 = md5;
+	this->descriptor.setMd5(md5);
 }
 	
 void MumuFile::setBlocks(QList<MumuBlock> blocks)
@@ -73,7 +84,7 @@ void MumuFile::setBlocks(QList<MumuBlock> blocks)
 
 FileDescriptor MumuFile::getFileDescriptor()
 {
-	return FileDescriptor(this->file->fileName(), this->getMd5(), this->getBlocks().size());
+	return this->descriptor;
 }
 	
 QFile* MumuFile::getFile()
@@ -83,7 +94,7 @@ QFile* MumuFile::getFile()
 
 QString MumuFile::fileName()
 {
-	return this->getFile()->fileName();
+	return this->descriptor.getFileName();
 }
 	
 bool MumuFile::exists()
@@ -104,4 +115,28 @@ QByteArray MumuFile::uncompress(const QByteArray& data)
 int MumuFile::getSize()
 {
 	return getBlocks().size();
+}
+	
+FileDescriptor* MumuFile::processFileDescriptorBlock(QByteArray block)
+{
+	return FileDescriptor::processFileDescriptorBlock(block);
+}
+	
+bool MumuFile::open(QIODevice::OpenMode openFlag)
+{
+	return this->getFile()->open(openFlag);
+}
+
+int MumuFile::size()
+{
+	return this->getFile()->size();
+}
+bool MumuFile::flush()
+{
+	return this->getFile()->flush();
+}
+
+void MumuFile::close()
+{
+	this->getFile()->close();
 }

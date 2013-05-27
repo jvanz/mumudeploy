@@ -35,3 +35,15 @@ QString FileHandle::getUserHome()
 	
 	return home.path();
 }
+	
+QDir FileHandle::getDirUserHome()
+{
+	QDir home(QDir::toNativeSeparators(QDir::homePath() + "/.mumudeploy/"));
+	return home;
+}
+	
+QDir FileHandle::getPublicUserHome()
+{
+	QDir home(QDir::toNativeSeparators(QDir::homePath() + "/mumudeploy/"));
+	return home;
+}

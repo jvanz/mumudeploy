@@ -6,7 +6,7 @@
 
 #include "mumuconnection.h"
 #include "../networkinterface.h"
-
+ 
 class MumuServer : public QTcpServer, public NetworkInterface
 {
 	Q_OBJECT

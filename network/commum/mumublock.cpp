@@ -8,7 +8,7 @@ MumuBlock::MumuBlock(QByteArray data) : QByteArray(data)
 QByteArray MumuBlock::getMd5()
 {
 	if(md5.isEmpty()){
-	    	md5 = Util::generateMd5(*this);
+//	    	md5 = Util::generateMd5(*this);
 	}
 	return md5;
 }

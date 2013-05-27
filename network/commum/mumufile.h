@@ -6,6 +6,7 @@
 #include "mumublock.h"
 #include "filedescriptor.h"
 
+
 /**
  * MumuFile - The struct of the file that will be used by server
  */
@@ -18,11 +19,13 @@ class MumuFile : QObject
 
 private:
 	QList<MumuBlock> blocks; ///< List of all blocks of MumuFile
-	QByteArray md5; ///< MD5 of the file
+	FileDescriptor descriptor;
 	QFile * file; ///< File inside MumuFile
 
 public:
 	MumuFile(QString); ///< Default constructor
+	MumuFile(QByteArray);
+	MumuFile(FileDescriptor);
 	void splitFile(int blocksCount = 3);  ///< Split file in chunks that will be send
 	QByteArray getMd5(); ///< Get the MD5 of the file for comparisson
 	void setMd5(QByteArray); ///< Set the MD5 of the file
@@ -34,6 +37,11 @@ public:
 	QFile* getFile(); ///< Get the file inside of MumuFile
 	QString fileName(); ///< Get the name of file
 	bool exists(); ///< Verify if the file exists
+	bool open(QIODevice::OpenMode);
+	int size();
+	bool flush();
+	void close();
 	static QByteArray compress(const QByteArray& data); ///< Compress a packet that will be send
 	static QByteArray uncompress(const QByteArray& data); ///< Uncompress a received packet
+	static FileDescriptor* processFileDescriptorBlock(QByteArray);
 };

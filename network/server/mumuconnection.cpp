@@ -7,7 +7,7 @@
 MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, QObject * parent) : files(fileList), QTcpSocket(parent)
 {
 	if(this->setSocketDescriptor(socketDescriptor)){
-		std::cout << "Socket descriptor setted" << std::endl;
+		Util::logMessage("Socket descriptor setted");
 	}
 
 	connect(this,SIGNAL(connected()),this,SLOT(socketConnected()));	
@@ -17,27 +17,7 @@ MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, 
 	connect(this,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
 	connect(this,SIGNAL(readyRead()),this,SLOT(processData()));
 	statusConnection = -1;
-	nextBlockSize = 0;
-}
-
-void MumuConnection::clientReady()
-{
-	std::cout << "Sending file to client" << std::endl;
-	sendMsgToClient("FILE");
-}
-
-void MumuConnection::sendMsgToClient(QString msg)
-{
-	std::cout << "Sending to client: " << msg.toStdString() << std::endl;
-	QByteArray block;
-	QDataStream out(&block,QIODevice::WriteOnly);
-	out.setVersion(QDataStream::Qt_4_3);
-	out << qint64(0) << msg;
-	out.device()->seek(0);
-	out << qint64(block.size() - sizeof(qint64));
-	int bytesWriten = write(block);
-	Util::logMessage(QString::number(bytesWriten));
-	
+	this->nextBlockSize = 0;
 }
 
 int MumuConnection::getState()
@@ -88,25 +68,18 @@ QString MumuConnection::getId()
  * This funtion send the file for client. When we write de file on the socket is necessary use writeRawData because this is the only
  * way to write just the bytes on the socket. Otherwise, the QT will serialize the whole object.
  */ 
-void MumuConnection::sendFile()
+bool MumuConnection::sendFile()
 {
 	if(this->files->size() > 0){
 		MumuFile * file = this->files->at(0);
-		file->getFile()->open(QIODevice::ReadOnly);
-		QByteArray block;
-		QDataStream out(&block,QIODevice::WriteOnly);
-		out.setVersion(QDataStream::Qt_4_3);
-		out << qint64(0) << file->getFile()->readAll();
-		out.device()->seek(0);
-		out << qint64(block.size() - sizeof(qint64));
-        	int bytesWriten = write(block);
-		std::cout << "Bytes writen = " << bytesWriten << std::endl;
-		file->getFile()->close();
-	//	this->disconnectFromHost();
+		QByteArray block = Util::getBlockFile(file->getFile()->fileName());
+		Util::logMessage("Sending " + file->getFile()->fileName());
+        	Util::logMessage("File block size = " + QString::number(block.size()));
+        	this->sendBytesToClient(block);
 		Util::logMessage("File sent");
-		return;
+		return true;
 	}
-	Util::logMessage("File did not send");
+	return false;
 }
 
 void MumuConnection::openFile()
@@ -125,40 +98,86 @@ void MumuConnection::processData()
 	Util::logMessage("Data to proccess");
 	QDataStream in(this);
 	in.setVersion(QDataStream::Qt_4_3);
-	forever {
-		if (nextBlockSize == 0) {
-			if (this->bytesAvailable() < sizeof(quint64)){
-				break;
+	forever{
+		if(this->nextBlockSize == 0){
+			if(this->bytesAvailable() >= sizeof(qint64)){
+				in >> this->nextBlockSize;	
 			}
-			in >> nextBlockSize;
 		}
-		if (nextBlockSize == 0xFFFF) {
+		if(this->bytesAvailable() == this->nextBlockSize){
 			break;
 		}
-		if (this->bytesAvailable() < nextBlockSize){
-			break;
-		}
-		Util::logMessage(QString::number(this->bytesAvailable()));
-		QString msg;
-		in >> msg;
-		Util::logMessage(msg);
-		
-		if(msg == "GREETING"){
-			Util::logMessage("Greeting received");
-			// Client is saying hello! Give a response
-			statusConnection = 1;
-			this->sendMsgToClient("OK");
-			
-		}else if(statusConnection == 1 & msg == "FILE"){
-			Util::logMessage("File requested");
-			// client is requesting the files
-			statusConnection = 2;
-			this->sendFile();
-		}
-		nextBlockSize = 0;
-	}
-//	this->sendMsgToClient("Ola cliente");
-//	this->openFile();
-//	this->sendFile();
 
+	}
+	QByteArray block;
+	in >> block;
+	this->processBlock(block);
+	this->nextBlockSize = 0;
+}
+
+void MumuConnection::processBlock(QByteArray block)
+{
+	QDataStream in(&block, QIODevice::ReadOnly);
+	if(this->statusConnection == -1){
+		if(Util::processMsg(block) == SOH){
+			this->statusConnection = 1;
+			this->sendAckToClient();
+			Util::logMessage("Connection accepted");
+		}
+	}else if(this->statusConnection == 1){ // requesting fd
+		if(Util::processMsg(block) == ENQ){
+			Util::logMessage("Client request file");
+			QByteArray block = this->files->at(0)->getFileDescriptor().getBlockFileDescriptor();
+			this->sendBytesToClient(block);
+			this->statusConnection = 2;
+		}
+	}else if(this->statusConnection == 2){ 
+		if(Util::processMsg(block) == ACK){ // FD Ok. Send file
+			if(this->sendFile()){
+				this->statusConnection = 3; // All blocks sent. 
+			}
+		}else{
+			this->sendFileDescriptor();
+		}
+	}else if(this->statusConnection == 3){ // file sent. ok?
+		if(Util::processMsg(block) == ACK){
+			Util::logMessage("File is ok in client");
+			this->statusConnection = 4;
+		}else{
+			Util::logMessage("File is not ok in client");
+		}
+	}
+}
+
+void MumuConnection::sendFileDescriptor()
+{
+	if(this->files->size() > 0){
+		MumuFile * file = this->files->at(0);
+		this->sendBytesToClient(file->getFileDescriptor().getBlockFileDescriptor());
+		Util::logMessage("FD sent");
+	}else{
+		Util::logMessage("No file");
+	}
+}
+
+void MumuConnection::sendBytesToClient(QByteArray data)
+{
+	Util::sendBytesTo(data,this);
+}
+
+
+void MumuConnection::sendMsgToClient(quint16 msg)
+{
+	Util::sendMsgTo(msg,this);	
+}
+
+void MumuConnection::sendAckToClient()
+{
+	this->sendMsgToClient(ACK);
+}
+
+void MumuConnection::sendNakToClient()
+{
+	Util::logMessage("Enviando NAK");
+	this->sendMsgToClient(NAK);
 }

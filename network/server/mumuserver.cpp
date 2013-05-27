@@ -41,19 +41,22 @@ void MumuServer::openAndSplitFile()
 {
 	this->openFiles();
 	/* Split the file */
-	QDir blockDir(QDir::toNativeSeparators(homeApp.path() + "/mumufile"));
-	if(blockDir.exists()){
+	if(QDir::setCurrent(FileHandle::getUserHome())){
 		for(MumuFile * file : files){
+			QDir::current().mkdir(file->fileName());
+			QDir blockDir(QDir::currentPath() +"/" + file->fileName());
 			int countBlock = 1;
 			QList<MumuBlock> blocks = file->getBlocks();
 			for(QByteArray block : blocks){
-				QString path = QDir::toNativeSeparators(blockDir.path() + "/block-" + QString::number(countBlock));
-				std::cout << path.toStdString() << "block size = " << block.size() << std::endl;
+				Util::saveBlockLikeFile(blockDir, block, QString::number(countBlock));
+		/*		QString path = file->fileName() + "/block-" + QString::number(countBlock);
+				Util::logMessage(path);
 				QFile fileBlock(path);
 				fileBlock.open(QIODevice::WriteOnly);
 				QDataStream out(&fileBlock);
 				out << block;
 				fileBlock.close();
+		*/
 				countBlock++;
 			}
 			std::cout << file->fileName().toStdString() << ". Block ready! " << std::endl;	
@@ -63,24 +66,22 @@ void MumuServer::openAndSplitFile()
 
 void MumuServer::openFiles()
 {
-	QDir fileDir(QDir::toNativeSeparators(homeApp.path() + "/file"));
-	std::cout << fileDir.path().toStdString() << std::endl;
-	if(fileDir.exists()){ // there is files directory in the application home dir
-		std::cout << "fileDir exists" << std::endl;
+	if(QDir::setCurrent(homeApp.path() + "/file")){ // there is files directory in the application home dir
+		QDir fileDir(QDir::currentPath());
 		QStringList filesList = fileDir.entryList();
 		for(int index = 0; index < filesList.size(); index++){
 			QString fileName = filesList.at(index);
 			if(this->blackListFile.contains(fileName)){
 				continue;
 			}
-			QString path = fileDir.path() + "/" + fileName;
-			std::cout << path.toStdString() << std::endl;
-			MumuFile * file = new MumuFile(QDir::toNativeSeparators(path));
+			std::cout << fileName.toStdString() << std::endl;
+			MumuFile * file = new MumuFile(fileName);
 			if(file->exists()){
 				files.append(file);
 			}
 		}
 		std::cout << this->files.size() << " files found" << std::endl;
+		QDir::setCurrent(FileHandle::getDirUserHome().path());
 	}
 }
 
