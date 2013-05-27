@@ -14,7 +14,11 @@ MumuClient::MumuClient(QString path,QHostAddress ip,int port, QObject *parent) :
 	connect(&tcpSocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(catchError(QAbstractSocket::SocketError)));
 	connect(&tcpSocket,SIGNAL(proxyAuthenticationRequired(const QNetworkProxy & proxy, QAuthenticator * authenticator )),this,SLOT(proxyAuthentication(const QNetworkProxy & proxy, QAuthenticator * authenticator)));
 	connectMumuServer();
-	statusConnection = -1;
+	this->statusConnection = -1;
+	this->currentBlock = 1;
+	this->nextBlockSize = 0;
+	this->buffer.clear();
+	this->tcpSocket.setReadBufferSize(0);
 }
 
 /**
@@ -61,8 +65,6 @@ void MumuClient::sendGreeting()
 
 void MumuClient::readFile()
 {
-//	QByteArray block = Util::processData(&tcpSocket);
-//	this->processBlock(block);
 	QDataStream in(&tcpSocket);
 	Util::logMessage("Processing data... bytes = " + QString::number(tcpSocket.bytesAvailable()));
 	forever{
@@ -77,7 +79,6 @@ void MumuClient::readFile()
 		if(tcpSocket.bytesAvailable() == this->nextBlockSize){
 			break;
 		}
-
 	}
 	QByteArray block;
 	in >> block;
@@ -97,6 +98,9 @@ void MumuClient::processBlock(QByteArray block)
 	}else if(statusConnection == 2){ // waiting file descriptor from server
 		if(block.size() > 2){ //recive fd
 			Util::logMessage("Reciving FD");
+			this->file = new MumuFile(block);
+			this->sendAckToServer();
+			this->statusConnection = 3;
 		}else if(Util::processMsg(block) == NAK){ // probabli nak
 			Util::logMessage("Server did not send FD");
 		}
@@ -105,11 +109,25 @@ void MumuClient::processBlock(QByteArray block)
 		if(block.size() > 2){ // recive file
 			Util::logMessage("Receving the file");
 			this->statusConnection = 4;
+			if(this->processFileBlock(block)){
+				this->sendAckToServer();
+			}else{
+				this->sendNakToServer();
+			}
 		}else{
-
+			//TODO
 		}
 		this->sendAckToServer();
 	}
+}
+
+bool MumuClient::processFileBlock(QByteArray block)
+{
+	if(this->file){
+		QDir dir(FileHandle::getUserHome() +"recive/"+ file->fileName());
+		return Util::saveBlockLikeFile(dir, block, QString::number(this->currentBlock));
+	}
+	return false;
 }
 
 void MumuClient::sendBytesToServer(QByteArray data)
@@ -136,10 +154,10 @@ void MumuClient::requestFilesToServer()
 
 bool MumuClient::openFile()
 {
-	file = new QFile(QDir::toNativeSeparators(filePath));
+	file = new MumuFile(QDir::toNativeSeparators(filePath));
 	bool isOpen = file->open(QIODevice::WriteOnly);
 	std::cout << "File size = " << file->size() << std::endl;	
-	inFile = new QDataStream(file);
+	inFile = new QDataStream(file->getFile());
 	return isOpen;
 }
 

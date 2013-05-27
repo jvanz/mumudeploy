@@ -73,7 +73,7 @@ QString MumuConnection::getId()
  * This funtion send the file for client. When we write de file on the socket is necessary use writeRawData because this is the only
  * way to write just the bytes on the socket. Otherwise, the QT will serialize the whole object.
  */ 
-void MumuConnection::sendFile()
+bool MumuConnection::sendFile()
 {
 	if(this->files->size() > 0){
 		MumuFile * file = this->files->at(0);
@@ -82,9 +82,9 @@ void MumuConnection::sendFile()
         	Util::logMessage("File block size = " + QString::number(block.size()));
         	this->sendBytesToClient(block);
 		Util::logMessage("File sent");
-		return;
+		return true;
 	}
-	Util::logMessage("File did not send");
+	return false;
 }
 
 void MumuConnection::openFile()
@@ -130,12 +130,15 @@ void MumuConnection::processBlock(QByteArray block)
 	}else if(this->statusConnection == 1){ // requesting fd
 		if(Util::processMsg(block) == ENQ){
 			Util::logMessage("Client request file");
-			this->sendNakToClient();
+			QByteArray block = this->files->at(0)->getFileDescriptor().getBlockFileDescriptor();
+			this->sendBytesToClient(block);
+			this->statusConnection = 2;
 		}
-	}else if(this->statusConnection == 2){ // fd ok. Send file
-		if(Util::processMsg(block) == ACK){
-			this->sendFile();
-			this->statusConnection = 3;
+	}else if(this->statusConnection == 2){ 
+		if(Util::processMsg(block) == ACK){ // FD Ok. Send file
+			if(this->sendFile()){
+				this->statusConnection = 3; // All blocks sent. 
+			}
 		}else{
 			this->sendFileDescriptor();
 		}

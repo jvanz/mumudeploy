@@ -31,7 +31,7 @@ private:
 	void sendAckToClient();
 	void sendNakToClient();
 	void clientReady();
-	void sendFile();
+	bool sendFile();
 	void openFile();
 	void processBlock(QByteArray);
 	void sendBytesToClient(QByteArray);

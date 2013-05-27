@@ -19,7 +19,7 @@ private:
 	bool connected;
 	QTcpSocket tcpSocket;
 	qint64 nextBlockSize;
-	QFile * file;
+	MumuFile * file;
 	QDataStream * inFile;
 	QByteArray buffer;
 	QString filePath;
@@ -27,6 +27,7 @@ private:
 	int portServer;
 	int statusConnection; // 1 = greeting sent ; 2 = file request ; 3 = file recive
 	char * bytes;
+	quint8 currentBlock;
 
 	bool connectMumuServer();
 	bool openFile();
@@ -39,6 +40,7 @@ private:
 	void processBlock(QByteArray);
 	bool processFileDescriptorBlock(QByteArray *);
 	void sendBytesToServer(QByteArray);
+	bool processFileBlock(QByteArray);
 
 private slots:
 	void serverConnected();

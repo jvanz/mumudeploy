@@ -98,3 +98,14 @@ QByteArray Util::getBlockFile(QString fileName)
 	return NULL;
 }
 
+
+bool Util::saveBlockLikeFile(QDir dir,QByteArray block, QString sufix)
+{
+	QString path = dir.path() + "/block-" + sufix;
+	Util::logMessage(path);
+	QFile fileBlock(path);
+	fileBlock.open(QIODevice::WriteOnly);
+	QDataStream out(&fileBlock);
+	out << block;
+	fileBlock.close();
+}

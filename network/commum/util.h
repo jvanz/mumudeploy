@@ -25,5 +25,6 @@ public:
 	static QByteArray processData(QTcpSocket*);
 	static quint16 processMsg(QByteArray);
 	static QByteArray getBlockFile(QString);
+	static bool saveBlockLikeFile(QDir,QByteArray, QString);
 
 };

@@ -121,3 +121,22 @@ FileDescriptor* MumuFile::processFileDescriptorBlock(QByteArray block)
 {
 	return FileDescriptor::processFileDescriptorBlock(block);
 }
+	
+bool MumuFile::open(QIODevice::OpenMode openFlag)
+{
+	return this->getFile()->open(openFlag);
+}
+
+int MumuFile::size()
+{
+	return this->getFile()->size();
+}
+bool MumuFile::flush()
+{
+	return this->getFile()->flush();
+}
+
+void MumuFile::close()
+{
+	this->getFile()->close();
+}

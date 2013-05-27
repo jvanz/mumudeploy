@@ -37,6 +37,10 @@ public:
 	QFile* getFile(); ///< Get the file inside of MumuFile
 	QString fileName(); ///< Get the name of file
 	bool exists(); ///< Verify if the file exists
+	bool open(QIODevice::OpenMode);
+	int size();
+	bool flush();
+	void close();
 	static QByteArray compress(const QByteArray& data); ///< Compress a packet that will be send
 	static QByteArray uncompress(const QByteArray& data); ///< Uncompress a received packet
 	static FileDescriptor* processFileDescriptorBlock(QByteArray);
