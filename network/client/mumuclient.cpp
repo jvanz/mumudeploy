@@ -18,7 +18,6 @@ MumuClient::MumuClient(QString path,QHostAddress ip,int port, QObject *parent) :
 	this->currentBlock = 1;
 	this->nextBlockSize = 0;
 	this->buffer.clear();
-	this->tcpSocket.setReadBufferSize(0);
 }
 
 /**
@@ -67,23 +66,20 @@ void MumuClient::readFile()
 {
 	QDataStream in(&tcpSocket);
 	Util::logMessage("Processing data... bytes = " + QString::number(tcpSocket.bytesAvailable()));
-	forever{
-		if(this->nextBlockSize == 0){
-			if(tcpSocket.bytesAvailable() >= sizeof(qint64)){
-				in >> this->nextBlockSize;	
-				Util::logMessage("nextBlockSize = " + QString::number(this->nextBlockSize));
-				Util::logMessage("Bytes Available = " + QString::number(tcpSocket.bytesAvailable()));
-			}
-		}
-		Util::logMessage("Bytes Available = " + QString::number(tcpSocket.bytesAvailable()));
-		if(tcpSocket.bytesAvailable() == this->nextBlockSize){
-			break;
+	if(this->nextBlockSize == 0){
+		if(tcpSocket.bytesAvailable() >= sizeof(qint64)){
+			in >> this->nextBlockSize;	
+			Util::logMessage("nextBlockSize = " + QString::number(this->nextBlockSize));
+			Util::logMessage("Bytes Available = " + QString::number(tcpSocket.bytesAvailable()));
 		}
 	}
-	QByteArray block;
-	in >> block;
-	this->processBlock(block);
-	this->nextBlockSize = 0;
+	Util::logMessage("Bytes Available = " + QString::number(tcpSocket.bytesAvailable()));
+	if(tcpSocket.bytesAvailable() == this->nextBlockSize){
+		QByteArray block;
+		in >> block;
+		this->processBlock(block);
+		this->nextBlockSize = 0;
+	}
 }
 
 void MumuClient::processBlock(QByteArray block)
@@ -124,7 +120,7 @@ void MumuClient::processBlock(QByteArray block)
 bool MumuClient::processFileBlock(QByteArray block)
 {
 	if(this->file){
-		QDir dir(FileHandle::getUserHome() +"recive/"+ file->fileName());
+		QDir dir(FileHandle::getUserHome() +"/recive/"+ file->fileName());
 		return Util::saveBlockLikeFile(dir, block, QString::number(this->currentBlock));
 	}
 	return false;
