@@ -1,4 +1,6 @@
-//#include <QtDeclarative>
+#ifndef __FILE_HANDLE_H__
+#define __FILE_HANDLE_H__
+
 #include <QFile>
 #include <QDir>
 
@@ -20,3 +22,4 @@ public slots:
 	Q_INVOKABLE static bool verifyFile(QString fileName); /// verify if the fileName points to a valid file
 	Q_INVOKABLE static bool verifyDir(QString dirName); /// verify if the dirName points to a a valid dir
 };
+#endif //__FILE_HANDLE_H__

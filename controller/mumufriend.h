@@ -14,7 +14,7 @@ class MumuFriend : public QObject
 	Q_OBJECT
 
 public slots:
-	Q_INVOKABLE bool sendFile(QString ip, QString path); ///< Send a file by the server
+	Q_INVOKABLE bool insertNewProcess(QString ip, QString path, int parts); ///< Send a file by the server
 	Q_INVOKABLE QObject *retornaPendentesModel(); ///< wrapper of method from DatabaseManager
 	Q_INVOKABLE QString getDestinationDir(); ///< wrapper of method from DatabaseManager
 	Q_INVOKABLE QString getServerAddress(); ///< wrapper of method from DatabaseManager
