@@ -27,7 +27,7 @@ Item {
 			height: parent.height - 370
 			y: parent.height - 320
 			buttonColor: "lightgray"
-			label: qsTr("Escolha um IP para enviar um arquivo")
+			label: qsTr("Cadastrar IP/arquivo")
 			anchors.horizontalCenter: parent.horizontalCenter
 
 			MouseArea {
@@ -287,7 +287,7 @@ Item {
 				anchors.leftMargin: 10
 				anchors.verticalCenter: parent.verticalCenter
 				buttonColor: "lightcyan"
-				label: qsTr("Enviar arquivo")
+				label: qsTr("Salvar")
 
 				MouseArea {
 					anchors.fill: parent
