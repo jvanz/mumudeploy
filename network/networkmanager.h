@@ -3,11 +3,17 @@
 
 class NetworkManager
 {
+
+private:
+	static NetworkInterface* mumuServer;
+
 public:
 	/*This function return a pointer to a mumuserver instance*/
-	static NetworkInterface* getInstance(QString filePath, int port, QObject * parent)
+	static NetworkInterface* getInstance( int port, QObject * parent)
 	{
-		return new MumuServer(filePath, port,parent);
+		if(!mumuServer){
+			mumuServer = new MumuServer(port, parent);
+		}
+		return mumuServer;
 	}
-
 };

@@ -5,13 +5,12 @@
 #include <QTcpSocket>
 
 /** Constructor */
-MumuServer::MumuServer(QDir homeApp,int port, QObject *parent) : QTcpServer(parent) 
+MumuServer::MumuServer(int port, QObject *parent) : QTcpServer(parent) 
 {
 	this->blackListFile;
 	this->blackListFile << "." << "..";
 	this->totalSplit = 3;
 	/* First - Look for a files in the homeapp/file and split it*/
-	this->homeApp = homeApp;
 	this->openAndSplitFile();
 
 

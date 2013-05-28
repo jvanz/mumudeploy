@@ -25,7 +25,7 @@ private:
 public:
 	void sendFile(QString);
 	int getNumberOfParts();
-	MumuServer(QDir,int,QObject * parent); 
+	MumuServer(int,QObject * parent); 
 
 protected:
 	void incomingConnection(int);
