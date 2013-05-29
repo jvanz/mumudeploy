@@ -61,20 +61,6 @@ QByteArray Util::processData(QTcpSocket * socket)
 	}
 	QByteArray block;
 	in >> block;
-	
-/*	Util::logMessage("Socket has data to process.");
-	QByteArray array;
-
-	while(!array.contains(ETX)) {
-		array += socket->readAll();
-	}
-	Util::logMessage("Array size = " + QString::number(array.size()));
-	QDataStream in(&array, QIODevice::ReadOnly);
-	QByteArray message;
-	in >> message;
-	Util::logMessage("Message size = " + QString::number(message.size()));
-	return message;
-*/
 }
 
 quint16 Util::processMsg(QByteArray block)

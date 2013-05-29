@@ -51,14 +51,8 @@ void FileDescriptor::generateFileDescriptor(QByteArray block)
 
 FileDescriptor* FileDescriptor::processFileDescriptorBlock(QByteArray block)
 {
-	Util::logMessage("------------Processing FD--------------");
 
 	FileDescriptor * fd = new FileDescriptor(block);
-	Util::logMessage("FileName = " + fd->getFileName());
-	Util::logMessage("Total blocks = " + QString::number(fd->getTotalBlocksCount()));
-	Util::logMessage("MD5 = " + QString(fd->getMd5().toHex()));
-	
-	Util::logMessage("--------------FD processed------------");
 	return fd;
 
 }

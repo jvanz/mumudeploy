@@ -18,6 +18,7 @@ private:
 	QDataStream * in;
 	QString filePath;
 	QList<MumuConnection *> connections;
+	DatabaseManager * databaseManager;
 	int totalSplit;
 	void openFiles();
 	void openAndSplitFile();

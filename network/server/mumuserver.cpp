@@ -12,6 +12,7 @@ MumuServer::MumuServer(int port, QObject *parent) : QTcpServer(parent)
 	this->totalSplit = 3;
 	/* First - Look for a files in the homeapp/file and split it*/
 	this->openAndSplitFile();
+	this->databasemanager = DatabaseManager::getInstance();
 
 
 	if(this->listen(QHostAddress::Any, port)){
@@ -48,14 +49,6 @@ void MumuServer::openAndSplitFile()
 			QList<MumuBlock> blocks = file->getBlocks();
 			for(QByteArray block : blocks){
 				Util::saveBlockLikeFile(blockDir, block, QString::number(countBlock));
-		/*		QString path = file->fileName() + "/block-" + QString::number(countBlock);
-				Util::logMessage(path);
-				QFile fileBlock(path);
-				fileBlock.open(QIODevice::WriteOnly);
-				QDataStream out(&fileBlock);
-				out << block;
-				fileBlock.close();
-		*/
 				countBlock++;
 			}
 			std::cout << file->fileName().toStdString() << ". Block ready! " << std::endl;	
@@ -112,4 +105,10 @@ int MumuServer::getNumberOfParts()
 		parts += file->getSize();
 
 	return parts;
+}
+	
+bool MumuServer::insertNewProcess(QString ip, QString path, int parts)
+{
+	for(MumuConnection * connection : this-> connections){
+	}
 }

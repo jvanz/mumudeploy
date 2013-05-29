@@ -31,7 +31,6 @@ bool MumuClient::connectMumuServer()
 
 void MumuClient::sendMsgToServer(quint16 msg)
 {
-	Util::logMessage("Enviando mensagem");
 	Util::sendMsgTo(msg,&(this->tcpSocket));	
 }
 
@@ -64,7 +63,6 @@ void MumuClient::sendGreeting()
 void MumuClient::readFile()
 {
 	QDataStream in(&tcpSocket);
-	Util::logMessage("Processing data... bytes = " + QString::number(tcpSocket.bytesAvailable()));
 	if(this->nextBlockSize == 0){
 		if(tcpSocket.bytesAvailable() >= sizeof(qint64)){
 			in >> this->nextBlockSize;	
