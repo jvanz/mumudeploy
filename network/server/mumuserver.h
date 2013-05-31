@@ -6,6 +6,7 @@
 
 #include "mumuconnection.h"
 #include "../networkinterface.h"
+#include "../../controller/databasemanager.h"
  
 class MumuServer : public QTcpServer, public NetworkInterface
 {
@@ -27,6 +28,7 @@ public:
 	void sendFile(QString);
 	int getNumberOfParts();
 	MumuServer(int,QObject * parent); 
+	bool insertNewProcess(QString ip, QString path, int parts);
 
 protected:
 	void incomingConnection(int);

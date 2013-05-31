@@ -12,7 +12,7 @@ MumuServer::MumuServer(int port, QObject *parent) : QTcpServer(parent)
 	this->totalSplit = 3;
 	/* First - Look for a files in the homeapp/file and split it*/
 	this->openAndSplitFile();
-	this->databasemanager = DatabaseManager::getInstance();
+	this->databaseManager = DatabaseManager::getInstance();
 
 
 	if(this->listen(QHostAddress::Any, port)){
@@ -109,6 +109,5 @@ int MumuServer::getNumberOfParts()
 	
 bool MumuServer::insertNewProcess(QString ip, QString path, int parts)
 {
-	for(MumuConnection * connection : this-> connections){
-	}
+	return true;
 }
