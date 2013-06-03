@@ -72,6 +72,15 @@ QString MumuConnection::getId()
  */ 
 bool MumuConnection::sendFile()
 {
+
+	/*---TODO---
+	- Enviar file descriptor
+	- Enviar blocos do arquivo
+	- Atualizar valor da base de dados ao enviar
+	*/
+	
+	
+/*
 	if(this->files->size() > 0){
 		MumuFile * file = this->files->at(0);
 		QByteArray block = Util::getBlockFile(file->getFile()->fileName());
@@ -82,6 +91,7 @@ bool MumuConnection::sendFile()
 		return true;
 	}
 	return false;
+*/
 }
 
 void MumuConnection::openFile()
