@@ -7,6 +7,7 @@
 #include <QFile>
 
 #include "../commum/mumufile.h"
+#include "../../controller/databasemanager.h"
 
 class MumuConnection : QTcpSocket
 {
@@ -26,6 +27,7 @@ private:
 	int statusConnection; // 1 = SOH recive
 	qint64 nextBlockSize;
 	QList<MumuFile*>* files;
+	DatabaseManager * dbManager;
 
 	void sendMsgToClient(quint16);
 	void sendAckToClient();
@@ -36,6 +38,7 @@ private:
 	void processBlock(QByteArray);
 	void sendBytesToClient(QByteArray);
 	void sendFileDescriptor();
+	bool registreIP(QHostAddress);
 
 public:
 	MumuConnection(int,QList<MumuFile*>*,QObject * parent = 0);

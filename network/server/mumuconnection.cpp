@@ -18,6 +18,8 @@ MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, 
 	connect(this,SIGNAL(readyRead()),this,SLOT(processData()));
 	statusConnection = -1;
 	this->nextBlockSize = 0;
+	this->dbManager = DatabaseManager::getInstance();
+	Util::logMessage("Files Count = " + QString::number(fileList->size()));
 }
 
 int MumuConnection::getState()
@@ -119,10 +121,18 @@ void MumuConnection::processBlock(QByteArray block)
 {
 	QDataStream in(&block, QIODevice::ReadOnly);
 	if(this->statusConnection == -1){
-		if(Util::processMsg(block) == SOH){
+		quint16 msg;
+		in >> msg;		
+		if(msg == SOH){
 			this->statusConnection = 1;
-			this->sendAckToClient();
-			Util::logMessage("Connection accepted");
+			QHostAddress ip;
+			in >> ip;
+			if(this->registreIP(ip)){
+				this->sendAckToClient();
+				Util::logMessage("Connection accepted. IP = " + ip.toString());
+			}else{
+				this->sendNakToClient();
+			}
 		}
 	}else if(this->statusConnection == 1){ // requesting fd
 		if(Util::processMsg(block) == ENQ){
@@ -180,4 +190,15 @@ void MumuConnection::sendNakToClient()
 {
 	Util::logMessage("Enviando NAK");
 	this->sendMsgToClient(NAK);
+}
+	
+bool MumuConnection::registreIP(QHostAddress ip)
+{
+	for(int index = 0; index < this->files->size(); index++){
+		MumuFile * file = this->files->at(index);
+		this->dbManager->insertNewProcess(ip.toString(),file->fileName() ,"S", file->getFileDescriptor().getTotalBlocksCount());
+		Util::logMessage(ip.toString() + " - " + file->fileName());
+	}
+	return true;
+	
 }

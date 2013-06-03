@@ -56,7 +56,10 @@ void MumuClient::serverConnected()
 
 void MumuClient::sendGreeting()
 {
-	this->sendMsgToServer(SOH); // SOH - It's initial char of a new connection
+	QByteArray tmpBlock;
+	QDataStream out(&tmpBlock,QIODevice::WriteOnly);
+	out << SOH << this->tcpSocket.localAddress();
+	this->sendBytesToServer(tmpBlock); // SOH - It's initial char of a new connection
 	statusConnection = 1;
 }
 

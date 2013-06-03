@@ -58,7 +58,7 @@ void MumuServer::openAndSplitFile()
 
 void MumuServer::openFiles()
 {
-	if(QDir::setCurrent(homeApp.path() + "/file")){ // there is files directory in the application home dir
+	if(QDir::setCurrent(FileHandle::getPublicUserHome().path() + "/file")){ // there is files directory in the application home dir
 		QDir fileDir(QDir::currentPath());
 		QStringList filesList = fileDir.entryList();
 		for(int index = 0; index < filesList.size(); index++){

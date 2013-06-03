@@ -1,3 +1,5 @@
+#ifndef __MUMUSERVER_H__
+#define __MUMUSERVER_H__
 
 #include <QTcpServer>
 #include <QFile>
@@ -6,7 +8,6 @@
 
 #include "mumuconnection.h"
 #include "../networkinterface.h"
-#include "../../controller/databasemanager.h"
  
 class MumuServer : public QTcpServer, public NetworkInterface
 {
@@ -40,3 +41,4 @@ private slots:
 	void socketStateChanged(QAbstractSocket::SocketState);
 };
 
+#endif //__MUMUSERVER_H__

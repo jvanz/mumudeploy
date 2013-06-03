@@ -1,3 +1,5 @@
+#ifndef __DATABASEMANAGER_H__
+#define __DATABASEMANAGER_H__
 #include <QtDeclarative>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -33,3 +35,5 @@ private:
 
 	static DatabaseManager *instance;
 };
+
+#endif

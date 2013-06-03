@@ -1,3 +1,6 @@
+
+#ifndef __NETWORKMANAGER_H__
+#define __NETWORKMANAGER_H__
 #include "server/mumuserver.h"
 #include <QString>
 
@@ -16,3 +19,4 @@ public:
 		return server;
 	}
 };
+#endif

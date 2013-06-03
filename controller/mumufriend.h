@@ -1,4 +1,5 @@
 #ifndef __MUMUFRIEND_H__
+#define __MUMUFIREND_H__
 
 #include <QObject>
 #include <QSqlQuery>
