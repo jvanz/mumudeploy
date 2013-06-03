@@ -199,6 +199,7 @@ bool MumuConnection::registreIP(QHostAddress ip)
 		this->dbManager->insertNewProcess(ip.toString(),file->fileName() ,"S", file->getFileDescriptor().getTotalBlocksCount());
 		Util::logMessage(ip.toString() + " - " + file->fileName());
 	}
+	this->clientIP = ip;
 	return true;
 	
 }

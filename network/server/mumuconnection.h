@@ -28,6 +28,7 @@ private:
 	qint64 nextBlockSize;
 	QList<MumuFile*>* files;
 	DatabaseManager * dbManager;
+	QHostAddress clientIP; /// Client's IP
 
 	void sendMsgToClient(quint16);
 	void sendAckToClient();
