@@ -2,8 +2,6 @@
 #include <QUrl>
 #include "controller/engine.h"
 #include "client/mumuclient.h"
-#include "controller/mumuthreadsend.h"
-#include "controller/mumuthreadreceive.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,14 +17,6 @@ int main(int argc, char *argv[])
 		MumuClient client("/home/marcos/grafico.diff", QHostAddress::LocalHost, 6666, NULL);
 		return app.exec();
 	}
-
-	MumuThreadSend threadSend;
-	MumuThreadReceive threadReceive;
-	threadSend.start();
-	threadReceive.start();
-	qDebug() << "Hello from gui thread " << app.thread()->currentThreadId();
-	threadSend.wait();
-	threadReceive.wait();
 
 	QDeclarativeView view;
 

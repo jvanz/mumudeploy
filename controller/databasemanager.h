@@ -23,6 +23,7 @@ public slots:
 	void updateServerAddress(QString path); ///< Updates the server address to get files
 	QString getServerAddress(); ///< return the server address to get files
 	void updateSentReceive(QString ip, QString file); ///< update the number os sent/received pieces of a file
+	int nextPiece(QString file, QString ip); ///< brings the next piece that needs to be send
 
 private:
 	DatabaseManager(); ///< default constructor

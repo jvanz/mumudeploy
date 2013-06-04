@@ -168,3 +168,18 @@ QSqlQuery DatabaseManager::returnOpenProcesses()
 	query.exec();
 	return query;
 }
+
+int DatabaseManager::nextPiece(QString file, QString ip)
+{
+	QSqlQuery query(db);
+
+	query.prepare("SELECT SENT_PIECES FROM PROCESSES WHERE FILE_PATH = :FILE AND IP = :IP");
+	query.bindValue(":FILE", file);
+	query.bindValue(":IP", ip);
+
+	if (query.exec() && query.next())
+		return query.value(0).toInt() + 1;
+
+	qWarning() << "File/IP: " << file << "/" << ip << " not found!!!";
+	return -1;
+}
