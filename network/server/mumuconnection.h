@@ -23,7 +23,7 @@ private:
 	QString id;
 	QString filePath;
 	QByteArray buffer;
-	QFile * file;
+	MumuFile * currentFile;
 	int statusConnection; // 1 = SOH recive
 	qint64 nextBlockSize;
 	QList<MumuFile*>* files;
@@ -35,10 +35,9 @@ private:
 	void sendNakToClient();
 	void clientReady();
 	bool sendFile();
-	void openFile();
 	void processBlock(QByteArray);
 	void sendBytesToClient(QByteArray);
-	void sendFileDescriptor();
+	bool sendFileDescriptor();
 	bool registreIP(QHostAddress);
 
 public:

@@ -74,7 +74,6 @@ bool MumuConnection::sendFile()
 {
 
 	/*---TODO---
-	- Enviar file descriptor
 	- Enviar blocos do arquivo
 	- Atualizar valor da base de dados ao enviar
 	*/
@@ -92,17 +91,6 @@ bool MumuConnection::sendFile()
 	}
 	return false;
 */
-}
-
-void MumuConnection::openFile()
-{
-	file = new QFile(QDir::toNativeSeparators(filePath));
-	if(file->exists()){
-		std::cout<<"File opened!"<<std::endl;
-		std::cout<<filePath.toStdString()<<std::endl;
-	}
-	file->open(QIODevice::ReadOnly);
-	
 }
 
 void MumuConnection::processData()
@@ -147,8 +135,7 @@ void MumuConnection::processBlock(QByteArray block)
 	}else if(this->statusConnection == 1){ // requesting fd
 		if(Util::processMsg(block) == ENQ){
 			Util::logMessage("Client request file");
-			QByteArray block = this->files->at(0)->getFileDescriptor().getBlockFileDescriptor();
-			this->sendBytesToClient(block);
+			this->sendFileDescriptor();
 			this->statusConnection = 2;
 		}
 	}else if(this->statusConnection == 2){ 
@@ -166,17 +153,6 @@ void MumuConnection::processBlock(QByteArray block)
 		}else{
 			Util::logMessage("File is not ok in client");
 		}
-	}
-}
-
-void MumuConnection::sendFileDescriptor()
-{
-	if(this->files->size() > 0){
-		MumuFile * file = this->files->at(0);
-		this->sendBytesToClient(file->getFileDescriptor().getBlockFileDescriptor());
-		Util::logMessage("FD sent");
-	}else{
-		Util::logMessage("No file");
 	}
 }
 
@@ -212,4 +188,19 @@ bool MumuConnection::registreIP(QHostAddress ip)
 	this->clientIP = ip;
 	return true;
 	
+}
+	
+bool MumuConnection::sendFileDescriptor()
+{
+	if(this->statusConnection == 2){
+		for(int index = 0; index < this->files->size(); index++){
+			//TODO verifica qual o próximo arquivo que não foi enviado e
+			// mando o FD. E seta o arquivo atual;
+			this->currentFile = this->files->at(index);
+			QByteArray block = this->currentFile->getFileDescriptor().getBlockFileDescriptor();
+			this->sendBytesToClient(block);
+			return true;	
+		}
+	}
+	return false;
 }
