@@ -26,5 +26,5 @@ public:
 	static quint16 processMsg(QByteArray);
 	static QByteArray getBlockFile(QString);
 	static bool saveBlockLikeFile(QDir,QByteArray, QString);
-
+	static QByteArray loadFileBlock(QDir dir,QString fileName, int blockNumber);
 };

@@ -77,20 +77,19 @@ bool MumuConnection::sendFile()
 	- Enviar blocos do arquivo
 	- Atualizar valor da base de dados ao enviar
 	*/
-	
-	
-/*
-	if(this->files->size() > 0){
-		MumuFile * file = this->files->at(0);
-		QByteArray block = Util::getBlockFile(file->getFile()->fileName());
-		Util::logMessage("Sending " + file->getFile()->fileName());
-        	Util::logMessage("File block size = " + QString::number(block.size()));
-        	this->sendBytesToClient(block);
-		Util::logMessage("File sent");
-		return true;
+	for(int index = 0; index < this->files; index++){
+		MumuFile * file = this->files->at(index);
+		int blockNumber = nextPiece(file->fileName(), clientIP.toString());
+		if(blockNumber < file->getTotalBlocksCount()){
+			this->currentFile = file; 
+			QByteArray block = Util::loadFileBlock(FileHandle::getDirUserHome, file->fileName(), blockNumber);
+			this->sendBytesToClient(block);
+			return true;
+		}
+		this->currentFile = NULL;
 	}
-	return false;
-*/
+	this->statusConnection = 4;
+	return false;	
 }
 
 void MumuConnection::processData()
@@ -132,27 +131,26 @@ void MumuConnection::processBlock(QByteArray block)
 				this->sendNakToClient();
 			}
 		}
-	}else if(this->statusConnection == 1){ // requesting fd
-		if(Util::processMsg(block) == ENQ){
+	}else if(this->statusConnection == 1){ // client ready
+		if(Util::processMsg(block) == ENQ){ // client resquesting file
 			Util::logMessage("Client request file");
 			this->sendFileDescriptor();
 			this->statusConnection = 2;
 		}
-	}else if(this->statusConnection == 2){ 
+	}else if(this->statusConnection == 2){ // File descriptor sent to client
 		if(Util::processMsg(block) == ACK){ // FD Ok. Send file
-			if(this->sendFile()){
-				this->statusConnection = 3; // All blocks sent. 
-			}
+			this->sendFile();
 		}else{
 			this->sendFileDescriptor();
 		}
-	}else if(this->statusConnection == 3){ // file sent. ok?
-		if(Util::processMsg(block) == ACK){
-			Util::logMessage("File is ok in client");
-			this->statusConnection = 4;
-		}else{
-			Util::logMessage("File is not ok in client");
+	}else if(this->statusConnection == 3){ // sending blocks
+		if(Util::processMsg(block) == ACK){ // last block ok. send next
+			this->sendFile();
+		}else{ // last block fail
+			this->sendLastBlock();
 		}
+	}else if(this->statusConnection == 4){ // no more files to send
+
 	}
 }
 

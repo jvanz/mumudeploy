@@ -101,3 +101,20 @@ bool Util::saveBlockLikeFile(QDir dir,QByteArray block, QString sufix)
 	Util::logMessage("BYTES WRITEN = " + QString::number(write));
 	fileBlock.close();
 }
+	
+QByteArray Util::loadFileBlock(QDir dir,QString fileName, int blockNumber)
+{
+	if(!dir.exists()){
+		if(!dir.mkpath(dir.path())){
+			return NULL;
+		}
+	}
+	QString path = dir.path() + fileName + "/block-" + QString::number(blockNumber);
+	Util::logMessage(path);
+	QFile fileBlock(path);
+	if(fileBlock.open(QIODevice::ReadOnly)){
+		return fileBlock.readAll();
+	}
+	return NULL;
+	
+}
