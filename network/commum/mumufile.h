@@ -34,6 +34,7 @@ public:
 	int getSize(); ///< Return the number os blocks
 	MumuBlock getBlock(int); ///< Get the block at position
 	FileDescriptor getFileDescriptor(); ///< Return the file descriptor of MumuFile
+	int getTotalBlocksCount();
 	QFile* getFile(); ///< Get the file inside of MumuFile
 	QString fileName(); ///< Get the name of file
 	bool exists(); ///< Verify if the file exists

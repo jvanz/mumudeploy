@@ -12,7 +12,7 @@
 #define ACK quint16(6) // positive
 #define NAK quint16(21) // negative
 #define ENQ quint16(5) // request file
-#define ETB quint16(23) // end of transmition
+#define EOT quint16(23) // end of transmition
 
 class Util
 {

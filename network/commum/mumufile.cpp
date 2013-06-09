@@ -140,3 +140,8 @@ void MumuFile::close()
 {
 	this->getFile()->close();
 }
+	
+int MumuFile::getTotalBlocksCount()
+{
+	return this->getFileDescriptor().getTotalBlocksCount();
+}

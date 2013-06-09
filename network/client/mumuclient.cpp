@@ -81,44 +81,44 @@ void MumuClient::readFile()
 
 void MumuClient::processBlock(QByteArray block)
 {
-
-	if(statusConnection == 1){ //waiting ack to greeting from server
-		if(Util::processMsg(block) == ACK){
-			Util::logMessage("Server accepted the connection");
-			this->requestFilesToServer();
-		}
-	}else if(statusConnection == 2){ // waiting file descriptor from server
-		if(block.size() > 2){ //recive fd
-			Util::logMessage("Reciving FD");
-			this->file = new MumuFile(block);
+	QDataStream in(&block, QIODevice::ReadOnly);
+	QByteArray tmpBlock;
+	quint16 msg;
+	in >> msg;		
+	if(this->statusConnection == -1){
+		if(msg == ENQ){ // server sending the first FD;
+			this->processFileDescriptorBlock(tmpBlock);
 			this->sendAckToServer();
-			this->statusConnection = 3;
-		}else if(Util::processMsg(block) == NAK){ // probabli nak
-			Util::logMessage("Server did not send FD");
+			this->statusConnection = 1;
+		}else if(msg == NAK){
+			Util::logMessage("Connection denied");
 		}
-	}else if(this->statusConnection == 3){ // wainting the file
-		if(block.size() > 2){ // recive file
-			Util::logMessage("Receving the file");
-			this->statusConnection = 4;
-			if(this->processFileBlock(block)){
-				this->sendAckToServer();
-			}else{
-				this->sendNakToServer();
-			}
-		}else{
-			//TODO
+	}else if(this->statusConnection == 1){ // reciving blocks
+		if(msg == STX ){
+			in >> tmpBlock;
+			this->processFileBlock(tmpBlock);
 		}
-		this->sendAckToServer();
 	}
 }
 
 bool MumuClient::processFileBlock(QByteArray block)
 {
 	if(this->file){
-		QDir dir(FileHandle::getUserHome() +"/recive/"+ file->fileName());
+		QDir dir(FileHandle::getUserHome() + file->fileName());
 		return Util::saveBlockLikeFile(dir, block, QString::number(this->currentBlock));
 	}
 	return false;
+}
+			
+bool MumuClient::processFileDescriptorBlock(QByteArray tmpBlock)
+{
+	FileDescriptor * fd = FileDescriptor::processFileDescriptorBlock(tmpBlock);
+	QDir dir = FileHandle::getDirUserHome();
+	if(!dir.exists(fd->getFileName())){
+		dir.mkdir(fd->getFileName());
+	}
+	this->currentFile = new MumuFile(*fd);
+	return true;
 }
 
 void MumuClient::sendBytesToServer(QByteArray data)

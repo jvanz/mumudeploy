@@ -20,6 +20,7 @@ private:
 	QTcpSocket tcpSocket;
 	qint64 nextBlockSize;
 	MumuFile * file;
+	MumuFile * currentFile;
 	QDataStream * inFile;
 	QByteArray buffer;
 	QString filePath;
@@ -38,7 +39,7 @@ private:
 	void sendNakToServer();
 	void requestFilesToServer();
 	void processBlock(QByteArray);
-	bool processFileDescriptorBlock(QByteArray *);
+	bool processFileDescriptorBlock(QByteArray);
 	void sendBytesToServer(QByteArray);
 	bool processFileBlock(QByteArray);
 

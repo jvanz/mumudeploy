@@ -24,6 +24,7 @@ private:
 	QString filePath;
 	QByteArray buffer;
 	MumuFile * currentFile;
+	QByteArray * currentBlock;
 	int statusConnection; // 1 = SOH recive
 	qint64 nextBlockSize;
 	QList<MumuFile*>* files;
@@ -39,6 +40,7 @@ private:
 	void sendBytesToClient(QByteArray);
 	bool sendFileDescriptor();
 	bool registreIP(QHostAddress);
+	void sendBlockToClient(QByteArray block);
 
 public:
 	MumuConnection(int,QList<MumuFile*>*,QObject * parent = 0);
