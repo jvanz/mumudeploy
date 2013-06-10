@@ -46,6 +46,7 @@ QByteArray FileDescriptor::getBlockFileDescriptor()
 void FileDescriptor::generateFileDescriptor(QByteArray block)
 {
 	QDataStream in(&block,QIODevice::ReadOnly);
+	Util::logMessage("FD BLOCK SIZE = " + QString::number(block.size()));
 	in >> this->fileName >> this->totalBlocksCount >> this->md5;
 }
 
@@ -53,6 +54,8 @@ FileDescriptor* FileDescriptor::processFileDescriptorBlock(QByteArray block)
 {
 
 	FileDescriptor * fd = new FileDescriptor(block);
+	Util::logMessage("NAME = " + fd->getFileName());
+	Util::logMessage("BLOCK NUMBER = " + QString::number(fd->getTotalBlocksCount()));
 	return fd;
 
 }
