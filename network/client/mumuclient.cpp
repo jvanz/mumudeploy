@@ -102,7 +102,11 @@ void MumuClient::processBlock(QByteArray block)
 			Util::logMessage("STX recebido");
 			in >> tmpBlock;
 			Util::logMessage("TMPBLOCK SIZE = " + QString::number(tmpBlock.size()));
-			this->processFileBlock(tmpBlock);
+			if(this->processFileBlock(tmpBlock)){
+				this->sendAckToServer();
+			}
+		}else if(msg == EOT){ // no more files
+			Util::logMessage("No more files to recive");
 		}
 	}
 }
