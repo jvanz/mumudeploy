@@ -19,6 +19,7 @@ MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, 
 	statusConnection = -1;
 	this->nextBlockSize = 0;
 	this->dbManager = DatabaseManager::getInstance();
+	this->lastBlockOk = true;
 	Util::logMessage("Files Count = " + QString::number(fileList->size()));
 }
 
@@ -77,12 +78,18 @@ bool MumuConnection::sendFile()
 	- Enviar blocos do arquivo
 	- Atualizar valor da base de dados ao enviar
 	*/
+	if(!this->lastBlockOk){
+		Util::logMessage("SEND BLOCK SIZE = " + QString::number(this->currentBlock.size()));
+		this->sendBlockToClient(this->currentBlock);
+		this->lastBlockOk = true;
+		return true;
+	}
 	if(this->currentFile){ //sending a file
 		int blockNumber = this->dbManager->nextPiece(this->currentFile->fileName(), clientIP.toString());
 		if(blockNumber < this->currentFile->getTotalBlocksCount()){
-			QByteArray block = Util::loadFileBlock(FileHandle::getDirUserHome(), this->currentFile->fileName(), blockNumber);
-			Util::logMessage("SEND BLOCK SIZE = " + QString::number(block.size()));
-			this->sendBlockToClient(block);
+			this->currentBlock = Util::loadFileBlock(FileHandle::getDirUserHome(), this->currentFile->fileName(), blockNumber);
+			Util::logMessage("SEND BLOCK SIZE = " + QString::number(this->currentBlock.size()));
+			this->sendBlockToClient(this->currentBlock);
 			return true;
 		}else{
 			this->currentFile = NULL;
@@ -128,9 +135,9 @@ void MumuConnection::processData()
 void MumuConnection::processBlock(QByteArray block)
 {
 	QDataStream in(&block, QIODevice::ReadOnly);
+	quint16 msg;
+	in >> msg;		
 	if(this->statusConnection == -1){
-		quint16 msg;
-		in >> msg;		
 		if(msg == SOH){
 			QHostAddress ip;
 			in >> ip;
@@ -143,8 +150,14 @@ void MumuConnection::processBlock(QByteArray block)
 			}
 		}
 	}else if(this->statusConnection == 1){ // sending file
+		if(msg == ACK){ // last block ok
+			this->dbManager->updateSentReceive(this->clientIP.toString(),this->currentFile->fileName());
+		}else{ // send again last block
+			this->lastBlockOk = false;
+		}
 		this->sendFile();
 	}else if(this->statusConnection == 2){ // no more files to send. 
+		this->sendMsgToClient(EOT);
 	}
 }
 
