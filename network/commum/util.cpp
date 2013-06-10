@@ -27,6 +27,7 @@ void Util::sendBytesTo(QByteArray data, QTcpSocket * socket)
 	out.setVersion(QDataStream::Qt_4_3);
 	out << qint64(0) << data;
 	out.device()->seek(0);
+	Util::logMessage("BLOCK SENT SIZE = " + QString::number(tmpBlock.size() - sizeof(qint64)));
 	out << qint64(tmpBlock.size() - sizeof(qint64));
 	socket->write(tmpBlock);
 	Util::logMessage("Bytes sent. Block size = " + QString::number(tmpBlock.size()));
@@ -109,12 +110,16 @@ QByteArray Util::loadFileBlock(QDir dir,QString fileName, int blockNumber)
 			return NULL;
 		}
 	}
-	QString path = dir.path() + fileName + "/block-" + QString::number(blockNumber);
+	QString path = dir.path() + "/" + fileName + "/block-" + QString::number(blockNumber);
 	Util::logMessage(path);
 	QFile fileBlock(path);
 	if(fileBlock.open(QIODevice::ReadOnly)){
-		return fileBlock.readAll();
+		QByteArray block =  fileBlock.readAll();
+		Util::logMessage("LOADFILEBLOCK = " + QString::number(block.size()));
+		return block;
+		
 	}
+	Util::logMessage("BLOCK DOES NOT OPEN");
 	return NULL;
 	
 }

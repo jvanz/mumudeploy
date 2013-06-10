@@ -81,6 +81,7 @@ bool MumuConnection::sendFile()
 		int blockNumber = this->dbManager->nextPiece(this->currentFile->fileName(), clientIP.toString());
 		if(blockNumber < this->currentFile->getTotalBlocksCount()){
 			QByteArray block = Util::loadFileBlock(FileHandle::getDirUserHome(), this->currentFile->fileName(), blockNumber);
+			Util::logMessage("SEND BLOCK SIZE = " + QString::number(block.size()));
 			this->sendBlockToClient(block);
 			return true;
 		}else{
@@ -189,6 +190,7 @@ bool MumuConnection::sendFileDescriptor()
 		in.setVersion(QDataStream::Qt_4_3);
 		in << ENQ << this->currentFile->getFileDescriptor().getBlockFileDescriptor();
 		this->sendBytesToClient(tmpBlock);
+		Util::logMessage("FD sent");
 		return true;
 	}
 	return false;	
