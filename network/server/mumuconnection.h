@@ -24,12 +24,13 @@ private:
 	QString filePath;
 	QByteArray buffer;
 	MumuFile * currentFile;
-	QByteArray * currentBlock;
+	QByteArray currentBlock;
 	int statusConnection; // 1 = SOH recive
 	qint64 nextBlockSize;
 	QList<MumuFile*>* files;
 	DatabaseManager * dbManager;
 	QHostAddress clientIP; /// Client's IP
+	bool lastBlockOk;
 
 	void sendMsgToClient(quint16);
 	void sendAckToClient();
