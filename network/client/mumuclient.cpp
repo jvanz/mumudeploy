@@ -49,7 +49,6 @@ void MumuClient::serverConnected()
 	std::cout<<"Client connected!"<<std::endl;
 	connected = true;
 	nextBlockSize = 0;
-	this->openFile();
 	this->sendGreeting();
 	
 }
@@ -69,6 +68,7 @@ void MumuClient::readFile()
 	if(this->nextBlockSize == 0){
 		if(tcpSocket.bytesAvailable() >= sizeof(qint64)){
 			in >> this->nextBlockSize;	
+			Util::logMessage("NEXTBLOCKSIZE = " + QString::number(this->nextBlockSize));
 		}
 	}
 	if(tcpSocket.bytesAvailable() == this->nextBlockSize){
@@ -81,21 +81,27 @@ void MumuClient::readFile()
 
 void MumuClient::processBlock(QByteArray block)
 {
+	Util::logMessage("BLOCK RECIVE SIZE = " + QString::number(block.size()));
 	QDataStream in(&block, QIODevice::ReadOnly);
 	QByteArray tmpBlock;
 	quint16 msg;
 	in >> msg;		
-	if(this->statusConnection == -1){
+	if(this->statusConnection == 1){
 		if(msg == ENQ){ // server sending the first FD;
+			Util::logMessage("ENQ recebido");
+			in >> tmpBlock;
 			this->processFileDescriptorBlock(tmpBlock);
 			this->sendAckToServer();
-			this->statusConnection = 1;
+			this->statusConnection = 2;
 		}else if(msg == NAK){
 			Util::logMessage("Connection denied");
 		}
-	}else if(this->statusConnection == 1){ // reciving blocks
+	}else if(this->statusConnection == 2){ // reciving blocks
+		Util::logMessage("entrou no status 2");
 		if(msg == STX ){
+			Util::logMessage("STX recebido");
 			in >> tmpBlock;
+			Util::logMessage("TMPBLOCK SIZE = " + QString::number(tmpBlock.size()));
 			this->processFileBlock(tmpBlock);
 		}
 	}
@@ -103,21 +109,26 @@ void MumuClient::processBlock(QByteArray block)
 
 bool MumuClient::processFileBlock(QByteArray block)
 {
-	if(this->file){
-		QDir dir(FileHandle::getUserHome() + file->fileName());
-		return Util::saveBlockLikeFile(dir, block, QString::number(this->currentBlock));
+	Util::logMessage("process file block");
+	QDir dir(FileHandle::getUserHome() + "/" + this->currentFile->fileName());
+	if(Util::saveBlockLikeFile(dir, block, QString::number(this->currentBlock))){
+		this->currentBlock++;
+		return true;
 	}
 	return false;
 }
 			
 bool MumuClient::processFileDescriptorBlock(QByteArray tmpBlock)
 {
+	Util::logMessage("Tratando FD");
 	FileDescriptor * fd = FileDescriptor::processFileDescriptorBlock(tmpBlock);
 	QDir dir = FileHandle::getDirUserHome();
+	Util::logMessage(dir.path());
 	if(!dir.exists(fd->getFileName())){
 		dir.mkdir(fd->getFileName());
 	}
-	this->currentFile = new MumuFile(*fd);
+	this->currentFile = new MumuFile(*fd);	
+	this->currentBlock = 1;
 	return true;
 }
 

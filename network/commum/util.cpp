@@ -90,6 +90,7 @@ bool Util::saveBlockLikeFile(QDir dir,QByteArray block, QString sufix)
 {
 	if(!dir.exists()){
 		if(!dir.mkpath(dir.path())){
+			Util::logMessage("não conseguiu criar a pasta");
 			return false;
 		}
 	}
