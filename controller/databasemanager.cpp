@@ -180,6 +180,6 @@ int DatabaseManager::nextPiece(QString file, QString ip)
 	if (query.exec() && query.next())
 		return query.value(0).toInt() + 1;
 
-	qWarning() << "File/IP: " << file << "/" << ip << " not found!!!";
+	qWarning() << "File/IP: " << file << "/" << ip << " not found!!! ERROR: " << query.lastError().databaseText();
 	return -1;
 }
