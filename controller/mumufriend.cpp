@@ -8,9 +8,9 @@ MumuFriend::MumuFriend(QObject *parent)
 	this->server = manager.getInstance(6666, this->parent());
 }
 
-bool MumuFriend::insertNewProcess(QString ip, QString path, int parts)
+bool MumuFriend::insertNewProcess(QString ip, QString path)
 {
-	return DatabaseManager::getInstance()->insertNewProcess(ip, path, "S", parts);
+	return this->server->insertNewProcess(ip, path);
 }
 
 QSqlQuery MumuFriend::returnOpenProcess()
