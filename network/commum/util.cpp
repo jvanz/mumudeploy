@@ -102,6 +102,7 @@ bool Util::saveBlockLikeFile(QDir dir,QByteArray block, QString sufix)
 	int write = out.writeRawData(block.constData(),block.size());
 	Util::logMessage("BYTES WRITEN = " + QString::number(write));
 	fileBlock.close();
+	return true;
 }
 	
 QByteArray Util::loadFileBlock(QDir dir,QString fileName, int blockNumber)
