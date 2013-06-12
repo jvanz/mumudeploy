@@ -107,7 +107,7 @@ int MumuServer::getNumberOfParts()
 	return parts;
 }
 	
-bool MumuServer::insertNewProcess(QString ip, QString path, int parts)
+bool MumuServer::insertNewProcess(QString ip, QString file)
 {
 	return true;
 }

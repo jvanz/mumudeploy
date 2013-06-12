@@ -8,7 +8,7 @@ class NetworkInterface
 public:
 	virtual void sendFile(QString) = 0;
 	virtual int getNumberOfParts() = 0;
-	virtual bool insertNewProcess(QString ip, QString path, int parts) = 0;
+	virtual bool insertNewProcess(QString ip, QString file) = 0;
 };
 
 #endif //__NETWORKINTERFACE_H__
