@@ -110,6 +110,7 @@ void MumuClient::processBlock(QByteArray block)
 			}
 		}else if(msg == EOT){ // no more files
 			Util::logMessage("No more files to recive");
+			Util::recreateFiles();
 		}
 	}
 }
