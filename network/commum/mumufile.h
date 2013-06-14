@@ -1,3 +1,5 @@
+#ifndef __MUMUFILE_H__
+#define __MUMUFILE_H__
 #include <QList>
 #include <QFile>
 #include <QByteArray>
@@ -46,3 +48,4 @@ public:
 	static QByteArray uncompress(const QByteArray& data); ///< Uncompress a received packet
 	static FileDescriptor* processFileDescriptorBlock(QByteArray);
 };
+#endif
