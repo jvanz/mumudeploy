@@ -14,7 +14,7 @@ class MumuClient : QObject
 	Q_OBJECT
 
 public:
-	MumuClient(QString,QHostAddress,int,QObject *parent);
+	MumuClient(QHostAddress,int,QObject *parent);
 private:
 	bool connected;
 	QTcpSocket tcpSocket;
@@ -23,7 +23,6 @@ private:
 	MumuFile * currentFile;
 	QDataStream * inFile;
 	QByteArray buffer;
-	QString filePath;
 	QHostAddress ipServer;
 	int portServer;
 	int statusConnection; // 1 = greeting sent ; 2 = file request ; 3 = file recive
@@ -31,7 +30,6 @@ private:
 	quint8 currentBlock;
 
 	bool connectMumuServer();
-	bool openFile();
 	void sendGreeting();
 	void sendOk();
 	void sendMsgToServer(quint16);

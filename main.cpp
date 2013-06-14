@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 				if(args[2] == "-port" & args[3].toInt() != 0){
 					int port = args[3].toInt(); 
 					if(args[1] == "-client"){
-						MumuClient client("/home/marcos/grafico.diff", QHostAddress::LocalHost, port , &app);
+						MumuClient client(QHostAddress::LocalHost, port , &app);
 					}else{
 						MumuServer server(port, &app);
 					}

@@ -4,7 +4,7 @@
 #include <QHostAddress>
 #include <QDir>
 
-MumuClient::MumuClient(QString path,QHostAddress ip,int port, QObject *parent) : filePath(path), ipServer(ip), portServer(port), tcpSocket(parent)
+MumuClient::MumuClient(QHostAddress ip,int port, QObject *parent) :  ipServer(ip), portServer(port), tcpSocket(parent)
 {
 	connect(&tcpSocket,SIGNAL(readyRead()),this,SLOT(readFile()));
 	connect(&tcpSocket,SIGNAL(disconnected()),this,SLOT(closeStream()));
@@ -156,15 +156,6 @@ void MumuClient::requestFilesToServer()
 	this->sendMsgToServer(ENQ);
 	statusConnection = 2; // request statius
 	Util::logMessage("File requested");
-}
-
-bool MumuClient::openFile()
-{
-	file = new MumuFile(QDir::toNativeSeparators(filePath));
-	bool isOpen = file->open(QIODevice::WriteOnly);
-	std::cout << "File size = " << file->size() << std::endl;	
-	inFile = new QDataStream(file->getFile());
-	return isOpen;
 }
 
 void MumuClient::closeStream()
