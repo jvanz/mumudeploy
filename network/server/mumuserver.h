@@ -29,7 +29,7 @@ public:
 	void sendFile(QString);
 	int getNumberOfParts();
 	MumuServer(int,QObject * parent); 
-	bool insertNewProcess(QString ip, QString path, int parts);
+	bool insertNewProcess(QString ip, QString path);
 
 protected:
 	void incomingConnection(int);

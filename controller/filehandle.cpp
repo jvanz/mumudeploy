@@ -45,5 +45,8 @@ QDir FileHandle::getDirUserHome()
 QDir FileHandle::getPublicUserHome()
 {
 	QDir home(QDir::toNativeSeparators(QDir::homePath() + "/mumudeploy/"));
+	if (!home.exists())
+		home.mkdir(home.path());
+	
 	return home;
 }

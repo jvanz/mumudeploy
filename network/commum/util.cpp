@@ -102,6 +102,7 @@ bool Util::saveBlockLikeFile(QDir dir,QByteArray block, QString sufix)
 	int write = out.writeRawData(block.constData(),block.size());
 	Util::logMessage("BYTES WRITEN = " + QString::number(write));
 	fileBlock.close();
+	return true;
 }
 	
 QByteArray Util::loadFileBlock(QDir dir,QString fileName, int blockNumber)
@@ -123,4 +124,42 @@ QByteArray Util::loadFileBlock(QDir dir,QString fileName, int blockNumber)
 	Util::logMessage("BLOCK DOES NOT OPEN");
 	return NULL;
 	
+}
+	
+bool Util::recreateFiles()
+{
+	QStringList filesList = FileHandle::getDirUserHome().entryList();
+	for(int index = 0; index < filesList.size(); index++){
+		QString dirName = filesList.at(index);
+		if(dirName == "." | dirName == ".."){ // for linux
+			continue;
+		}
+		QDir dir(FileHandle::getUserHome() + "/" + dirName);
+		if(dir.exists()){
+			QFile newFile(FileHandle::getPublicUserHome().path() + "/" +  dirName);
+			if(!newFile.open(QIODevice::WriteOnly)){
+				return false;
+			}
+			QDataStream out(&newFile);
+			QStringList subFiles = dir.entryList();
+			for(int i = 0; i < subFiles.size(); i++){
+				QString subDirName = subFiles.at(i);
+				if(subDirName == "." | subDirName == ".."){ // for linux
+					continue;
+				}
+				QString path = dir.path() + "/" + subFiles.at(i);
+				Util::logMessage(path);
+				QFile fileBlock(path);
+				if(fileBlock.open(QIODevice::ReadOnly)){
+					QByteArray data =  fileBlock.readAll();
+					out.writeRawData(data.constData(), data.size());
+					fileBlock.close();
+				}else{
+					return false;
+				}
+			}
+			newFile.close();
+		}
+	}
+	return true;
 }

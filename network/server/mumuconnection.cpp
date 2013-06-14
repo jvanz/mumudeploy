@@ -20,7 +20,7 @@ MumuConnection::MumuConnection(int socketDescriptor,QList<MumuFile*>* fileList, 
 	this->nextBlockSize = 0;
 	this->dbManager = DatabaseManager::getInstance();
 	this->lastBlockOk = true;
-	Util::logMessage("Files Count = " + QString::number(fileList->size()));
+	this->currentFile = NULL;
 }
 
 int MumuConnection::getState()
@@ -73,22 +73,20 @@ QString MumuConnection::getId()
  */ 
 bool MumuConnection::sendFile()
 {
-
-	/*---TODO---
-	- Enviar blocos do arquivo
-	- Atualizar valor da base de dados ao enviar
-	*/
+	if(this->statusConnection == -2){ // enviar último FD novamente;
+		this->sendFileDescriptor();
+		this->statusConnection = 1;
+		return true;
+	}
 	if(!this->lastBlockOk){
-		Util::logMessage("SEND BLOCK SIZE = " + QString::number(this->currentBlock.size()));
 		this->sendBlockToClient(this->currentBlock);
 		this->lastBlockOk = true;
 		return true;
 	}
 	if(this->currentFile){ //sending a file
 		int blockNumber = this->dbManager->nextPiece(this->currentFile->fileName(), clientIP.toString());
-		if(blockNumber < this->currentFile->getTotalBlocksCount()){
+		if(blockNumber <= this->currentFile->getTotalBlocksCount()){
 			this->currentBlock = Util::loadFileBlock(FileHandle::getDirUserHome(), this->currentFile->fileName(), blockNumber);
-			Util::logMessage("SEND BLOCK SIZE = " + QString::number(this->currentBlock.size()));
 			this->sendBlockToClient(this->currentBlock);
 			return true;
 		}else{
@@ -102,17 +100,17 @@ bool MumuConnection::sendFile()
 		if(blockNumber < file->getTotalBlocksCount()){
 			this->currentFile = file; 
 			this->sendFileDescriptor();
+			this->statusConnection = 1;
 			return true;
 		}
 	}
 	this->sendMsgToClient(EOT);
-	this->statusConnection = 2;
+	this->statusConnection = 3;
 	return true;	
 }
 
 void MumuConnection::processData()
 {
-	Util::logMessage("Data to proccess");
 	QDataStream in(this);
 	in.setVersion(QDataStream::Qt_4_3);
 	forever{
@@ -142,21 +140,27 @@ void MumuConnection::processBlock(QByteArray block)
 			QHostAddress ip;
 			in >> ip;
 			if(this->registreIP(ip)){
+				this->statusConnection = 1; // connected. Start file sending
 				this->sendFile();
-				Util::logMessage("Connection accepted. IP = " + ip.toString());
-				this->statusConnection = 1;
 			}else{
 				this->sendNakToClient();
 			}
 		}
-	}else if(this->statusConnection == 1){ // sending file
+	}else if(this->statusConnection == 1){
+		if(msg == NAK){ // fd ok
+			this->statusConnection = -2;	
+		}else{
+			this->statusConnection = 2;
+		}
+		this->sendFile();
+	}else if(this->statusConnection == 2){ // sending file
 		if(msg == ACK){ // last block ok
 			this->dbManager->updateSentReceive(this->clientIP.toString(),this->currentFile->fileName());
 		}else{ // send again last block
 			this->lastBlockOk = false;
 		}
 		this->sendFile();
-	}else if(this->statusConnection == 2){ // no more files to send. 
+	}else if(this->statusConnection == 3){ // no more files to send. 
 		this->sendMsgToClient(EOT);
 	}
 }
@@ -179,7 +183,6 @@ void MumuConnection::sendAckToClient()
 
 void MumuConnection::sendNakToClient()
 {
-	Util::logMessage("Enviando NAK");
 	this->sendMsgToClient(NAK);
 }
 	
@@ -203,7 +206,6 @@ bool MumuConnection::sendFileDescriptor()
 		in.setVersion(QDataStream::Qt_4_3);
 		in << ENQ << this->currentFile->getFileDescriptor().getBlockFileDescriptor();
 		this->sendBytesToClient(tmpBlock);
-		Util::logMessage("FD sent");
 		return true;
 	}
 	return false;	

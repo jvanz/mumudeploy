@@ -81,6 +81,7 @@ void MumuClient::readFile()
 
 void MumuClient::processBlock(QByteArray block)
 {
+	Util::logMessage("----------------------------------------------------------------");
 	Util::logMessage("BLOCK RECIVE SIZE = " + QString::number(block.size()));
 	QDataStream in(&block, QIODevice::ReadOnly);
 	QByteArray tmpBlock;
@@ -104,9 +105,12 @@ void MumuClient::processBlock(QByteArray block)
 			Util::logMessage("TMPBLOCK SIZE = " + QString::number(tmpBlock.size()));
 			if(this->processFileBlock(tmpBlock)){
 				this->sendAckToServer();
+			}else{
+				this->sendNakToServer();
 			}
 		}else if(msg == EOT){ // no more files
 			Util::logMessage("No more files to recive");
+			Util::recreateFiles();
 		}
 	}
 }
@@ -143,11 +147,13 @@ void MumuClient::sendBytesToServer(QByteArray data)
 
 void MumuClient::sendAckToServer()
 {
+	Util::logMessage("enviando ack");
 	this->sendMsgToServer(ACK);
 }
 
 void MumuClient::sendNakToServer()
 {
+	Util::logMessage("enviando nak");
 	this->sendMsgToServer(NAK);
 }
 
