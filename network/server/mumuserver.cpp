@@ -113,5 +113,10 @@ int MumuServer::getNumberOfParts()
 	
 bool MumuServer::insertNewProcess(QString ip, QString file)
 {
-	return true;
+	for(MumuFile * mumuFile : this->files){
+		if(mumuFile->fileName() == file){
+			return this->databaseManager->insertNewProcess(ip, file, "S", mumuFile->getTotalBlocksCount());
+		}
+	}
+	return false;
 }
