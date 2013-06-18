@@ -16,20 +16,20 @@ MumuServer::MumuServer(int port, QObject *parent) : QTcpServer(parent)
 
 
 	if(this->listen(QHostAddress::Any, port)){
-		qDebug() <<"The MumuServer is listening any ip address on port " << this->serverPort();
+		std::cout<<"The MumuServer is listening any ip address on port " << this->serverPort() << std::endl;
 	}
 	if(this->isListening()){
-		qDebug() << "The server is listening";
+		Util::logMessage("The server is listening");
 	}
 	connect(this, SIGNAL(newConnection()),this,SLOT(clientConnecting()));
 
-	qDebug() << "Constructor done!.";
+	Util::logMessage("Constructor done!.");
 }
 
 void MumuServer::clientConnecting()
 {
-	qDebug() << "Client wants connect!";
-	qDebug() << "Total clients connected = " << connections.size();
+	Util::logMessage("Client wants connect!");
+	std::cout << "Total clients connected = " << connections.size() << std::endl;
 }
 
 void MumuServer::sendFile(QString path)
@@ -41,35 +41,40 @@ void MumuServer::openAndSplitFile()
 {
 	this->openFiles();
 	/* Split the file */
-	for(MumuFile * file : files){
-		FileHandle::getDirUserHome().mkdir(file->fileName());
-		QDir blockDir(FileHandle::getUserHome() +"/" + file->fileName());
-		int countBlock = 1;
-		QList<MumuBlock> blocks = file->getBlocks();
-		for(QByteArray block : blocks){
-			Util::saveBlockLikeFile(blockDir, block, QString::number(countBlock));
-			countBlock++;
+	if(QDir::setCurrent(FileHandle::getUserHome())){
+		for(MumuFile * file : files){
+			QDir::current().mkdir(file->fileName());
+			QDir blockDir(QDir::currentPath() +"/" + file->fileName());
+			int countBlock = 1;
+			QList<MumuBlock> blocks = file->getBlocks();
+			for(QByteArray block : blocks){
+				Util::saveBlockLikeFile(blockDir, block, QString::number(countBlock));
+				countBlock++;
+			}
+			std::cout << file->fileName().toStdString() << ". Block ready! " << std::endl;	
 		}
-		qDebug() << file->fileName() << ". Block ready! ";	
 	}
 }
 
 void MumuServer::openFiles()
 {
-	QDir fileDir(FileHandle::getPublicUserHome().path() + "/file");
-	qDebug() << fileDir.path();
-	QStringList filesList = fileDir.entryList();
-	for(int index = 0; index < filesList.size(); index++){
-		QString fileName = filesList.at(index);
-		if(this->blackListFile.contains(fileName)){
-			continue;
+	if(QDir::setCurrent(FileHandle::getPublicUserHome().path() + "/file")){ // there is files directory in the application home dir
+		QDir fileDir(QDir::currentPath());
+		QStringList filesList = fileDir.entryList();
+		for(int index = 0; index < filesList.size(); index++){
+			QString fileName = filesList.at(index);
+			if(this->blackListFile.contains(fileName)){
+				continue;
+			}
+			std::cout << fileName.toStdString() << std::endl;
+			MumuFile * file = new MumuFile(fileName);
+			if(file->exists()){
+				files.append(file);
+			}
 		}
-		qDebug() << fileName;
-		MumuFile * file = new MumuFile(FileHandle::getPublicUserHome().path() + "/" + fileName);
-		qDebug() << FileHandle::getPublicUserHome().path() + "/" + fileName;
-		files.append(file);
+		std::cout << this->files.size() << " files found" << std::endl;
+		QDir::setCurrent(FileHandle::getDirUserHome().path());
 	}
-	qDebug() << this->files.size() << " files found";
 }
 
 void MumuServer::incomingConnection(int socketDescription)

@@ -11,13 +11,19 @@ bool FileHandle::verifyPath(QString path)
 bool FileHandle::verifyFile(QString filename)
 {
 	QFile file(filename);
-	return file.exists();
+
+	if (!file.exists())
+		return false;
+	return true;
 }
 
 bool FileHandle::verifyDir(QString dirName)
 {
 	QDir dir(dirName);
-	return dir.exists();
+
+	if (!dir.exists())
+		return false;
+	return true;
 }
 
 QString FileHandle::getUserHome()
@@ -33,8 +39,6 @@ QString FileHandle::getUserHome()
 QDir FileHandle::getDirUserHome()
 {
 	QDir home(QDir::toNativeSeparators(QDir::homePath() + "/.mumudeploy/"));
-	if (!home.exists())
-		home.mkdir(home.path());
 	return home;
 }
 	
