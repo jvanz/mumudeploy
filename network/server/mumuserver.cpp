@@ -39,6 +39,8 @@ void MumuServer::sendFile(QString path)
 
 void MumuServer::openAndSplitFile()
 {
+	QString currPath = QDir::currentPath();
+
 	this->openFiles();
 	/* Split the file */
 	for(MumuFile * file : files){
@@ -52,6 +54,8 @@ void MumuServer::openAndSplitFile()
 		}
 		qDebug() << file->fileName() << ". Block ready! ";	
 	}
+
+	QDir::setCurrent(currPath);
 }
 
 void MumuServer::openFiles()
