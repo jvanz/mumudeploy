@@ -39,6 +39,8 @@ void MumuServer::sendFile(QString path)
 
 void MumuServer::openAndSplitFile()
 {
+	QString path = QDir::currentPath();
+
 	this->openFiles();
 	/* Split the file */
 	if(QDir::setCurrent(FileHandle::getUserHome())){
@@ -54,6 +56,8 @@ void MumuServer::openAndSplitFile()
 			std::cout << file->fileName().toStdString() << ". Block ready! " << std::endl;	
 		}
 	}
+
+	QDir::setCurrent(path);
 }
 
 void MumuServer::openFiles()
