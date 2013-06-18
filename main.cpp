@@ -14,7 +14,7 @@ void PrintUsage()
 	qDebug() << "mumudeploy [-client|-server] [-ip <ip>] -port <port>";
 }
 
-int ExtractArgs(QStringList * args, QHostAddress * ip, int * port)
+int ExtractArgs(QStringList * args, QString *ip, int * port)
 {
 	bool ok = false;
 	if (args->size() >= 4) {
@@ -24,7 +24,7 @@ int ExtractArgs(QStringList * args, QHostAddress * ip, int * port)
 			if (args->at(1) == "-client" && args->size() >= 6) { // validate client args
 				if (args->at(2) == "-ip" && args->at(4) == "-port") {
 					if (args->at(3) != NULL && args->at(5) != NULL) {
-						ip->setAddress(args->at(3));
+						*ip = args->at(3);
 						*port = args->at(5).toInt();
 						ok = true;
 					}
@@ -46,36 +46,34 @@ int ExtractArgs(QStringList * args, QHostAddress * ip, int * port)
 	return 0;
 }
 
-int StartClient(QHostAddress ip, int port, QApplication * app)
-{
-	MumuClient client(ip, port ,app);
-}
-
-int StartServer(int port, QApplication * app)
-{
-	MumuServer server(port, app);
-}
-
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 
 	QStringList args = app.arguments();
-	QHostAddress ipServer;
+	QString ipServer;
 	int port;
+	MumuServer *server = 0;
+	MumuClient *client = 0;
 	
 	if(ExtractArgs(&args, &ipServer, &port)){
 		return -1;
 	}
 
 	if(args.at(1) == "-client"){
-		StartClient(ipServer,port, &app);
+		client = new MumuClient(QHostAddress(ipServer), port,&app);
 	}else if(args.at(1) == "-server"){
-		StartServer(port, &app);
+		server = new MumuServer(port, &app);
 	}
+
 	QDeclarativeView view;
 	Engine::start();
 	view.setSource(QUrl("qml/Main.qml"));
 	view.show();
-	return app.exec();
+	app.exec();
+
+	delete client;
+	delete server;
+
+	return 0;
 }
