@@ -293,13 +293,7 @@ Item {
 					anchors.fill: parent
 					onClicked: {
 						if (fileControler.verifyPath(textFile.text)) {
-							rectFile.color = "lightgreen"
-							if (friend.sendFile(textIP.text, textFile.text)) {
-								rectMain.state = "showRunning"
-								rectFile.color = "white"
-							} else {
-								rectFile.color = "red"
-							}
+							friend.insertNewProcess(textIP.text, textFile.text);
 						} else {
 							rectFile.color = "red"
 						}
