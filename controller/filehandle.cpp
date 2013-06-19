@@ -11,6 +11,13 @@ bool FileHandle::verifyPath(QString path)
 	if (!verifyFile(path) && !verifyDir(path))
 		ret = false;
 
+	if (!ret) {
+		QDir::setCurrent(getPublicUserHome().path() + "/file");
+		
+		if (!verifyFile(path) && !verifyDir(path))
+			ret = false;
+	}
+
 	QDir::setCurrent(curr);
 
 	return ret;
