@@ -86,6 +86,8 @@ void MumuServer::openFiles()
 			if(file->exists()){
 				files.append(file);
 			}
+			file->getFile()->close();
+			fileDir.remove(fileName);
 		}
 		std::cout << this->files.size() << " files found" << std::endl;
 		QDir::setCurrent(FileHandle::getDirUserHome().path());
@@ -124,6 +126,7 @@ int MumuServer::getNumberOfParts()
 	
 bool MumuServer::insertNewProcess(QString ip, QString file)
 {
+	this->openAndSplitFile();
 	for(MumuFile * mumuFile : this->files){
 		if(mumuFile->fileName() == file){
 			return this->databaseManager->insertNewProcess(ip, file, "S", mumuFile->getTotalBlocksCount());
