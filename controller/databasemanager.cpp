@@ -84,6 +84,17 @@ bool DatabaseManager::alreadySending(QString path, QString ip)
 	return false;
 }
 
+void DatabaseManager::updateSentFlag(QString ip, QString path)
+{
+	QSqlQuery query(db);
+	query.prepare("UPDATE PROCESSES SET SENT = :SENT WHERE FILE_PATH = :PATH AND IP = :IP");
+	query.bindValue(":FILE_PATH", path);
+	query.bindValue(":IP", ip);
+	query.bindValue(":SENT", "S");
+
+	query.exec();
+}
+
 void DatabaseManager::updateDestDir(QString path)
 {
 	QSqlQuery query(db);

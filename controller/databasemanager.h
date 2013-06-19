@@ -24,6 +24,7 @@ public slots:
 	QString getServerAddress(); ///< return the server address to get files
 	void updateSentReceive(QString ip, QString file); ///< update the number os sent/received pieces of a file
 	int nextPiece(QString file, QString ip); ///< brings the next piece that needs to be send
+	void updateSentFlag(QString ip, QString path); ///< the file was sucessfully sent
 
 private:
 	DatabaseManager(); ///< default constructor
