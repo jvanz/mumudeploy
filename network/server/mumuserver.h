@@ -14,6 +14,9 @@ class MumuServer : public QTcpServer, public NetworkInterface
 	Q_OBJECT
 
 private:
+	MumuServer();
+	MumuServer(int,QObject * parent); 
+	static MumuServer* instance;
 	QList<MumuFile*> files;
 	QStringList blackListFile; 
 	QDir homeApp;
@@ -28,8 +31,8 @@ private:
 public:
 	void sendFile(QString);
 	int getNumberOfParts();
-	MumuServer(int,QObject * parent); 
 	bool insertNewProcess(QString ip, QString path);
+	static MumuServer* getInstance(int port, QObject * parent);
 
 protected:
 	void incomingConnection(int);

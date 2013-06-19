@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 	if(args.at(1) == "-client"){
 		client = new MumuClient(QHostAddress(ipServer), port,&app);
 	}else if(args.at(1) == "-server"){
-		server = new MumuServer(port, &app);
+		server = MumuServer::getInstance(port, &app);
 	}
 
 	QDeclarativeView view;

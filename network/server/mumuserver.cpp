@@ -4,6 +4,17 @@
 #include <QDir>
 #include <QTcpSocket>
 
+MumuServer* MumuServer::instance = NULL;
+
+MumuServer* MumuServer::getInstance(int port, QObject * parent)
+{
+	if(instance == NULL){
+		instance = new MumuServer(port, parent);
+	}
+	return instance;
+}
+
+	
 /** Constructor */
 MumuServer::MumuServer(int port, QObject *parent) : QTcpServer(parent) 
 {
@@ -118,5 +129,6 @@ bool MumuServer::insertNewProcess(QString ip, QString file)
 			return this->databaseManager->insertNewProcess(ip, file, "S", mumuFile->getTotalBlocksCount());
 		}
 	}
+	qDebug() << "Nenhum arquivo com esse nome encontrado";
 	return false;
 }
