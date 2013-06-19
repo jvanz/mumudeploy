@@ -3,27 +3,29 @@
 
 bool FileHandle::verifyPath(QString path)
 {
+	bool ret = true;
+	QString curr = QDir::currentPath();
+
+	QDir::setCurrent(getDirUserHome().path());
+
 	if (!verifyFile(path) && !verifyDir(path))
-		return false;
-	return true;
+		ret = false;
+
+	QDir::setCurrent(curr);
+
+	return ret;
 }
 
 bool FileHandle::verifyFile(QString filename)
 {
 	QFile file(filename);
-
-	if (!file.exists())
-		return false;
-	return true;
+	return file.exists();
 }
 
 bool FileHandle::verifyDir(QString dirName)
 {
 	QDir dir(dirName);
-
-	if (!dir.exists())
-		return false;
-	return true;
+	return dir.exists();
 }
 
 QString FileHandle::getUserHome()
